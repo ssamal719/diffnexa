@@ -210,6 +210,12 @@ export function buildReport(result: ComparisonResponse): Report {
 
 // ---------------------------------------------------------------- filtering
 
+function isPageAnchor(change: Change): "added" | "removed" | null {
+  if (change.type === "PAGE_ADDED") return "added";
+  if (change.type === "PAGE_REMOVED") return "removed";
+  return null;
+}
+
 export type Filters = {
   categories: CategoryId[];
   kinds: EditKind[];
@@ -253,22 +259,152 @@ function matchesQuery(change: Change, query: string): boolean {
 }
 
 export function applyFilters(report: Report, filters: Filters): Change[] {
-  const pool = filters.includeMinor ? [...report.changes, ...report.minor].sort(inDocumentOrder) : report.changes;
+  const pool = filters.includeMinor
+    ? [...report.changes, ...report.minor].sort(inDocumentOrder)
+    : report.changes;
 
-  return pool.filter((change) => {
-    if (filters.categories.length > 0 && !filters.categories.includes(categoryOf(change))) return false;
+  const passesChosenFilters = (change: Change) => {
+    if (filters.categories.length > 0 && !filters.categories.includes(categoryOf(change)))
+      return false;
     if (filters.kinds.length > 0 && !filters.kinds.includes(editKindOf(change))) return false;
     if (filters.pages.length > 0) {
-      const anchor = primaryPage(change);
-      if (!anchor || !filters.pages.includes(anchor.page)) return false;
+      const location = primaryPage(change);
+      if (!location || !filters.pages.includes(location.page)) return false;
     }
-    return matchesQuery(change, filters.query);
-  });
+    return true;
+  };
+
+  const kept = pool.filter(
+    (change) => passesChosenFilters(change) && matchesQuery(change, filters.query),
+  );
+
+  if (!filters.query.trim()) return kept;
+
+  // Searching for wording that sits on a newly added page should still show
+  // which page it is on. The page's own record rarely contains the search term,
+  // so it is brought back to keep that context — but only when the filters the
+  // user actually chose would have allowed it anyway. Narrowing to "Content"
+  // still excludes page records, because that is what was asked for.
+  const keptIds = new Set(kept.map((change) => change.id));
+  const anchors = pool.filter(
+    (change) =>
+      !keptIds.has(change.id) &&
+      isPageAnchor(change) !== null &&
+      passesChosenFilters(change) &&
+      kept.some((match) => sharesPageWithAnchor(match, change)),
+  );
+
+  return [...kept, ...anchors].sort(inDocumentOrder);
+}
+
+/** True when `change` is content belonging to the page `anchor` added or removed. */
+function sharesPageWithAnchor(change: Change, anchor: Change): boolean {
+  const wanted = isPageAnchor(anchor);
+  if (wanted === null || isPageAnchor(change) !== null) return false;
+  if (editKindOf(change) !== wanted) return false;
+  const here = primaryPage(change);
+  const there = primaryPage(anchor);
+  return !!here && !!there && here.page === there.page && here.side === there.side;
 }
 
 /** Adds or removes one value, so clicking a summary element toggles it. */
 export function toggle<T>(values: T[], value: T): T[] {
   return values.includes(value) ? values.filter((item) => item !== value) : [...values, value];
+}
+
+// ---------------------------------------------------------------- grouping
+
+/**
+ * One card in the results list.
+ *
+ * A whole new page arrives from the engine as a PAGE_ADDED record plus one
+ * record per piece of text on it. Showing twenty "Content added" cards is
+ * accurate and useless: the reader needs to learn that a page is new before
+ * reading its contents. So those records are presented as one page-level card
+ * with the text changes nested inside it.
+ *
+ * This is presentation only. No record is merged, altered or dropped — the
+ * members are the original Change objects, with their evidence intact, and the
+ * summary keeps counting every one of them individually.
+ */
+export type ReportItem =
+  | { type: "change"; key: string; change: Change }
+  | {
+      type: "page-group";
+      key: string;
+      anchor: Change;
+      members: Change[];
+      page: number;
+      side: "new" | "old";
+    };
+
+/**
+ * Groups whole-page additions and removals with the text they contain.
+ *
+ * A group forms only where the engine reported the page itself as added or
+ * removed. A page that merely has some edited wording has no anchor, so its
+ * changes stay as ordinary cards.
+ */
+export function groupIntoItems(changes: Change[]): ReportItem[] {
+  const anchors = changes.filter((change) => isPageAnchor(change) !== null);
+  if (anchors.length === 0) {
+    return changes.map((change) => ({ type: "change", key: change.id, change }));
+  }
+
+  const claimed = new Set<string>();
+  const membersByAnchor = new Map<string, Change[]>();
+
+  for (const anchor of anchors) {
+    const wanted = isPageAnchor(anchor);
+    const anchorPage = primaryPage(anchor);
+    if (!anchorPage) continue;
+
+    const members = changes.filter((change) => {
+      if (change.id === anchor.id || claimed.has(change.id)) return false;
+      if (isPageAnchor(change) !== null) return false; // never nest a page inside a page
+      if (editKindOf(change) !== wanted) return false; // an edit is not part of a new page
+      const location = primaryPage(change);
+      return !!location && location.page === anchorPage.page && location.side === anchorPage.side;
+    });
+
+    for (const member of members) claimed.add(member.id);
+    membersByAnchor.set(anchor.id, members);
+  }
+
+  const items: ReportItem[] = [];
+  for (const change of changes) {
+    if (claimed.has(change.id)) continue; // shown inside its page group
+    const members = membersByAnchor.get(change.id);
+    if (members) {
+      const location = primaryPage(change)!;
+      items.push({
+        type: "page-group",
+        key: change.id,
+        anchor: change,
+        members,
+        page: location.page,
+        side: location.side,
+      });
+    } else {
+      items.push({ type: "change", key: change.id, change });
+    }
+  }
+  return items;
+}
+
+/** Every underlying record an item stands for, so counts stay honest. */
+export function changesIn(item: ReportItem): Change[] {
+  return item.type === "change" ? [item.change] : [item.anchor, ...item.members];
+}
+
+export function pageGroupHeadline(item: Extract<ReportItem, { type: "page-group" }>): string {
+  return item.side === "new" ? `Page ${item.page} — new page added` : `Page ${item.page} — page removed`;
+}
+
+export function pageGroupSummary(item: Extract<ReportItem, { type: "page-group" }>): string {
+  return item.side === "new"
+    ? "This page does not appear in the previous version. All of its content is new."
+    : "This page is not in the revised version. All of its content has gone.";
 }
 
 // ---------------------------------------------------------------- wording

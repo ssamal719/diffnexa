@@ -18,8 +18,12 @@ import {
   describeLocation,
   describePageDelta,
   describeScope,
+  changesIn,
   editKindOf,
+  groupIntoItems,
   headlineFor,
+  pageGroupHeadline,
+  pageGroupSummary,
   pageBuckets,
   primaryPage,
   toggle,
@@ -401,5 +405,217 @@ describe("the report never invents anything", () => {
   it("never adds a change that was not in the result", () => {
     const report = buildReport(result([change({ id: "only" })]));
     expect([...report.changes, ...report.minor].map((c) => c.id)).toEqual(["only"]);
+  });
+});
+
+// ---------------------------------------------------------------- page grouping
+
+describe("whole pages that were added or removed", () => {
+  const pageAdded = change({
+    id: "page3",
+    seq: 0,
+    type: "PAGE_ADDED",
+    kind: "added",
+    oldValue: null,
+    newValue: "Page 3",
+    oldPages: [],
+    newPages: [3],
+    evidence: [{ side: "new", page: 3, excerpt: "Annexure A", bbox: null, wordCount: 2 }],
+  });
+
+  const textOnNewPage = (id: string, seq: number, text: string): Change =>
+    change({
+      id,
+      seq,
+      type: "TEXT_ADDED",
+      kind: "added",
+      oldValue: null,
+      newValue: text,
+      oldPages: [],
+      newPages: [3],
+      evidence: [{ side: "new", page: 3, excerpt: text, bbox: null, wordCount: 4 }],
+    });
+
+  const newPageSet = [
+    pageAdded,
+    textOnNewPage("t1", 1, "Schedule of deliverables"),
+    textOnNewPage("t2", 2, "Acceptance testing shall complete within 30 days"),
+    textOnNewPage("t3", 3, "Payment milestones are defined below"),
+  ];
+
+  function itemsFor(changes: Change[], filters = NO_FILTERS) {
+    const report = buildReport(result(changes));
+    return groupIntoItems(applyFilters(report, filters));
+  }
+
+  it("shows one page card instead of a card per fragment", () => {
+    const items = itemsFor(newPageSet);
+    expect(items).toHaveLength(1);
+    expect(items[0].type).toBe("page-group");
+  });
+
+  it("keeps every underlying change inside the group", () => {
+    const [item] = itemsFor(newPageSet);
+    expect(item.type).toBe("page-group");
+    if (item.type !== "page-group") return;
+    expect(item.members.map((m) => m.id)).toEqual(["t1", "t2", "t3"]);
+    expect(item.anchor.id).toBe("page3");
+    expect(changesIn(item).map((c) => c.id)).toEqual(["page3", "t1", "t2", "t3"]);
+  });
+
+  it("keeps each member's evidence intact and traceable", () => {
+    const [item] = itemsFor(newPageSet);
+    if (item.type !== "page-group") throw new Error("expected a page group");
+    for (const member of item.members) {
+      expect(member.evidence.length).toBeGreaterThan(0);
+      expect(member.evidence[0].page).toBe(3);
+      expect(member.evidence[0].excerpt).toBeTruthy();
+    }
+  });
+
+  it("describes the page in plain language, without inventing importance", () => {
+    const [item] = itemsFor(newPageSet);
+    if (item.type !== "page-group") throw new Error("expected a page group");
+    expect(pageGroupHeadline(item)).toBe("Page 3 — new page added");
+    expect(pageGroupSummary(item)).toContain("All of its content is new");
+    expect(pageGroupHeadline(item)).not.toMatch(/_|critical|high|important/i);
+  });
+
+  it("does not change the summary counts", () => {
+    const report = buildReport(result(newPageSet));
+    // Four records were detected, and four are counted. Grouping is presentation.
+    expect(report.totalMeaningful).toBe(4);
+    const counts = Object.fromEntries(report.categories.map((c) => [c.id, c.count]));
+    expect(counts).toEqual({ content: 3, values: 0, dates: 0, pages: 1 });
+  });
+
+  it("does not double-count a grouped page in the page map", () => {
+    const report = buildReport(result(newPageSet));
+    const page3 = report.pages.find((bucket) => bucket.page === 3);
+    expect(page3?.count).toBe(4);
+    expect(report.pagesAffected).toBe(1);
+  });
+
+  it("groups a removed page the same way, from the previous document", () => {
+    const removed = [
+      change({
+        id: "gone",
+        seq: 0,
+        type: "PAGE_REMOVED",
+        kind: "removed",
+        oldValue: "Page 7",
+        newValue: null,
+        oldPages: [7],
+        newPages: [],
+        evidence: [{ side: "old", page: 7, excerpt: "Appendix B", bbox: null, wordCount: 2 }],
+      }),
+      change({
+        id: "gone-text",
+        seq: 1,
+        type: "TEXT_REMOVED",
+        kind: "removed",
+        oldValue: "This appendix is withdrawn",
+        newValue: null,
+        oldPages: [7],
+        newPages: [],
+        evidence: [
+          { side: "old", page: 7, excerpt: "This appendix is withdrawn", bbox: null, wordCount: 4 },
+        ],
+      }),
+    ];
+    const [item] = itemsFor(removed);
+    if (item.type !== "page-group") throw new Error("expected a page group");
+    expect(item.side).toBe("old");
+    expect(pageGroupHeadline(item)).toBe("Page 7 — page removed");
+    expect(item.members.map((m) => m.id)).toEqual(["gone-text"]);
+  });
+
+  it("leaves a page that was merely edited as individual changes", () => {
+    const edited = [
+      change({ id: "a", seq: 0, newPages: [5], oldPages: [5] }),
+      change({ id: "b", seq: 1, type: "NUMBER_CHANGED", newPages: [5], oldPages: [5] }),
+    ];
+    const items = itemsFor(edited);
+    expect(items.map((item) => item.type)).toEqual(["change", "change"]);
+  });
+
+  it("does not absorb an edit that happens to sit on an added page", () => {
+    // A modification is not part of "this page is new"; only additions are.
+    const mixed = [
+      ...newPageSet,
+      change({ id: "edit", seq: 4, kind: "modified", newPages: [3], oldPages: [3] }),
+    ];
+    const items = itemsFor(mixed);
+    expect(items.map((item) => item.type)).toEqual(["page-group", "change"]);
+  });
+
+  it("does not group changes from a different page", () => {
+    const items = itemsFor([
+      ...newPageSet,
+      change({
+        id: "elsewhere",
+        seq: 5,
+        type: "TEXT_ADDED",
+        kind: "added",
+        oldValue: null,
+        newValue: "A sentence on another page",
+        oldPages: [],
+        newPages: [9],
+      }),
+    ]);
+    expect(items).toHaveLength(2);
+    const group = items.find((item) => item.type === "page-group");
+    if (group?.type !== "page-group") throw new Error("expected a page group");
+    expect(group.members.map((m) => m.id)).not.toContain("elsewhere");
+  });
+
+  it("never nests one page inside another", () => {
+    const items = itemsFor([
+      pageAdded,
+      change({
+        id: "page4",
+        seq: 4,
+        type: "PAGE_ADDED",
+        kind: "added",
+        oldValue: null,
+        newValue: "Page 4",
+        oldPages: [],
+        newPages: [4],
+      }),
+    ]);
+    expect(items).toHaveLength(2);
+    expect(items.every((item) => item.type === "page-group")).toBe(true);
+  });
+
+  it("shows a page's text as ordinary cards when the page record is filtered out", () => {
+    // Filtering to Content excludes the page record, so its text stands alone
+    // rather than vanishing with the group.
+    const items = itemsFor(newPageSet, { ...NO_FILTERS, categories: ["content"] });
+    expect(items.map((item) => item.type)).toEqual(["change", "change", "change"]);
+  });
+
+  it("keeps a group when a search matches only text inside it", () => {
+    const items = itemsFor(newPageSet, { ...NO_FILTERS, query: "acceptance testing" });
+    expect(items).toHaveLength(1);
+    const [item] = items;
+    if (item.type !== "page-group") throw new Error("expected a page group");
+    expect(item.members.map((m) => m.id)).toEqual(["t2"]);
+  });
+
+  it("finds a page group by searching its own text", () => {
+    const items = itemsFor(newPageSet, { ...NO_FILTERS, query: "annexure" });
+    expect(items).toHaveLength(1);
+    expect(items[0].type).toBe("page-group");
+  });
+
+  it("takes a page-map click to the page-level result", () => {
+    const items = itemsFor(newPageSet, { ...NO_FILTERS, pages: [3] });
+    expect(items).toHaveLength(1);
+    expect(items[0].type).toBe("page-group");
+  });
+
+  it("changes nothing when no page was added or removed", () => {
+    const ordinary = [change({ id: "a", seq: 0 }), change({ id: "b", seq: 1 })];
+    expect(groupIntoItems(ordinary).map((item) => item.key)).toEqual(["a", "b"]);
   });
 });

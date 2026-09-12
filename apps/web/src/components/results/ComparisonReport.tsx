@@ -5,6 +5,7 @@ import { useMemo, useRef, useState } from "react";
 import { CategoryTiles } from "@/components/results/CategoryTiles";
 import { ChangeCard } from "@/components/results/ChangeCard";
 import { ChangeMix } from "@/components/results/ChangeMix";
+import { PageGroupCard } from "@/components/results/PageGroupCard";
 import { PageMap } from "@/components/results/PageMap";
 import { Alert } from "@/components/ui/Alert";
 import type { ComparisonResponse } from "@/lib/comparison";
@@ -15,6 +16,7 @@ import {
   describePageDelta,
   describeScope,
   formatDuration,
+  groupIntoItems,
   hasActiveFilters,
   toggle,
   type CategoryId,
@@ -34,7 +36,12 @@ export function ComparisonReport({ result }: { result: ComparisonResponse }) {
   const [filters, setFilters] = useState<Filters>(NO_FILTERS);
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // Filtering runs on the underlying changes, then the survivors are grouped.
+  // That order matters: a search hit inside a whole new page keeps its group,
+  // rather than the group disappearing because its page record did not match.
   const visible = useMemo(() => applyFilters(report, filters), [report, filters]);
+  const items = useMemo(() => groupIntoItems(visible), [visible]);
+  const searching = filters.query.trim() !== "";
   const listRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLElement | null)[]>([]);
 
@@ -52,7 +59,7 @@ export function ComparisonReport({ result }: { result: ComparisonResponse }) {
   }
 
   function goTo(index: number) {
-    if (index < 0 || index >= visible.length) return;
+    if (index < 0 || index >= items.length) return;
     setCurrentIndex(index);
     cardRefs.current[index]?.focus();
     cardRefs.current[index]?.scrollIntoView({ block: "center" });
@@ -155,23 +162,24 @@ export function ComparisonReport({ result }: { result: ComparisonResponse }) {
           )}
         </div>
 
-        {visible.length > 1 && (
+        {items.length > 1 && (
           <div className="flex items-center justify-between gap-3 border-b border-rule bg-surface px-3 py-2 md:px-4">
             <p className="tabular text-[0.85rem] text-ink-soft" role="status" aria-live="polite">
-              Change {Math.min(currentIndex + 1, visible.length)} of {visible.length}
-              {hasActiveFilters(filters) && ` (filtered from ${report.totalMeaningful})`}
+              Result {Math.min(currentIndex + 1, items.length)} of {items.length}
+              {items.length !== visible.length && ` · ${visible.length} changes`}
+              {hasActiveFilters(filters) && ` · filtered from ${report.totalMeaningful}`}
             </p>
             <div className="flex gap-2">
               <NavButton
-                label="Previous change"
+                label="Previous result"
                 disabled={currentIndex === 0}
                 onClick={() => goTo(currentIndex - 1)}
               >
                 ←
               </NavButton>
               <NavButton
-                label="Next change"
-                disabled={currentIndex >= visible.length - 1}
+                label="Next result"
+                disabled={currentIndex >= items.length - 1}
                 onClick={() => goTo(currentIndex + 1)}
               >
                 →
@@ -180,25 +188,40 @@ export function ComparisonReport({ result }: { result: ComparisonResponse }) {
           </div>
         )}
 
-        {visible.length === 0 ? (
+        {items.length === 0 ? (
           <p className="p-4 text-ink-soft md:p-5">
             Nothing matches these filters. Clear them to see all {report.totalMeaningful} changes.
           </p>
         ) : (
           <div className="space-y-3 p-3 md:p-4">
-            {visible.map((change, index) => (
-              <ChangeCard
-                key={change.id}
-                ref={(element) => {
-                  cardRefs.current[index] = element;
-                }}
-                change={change}
-                index={index}
-                total={visible.length}
-                isCurrent={index === currentIndex}
-                onFocus={() => setCurrentIndex(index)}
-              />
-            ))}
+            {items.map((item, index) =>
+              item.type === "page-group" ? (
+                <PageGroupCard
+                  key={item.key}
+                  ref={(element) => {
+                    cardRefs.current[index] = element;
+                  }}
+                  group={item}
+                  index={index}
+                  total={items.length}
+                  isCurrent={index === currentIndex}
+                  onFocus={() => setCurrentIndex(index)}
+                  forceOpen={searching}
+                />
+              ) : (
+                <ChangeCard
+                  key={item.key}
+                  ref={(element) => {
+                    cardRefs.current[index] = element;
+                  }}
+                  change={item.change}
+                  index={index}
+                  total={items.length}
+                  isCurrent={index === currentIndex}
+                  onFocus={() => setCurrentIndex(index)}
+                />
+              ),
+            )}
           </div>
         )}
 

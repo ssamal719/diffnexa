@@ -56,6 +56,19 @@ SIMILARITY_THRESHOLD = 0.55
 BlockT = TypeVar("BlockT", bound=ContentBlock)
 MIN_BLOCK_CHARS_FOR_FUZZY = 3
 
+# Pairing edited paragraphs compares every old block against every new one,
+# which is the right answer and costs O(n x m). On an ordinary revision the
+# unmatched regions are small and that is free. On a document where almost
+# nothing matches - a wholly rewritten page, or a deliberately crafted one - it
+# is not: 1,500 unmatched blocks each side meant over two million string
+# comparisons and minutes of work for a single request.
+#
+# Above this many candidate pairs the region is aligned in document order
+# instead. That is still deterministic and still finds the common case (text
+# edited in place); it simply stops trying every combination. The threshold sits
+# far above any real revision, and the golden suites are unaffected by it.
+MAX_PAIR_COMPARISONS = 10_000
+
 
 class PairKind(StrEnum):
     EQUAL = "equal"
@@ -110,6 +123,9 @@ def _pair_region(
     old_region: list[BlockT], new_region: list[BlockT]
 ) -> tuple[list[BlockPair[BlockT]], list[BlockT], list[BlockT]]:
     """Pair up edited paragraphs within one region, best match first."""
+    if len(old_region) * len(new_region) > MAX_PAIR_COMPARISONS:
+        return _pair_region_in_order(old_region, new_region)
+
     candidates: list[tuple[float, int, int]] = []
     for i, old in enumerate(old_region):
         for j, new in enumerate(new_region):
@@ -130,6 +146,39 @@ def _pair_region(
 
     leftover_old = [b for i, b in enumerate(old_region) if i not in used_old]
     leftover_new = [b for j, b in enumerate(new_region) if j not in used_new]
+    return pairs, leftover_old, leftover_new
+
+
+def _pair_region_in_order(
+    old_region: list[BlockT], new_region: list[BlockT]
+) -> tuple[list[BlockPair[BlockT]], list[BlockT], list[BlockT]]:
+    """Align a very large region by position rather than by best match.
+
+    Used only past MAX_PAIR_COMPARISONS. Blocks are compared with their
+    counterpart at the same position; anything that does not meet the similarity
+    threshold is left unpaired and reported as a removal and an addition, which
+    is what it looks like anyway at that scale.
+    """
+    pairs: list[BlockPair[BlockT]] = []
+    leftover_old: list[BlockT] = []
+    leftover_new: list[BlockT] = []
+
+    for index in range(max(len(old_region), len(new_region))):
+        old_block = old_region[index] if index < len(old_region) else None
+        new_block = new_region[index] if index < len(new_region) else None
+        if old_block is None:
+            assert new_block is not None
+            leftover_new.append(new_block)
+            continue
+        if new_block is None:
+            leftover_old.append(old_block)
+            continue
+        score = _similarity(old_block.text, new_block.text)
+        if score >= SIMILARITY_THRESHOLD:
+            pairs.append(BlockPair(PairKind.MODIFIED, old_block, new_block, score))
+        else:
+            leftover_old.append(old_block)
+            leftover_new.append(new_block)
     return pairs, leftover_old, leftover_new
 
 

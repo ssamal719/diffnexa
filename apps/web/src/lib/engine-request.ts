@@ -20,7 +20,8 @@ export const MAX_JSON_BYTES = 10 * 1024 * 1024;
 export type EngineFailure = { code: string; message: string; side?: string | null };
 
 export function failure(status: number, code: string, message: string): NextResponse {
-  return NextResponse.json({ error: { code, message, side: null } }, { status });
+  const headers = status === 429 ? { "Retry-After": "60" } : undefined;
+  return NextResponse.json({ error: { code, message, side: null } }, { status, headers });
 }
 
 /**

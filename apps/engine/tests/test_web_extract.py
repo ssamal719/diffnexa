@@ -442,3 +442,61 @@ def test_extraction_reuses_the_shared_normalisation():
         url="https://e.com/",
     )
     assert snapshot.nodes[0].text == 'The "agreement" runs for 30-days.'
+
+
+# ---------------------------------------------------------------- resource bounds
+
+
+def test_a_very_long_page_is_read_in_part_and_says_so():
+    """A page within the size limit can still hold tens of thousands of elements.
+
+    Reading all of it used to cost quadratic time, so a single request could
+    occupy the service for minutes. The work is now bounded, and the reader is
+    told the page was only partly read rather than being given a silent partial
+    answer.
+    """
+    from diffnexa_engine.web.extract import MAX_CONTENT_NODES
+
+    html = (
+        "<html><body><main>"
+        + "".join(f"<p>Clause {index} of the agreement.</p>" for index in range(MAX_CONTENT_NODES + 500))
+        + "</main></body></html>"
+    )
+    snapshot = extract_snapshot(html, url="https://example.com/")
+
+    assert snapshot.node_count == MAX_CONTENT_NODES
+    assert any("only its first" in warning.lower() for warning in snapshot.extraction.warnings)
+
+
+def test_an_ordinary_page_is_never_truncated():
+    html = (
+        "<html><body><main>"
+        + "".join(f"<p>Clause {index} of the agreement.</p>" for index in range(400))
+        + "</main></body></html>"
+    )
+    snapshot = extract_snapshot(html, url="https://example.com/")
+    assert snapshot.node_count == 400
+    assert snapshot.extraction.warnings == ()
+
+
+def test_a_page_with_an_absurd_number_of_elements_is_refused():
+    from diffnexa_engine.errors import DocumentError
+    from diffnexa_engine.web.extract import MAX_ELEMENTS
+
+    html = "<html><body>" + "<span>x</span>" * (MAX_ELEMENTS + 100) + "</body></html>"
+    with pytest.raises(DocumentError):
+        extract_snapshot(html, url="https://example.com/")
+
+
+def test_reading_a_long_page_is_fast_enough_to_serve():
+    """Guards the fix: this input took minutes before extraction became linear."""
+    import time
+
+    html = (
+        "<html><body><main>"
+        + "".join(f"<p>item {index} with some words here</p>" for index in range(10_000))
+        + "</main></body></html>"
+    )
+    started = time.perf_counter()
+    extract_snapshot(html, url="https://example.com/")
+    assert time.perf_counter() - started < 10.0

@@ -6,6 +6,7 @@ import {
   engineAuthHeaders,
   MAX_UPLOAD_BYTES,
 } from "@/lib/engine-config";
+import { TOO_MANY_REQUESTS_MESSAGE, checkRateLimit, clientKey } from "@/lib/rate-limit";
 import { ERROR_MESSAGES, type ErrorCode } from "@/lib/validation";
 
 export const runtime = "nodejs";
@@ -29,6 +30,16 @@ function friendly(code: string): string | null {
  * below are a fast rejection, not the security boundary.
  */
 export async function POST(request: Request) {
+  // Comparison occupies a worker for seconds, so it is limited before the body
+  // is read rather than after the work has already been paid for.
+  const decision = checkRateLimit("pdf-compare", clientKey(request));
+  if (!decision.allowed) {
+    return NextResponse.json(
+      { error: { code: "too_many_requests", message: TOO_MANY_REQUESTS_MESSAGE, side: null } },
+      { status: 429, headers: { "Retry-After": String(decision.retryAfterSeconds) } },
+    );
+  }
+
   let form: FormData;
   try {
     form = await request.formData();
@@ -53,6 +64,10 @@ export async function POST(request: Request) {
     if (file.size > MAX_UPLOAD_BYTES) {
       return failure(413, "file_too_large", ERROR_MESSAGES.file_too_large, side);
     }
+  }
+
+  if (previous.size + revised.size > MAX_UPLOAD_BYTES * 2) {
+    return failure(413, "file_too_large", ERROR_MESSAGES.file_too_large, undefined);
   }
 
   const outgoing = new FormData();

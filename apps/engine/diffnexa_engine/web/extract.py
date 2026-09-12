@@ -31,6 +31,7 @@ import lxml.html
 from lxml.html import HtmlElement
 
 from diffnexa_engine.compare.normalize import normalize
+from diffnexa_engine.errors import DocumentError, ErrorCode
 from diffnexa_engine.web.noise import (
     CHROME_ROLES,
     CHROME_TAGS,
@@ -57,6 +58,15 @@ from diffnexa_engine.web.snapshot import (
 
 EXTRACTOR_NAME = "diffnexa-html"
 EXTRACTOR_VERSION = "1.0"
+
+# Ceilings that bound the work a single page can cause. A page within the 5 MB
+# fetch limit can still contain tens of thousands of elements, and extraction
+# used to cost quadratic time in that count, so a large page could occupy the
+# service for minutes. The cost is now linear, and these ceilings bound the rest:
+# content is truncated with a visible warning rather than silently, because a
+# partial reading the user is told about is better than a refusal or a lie.
+MAX_ELEMENTS = 60_000
+MAX_CONTENT_NODES = 5_000
 
 # A page with fewer readable words than this, whose markup shows the signs of an
 # application shell, is reported as needing a browser rather than compared empty.
@@ -158,23 +168,60 @@ def _is_hidden(element: HtmlElement) -> bool:
     return bool(HIDDEN_STYLE.search(style))
 
 
-def _dom_path(element: HtmlElement, root: HtmlElement) -> str:
+def _sibling_positions(root: HtmlElement) -> dict[int, tuple[int, int]]:
+    """Each element's position among same-tag siblings, computed in one pass.
+
+    Previously this was worked out per node by scanning all of its siblings,
+    which is quadratic on a page with thousands of paragraphs under one parent
+    and was the main reason a large page took minutes. One pass over the tree
+    gives the same answer in linear time.
+
+    Keyed by the element's index in document order rather than id(), because
+    lxml builds element proxies on demand and reuses their addresses.
+    """
+    positions: dict[int, tuple[int, int]] = {}
+    order = {}
+    for index, element in enumerate(root.iter()):
+        if isinstance(element.tag, str):
+            order[element] = index
+
+    for parent in root.iter():
+        if not isinstance(parent.tag, str):
+            continue
+        counts: dict[str, int] = {}
+        children = [child for child in parent if isinstance(child.tag, str)]
+        totals: dict[str, int] = {}
+        for child in children:
+            totals[str(child.tag)] = totals.get(str(child.tag), 0) + 1
+        for child in children:
+            tag = str(child.tag)
+            counts[tag] = counts.get(tag, 0) + 1
+            key = order.get(child)
+            if key is not None:
+                positions[key] = (counts[tag], totals[tag])
+    return positions
+
+
+def _dom_path(
+    element: HtmlElement,
+    root: HtmlElement,
+    positions: dict[int, tuple[int, int]],
+    order: dict[HtmlElement, int],
+) -> str:
     """A readable path from the region root, e.g. "article > section:nth-of-type(2) > p"."""
     steps: list[str] = []
     current: HtmlElement | None = element
-    while current is not None and current is not root:
+    depth = 0
+    while current is not None and current is not root and depth < 64:
         parent = current.getparent()
         if parent is None:
             break
         tag = str(current.tag)
-        siblings = [child for child in parent if str(child.tag) == tag]
-        if len(siblings) > 1:
-            steps.append(f"{tag}:nth-of-type({siblings.index(current) + 1})")
-        else:
-            steps.append(tag)
+        index, total = positions.get(order.get(current, -1), (1, 1))
+        steps.append(f"{tag}:nth-of-type({index})" if total > 1 else tag)
         current = parent
-    root_tag = str(root.tag) if root is not None else "body"
-    steps.append(root_tag)
+        depth += 1
+    steps.append(str(root.tag) if root is not None else "body")
     return " > ".join(reversed(steps))
 
 
@@ -269,7 +316,8 @@ def choose_main_region(tree: HtmlElement, state: _Extraction) -> tuple[HtmlEleme
             return articles[0], MainRegionStrategy.ARTICLE_ELEMENT
         # Several articles: a listing page. The one with the most substance is
         # the page's subject; ties break by document order, never randomly.
-        best = max(articles, key=lambda element: (_score_region(element), -_document_index(element, root)))
+        order = _document_order(root)
+        best = max(articles, key=lambda element: (_score_region(element), -_document_index(element, order)))
         state.warn(f"The page contains {len(articles)} articles; the longest was used.")
         return best, MainRegionStrategy.ARTICLE_ELEMENT
 
@@ -284,7 +332,8 @@ def choose_main_region(tree: HtmlElement, state: _Extraction) -> tuple[HtmlEleme
             # Prefer the deepest container that still holds the winning score,
             # so the result is the content itself rather than a wrapper of it.
             winners = [element for element, score in scored if score >= best_score * 0.999]
-            best = min(winners, key=lambda element: (-_depth(element), _document_index(element, root)))
+            order = _document_order(root)
+            best = min(winners, key=lambda element: (-_depth(element), _document_index(element, order)))
             return best, MainRegionStrategy.SCORED_REGION
 
     return root, MainRegionStrategy.BODY_FALLBACK
@@ -299,11 +348,12 @@ def _depth(element: HtmlElement) -> int:
     return depth
 
 
-def _document_index(element: HtmlElement, root: HtmlElement) -> int:
-    for index, candidate in enumerate(root.iter()):
-        if candidate is element:
-            return index
-    return 0
+def _document_order(root: HtmlElement) -> dict[HtmlElement, int]:
+    return {element: index for index, element in enumerate(root.iter())}
+
+
+def _document_index(element: HtmlElement, order: dict[HtmlElement, int]) -> int:
+    return order.get(element, 0)
 
 
 # ---------------------------------------------------------------- pass 3: chrome
@@ -405,6 +455,8 @@ def _cell_position(cell: HtmlElement, tables: list[HtmlElement]) -> TableRef | N
 
 
 def _build_nodes(region: HtmlElement, base_url: str, state: _Extraction) -> tuple[ContentNode, ...]:
+    positions = _sibling_positions(region)
+    order = _document_order(region)
     tables = list(region.iter("table"))
     headings: list[tuple[int, str]] = []
     nodes: list[ContentNode] = []
@@ -444,12 +496,19 @@ def _build_nodes(region: HtmlElement, base_url: str, state: _Extraction) -> tupl
         if role is NodeRole.TABLE_CELL and table_ref is None:
             continue  # a stray cell outside any table
 
+        if len(nodes) >= MAX_CONTENT_NODES:
+            state.warn(
+                f"This page is unusually long. Only its first {MAX_CONTENT_NODES} pieces of "
+                "content were read, so changes further down were not compared."
+            )
+            break
+
         nodes.append(
             ContentNode(
                 id=node_id,
                 role=role,
                 level=level,
-                path=_dom_path(element, region),
+                path=_dom_path(element, region, positions, order),
                 section_path=section_path,
                 text=text,
                 tokens=tuple(
@@ -459,11 +518,18 @@ def _build_nodes(region: HtmlElement, base_url: str, state: _Extraction) -> tupl
             )
         )
 
-    nodes.extend(_link_nodes(region, base_url, len(nodes)))
-    return tuple(nodes)
+    if len(nodes) < MAX_CONTENT_NODES:
+        nodes.extend(_link_nodes(region, base_url, len(nodes), positions, order))
+    return tuple(nodes[:MAX_CONTENT_NODES])
 
 
-def _link_nodes(region: HtmlElement, base_url: str, start_index: int) -> list[ContentNode]:
+def _link_nodes(
+    region: HtmlElement,
+    base_url: str,
+    start_index: int,
+    positions: dict[int, tuple[int, int]],
+    order: dict[HtmlElement, int],
+) -> list[ContentNode]:
     """Links are recorded separately, so a changed destination is visible.
 
     The link's own text is already part of the paragraph containing it; what a
@@ -475,6 +541,8 @@ def _link_nodes(region: HtmlElement, base_url: str, start_index: int) -> list[Co
         text = _text_of(link)
         if not href or not text:
             continue
+        if start_index + len(nodes) >= MAX_CONTENT_NODES:
+            break
         absolute = urljoin(base_url, href.strip())
         if not absolute.lower().startswith(("http://", "https://")):
             continue
@@ -483,7 +551,7 @@ def _link_nodes(region: HtmlElement, base_url: str, start_index: int) -> list[Co
             ContentNode(
                 id=node_id,
                 role=NodeRole.LINK,
-                path=_dom_path(link, region),
+                path=_dom_path(link, region, positions, order),
                 text=text,
                 tokens=tuple(
                     WebToken(id=f"{node_id}-t{index}", text=word) for index, word in enumerate(text.split())
@@ -579,6 +647,13 @@ def extract_snapshot(
         except (lxml.etree.ParserError, ValueError):
             tree = lxml.html.fromstring(f"<html><body>{raw}</body></html>")
             state.warn("The page's markup could not be parsed normally and was repaired.")
+
+        element_count = sum(1 for _ in tree.iter())
+        if element_count > MAX_ELEMENTS:
+            raise DocumentError(
+                ErrorCode.EXTRACTION_FAILED,
+                f"{element_count} elements exceeds the {MAX_ELEMENTS} ceiling",
+            )
 
         metadata = _read_metadata(tree, final)
         _strip_unreadable(tree, state)

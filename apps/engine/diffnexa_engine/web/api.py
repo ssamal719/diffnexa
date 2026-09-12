@@ -31,6 +31,9 @@ from diffnexa_engine.web.urls import UnsafeUrl
 # A capture of a long page is a few hundred kilobytes; this is generous.
 MAX_SNAPSHOT_BYTES = 10 * 1024 * 1024
 MAX_URL_LENGTH = 2048
+# Extraction never produces more than this, so a capture claiming more was not
+# made by DiffNexa and would only serve to make comparison expensive.
+MAX_SNAPSHOT_NODES = 5_000
 
 # How a fetch failure is described to the person who asked.
 _FETCH_ERRORS: dict[FetchFailure, WebErrorCode] = {
@@ -143,8 +146,17 @@ def read_snapshot(payload: Any) -> Snapshot:
         if isinstance(payload, str | bytes | bytearray):
             if len(payload) > MAX_SNAPSHOT_BYTES:
                 raise WebRequestError(WebErrorCode.PAGE_TOO_LARGE, "snapshot over the size ceiling")
-            return Snapshot.model_validate_json(payload)
-        return Snapshot.model_validate(payload)
+            snapshot = Snapshot.model_validate_json(payload)
+            if snapshot.node_count > MAX_SNAPSHOT_NODES:
+                raise WebRequestError(WebErrorCode.SNAPSHOT_UNREADABLE, "implausible node count")
+            return snapshot
+        snapshot = Snapshot.model_validate(payload)
+        if snapshot.node_count > MAX_SNAPSHOT_NODES:
+            raise WebRequestError(
+                WebErrorCode.SNAPSHOT_UNREADABLE,
+                f"{snapshot.node_count} nodes exceeds anything DiffNexa produces",
+            )
+        return snapshot
     except WebRequestError:
         raise
     except (ValidationError, ValueError, TypeError) as exc:

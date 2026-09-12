@@ -171,3 +171,51 @@ def test_the_fetch_time_does_not_affect_the_comparison():
         compare_snapshots(morning, changed).model_dump_json()
         == compare_snapshots(evening, changed).model_dump_json()
     )
+
+
+# ---------------------------------------------------------------- resource bounds
+
+
+def test_comparing_two_wholly_different_pages_stays_fast():
+    """Guards the fix: pairing every block against every other was quadratic.
+
+    A page where almost nothing matches - a full rewrite, or a crafted baseline -
+    took minutes for a single request. Large regions are now aligned in document
+    order instead, which is still deterministic.
+    """
+    import time
+
+    before = snap(
+        "<html><body><main>"
+        + "".join(f"<p>clause {i} states the original wording</p>" for i in range(1500))
+        + "</main></body></html>"
+    )
+    after = snap(
+        "<html><body><main>"
+        + "".join(f"<p>section {i} states entirely different wording now</p>" for i in range(1500))
+        + "</main></body></html>"
+    )
+
+    started = time.perf_counter()
+    result = compare_snapshots(before, after)
+    elapsed = time.perf_counter() - started
+
+    assert elapsed < 15.0, f"comparison took {elapsed:.1f}s"
+    assert result.changes, "the changes are still found"
+
+
+def test_an_implausible_capture_is_refused():
+    """A capture claiming more content than DiffNexa ever produces is not ours."""
+    from diffnexa_engine.web.api import MAX_SNAPSHOT_NODES, read_snapshot
+    from diffnexa_engine.web.errors import WebErrorCode, WebRequestError
+
+    real = snap(PAGE).model_dump(mode="json")
+    node = real["nodes"][0]
+    real["nodes"] = [
+        {**node, "id": f"n{index}", "tokens": [{"id": f"n{index}-t0", "text": "x"}]}
+        for index in range(MAX_SNAPSHOT_NODES + 10)
+    ]
+
+    with pytest.raises(WebRequestError) as info:
+        read_snapshot(real)
+    assert info.value.code is WebErrorCode.SNAPSHOT_UNREADABLE

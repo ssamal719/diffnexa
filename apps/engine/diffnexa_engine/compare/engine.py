@@ -167,10 +167,28 @@ def _words_by_id(document: Document) -> dict[str, Word]:
 
 
 def _excerpt(text: str) -> str:
+    """A shortened value for display. Not for evidence — see `_quoted_excerpt`."""
     cleaned = normalize(text)
     if len(cleaned) <= EXCERPT_CHARS:
         return cleaned
     return cleaned[: EXCERPT_CHARS - 1].rstrip() + "…"
+
+
+def _quoted_excerpt(text: str) -> str:
+    """A shortened quotation that is still literally part of what was quoted.
+
+    Evidence excerpts are checked against the words they cite, and an excerpt
+    ending in an ellipsis is no longer found in that text, so the change is
+    rejected and discarded. Cutting at a word boundary with no added characters
+    keeps the excerpt a true opening fragment of the cited words, which the
+    traceability check accepts without being relaxed.
+    """
+    cleaned = normalize(text)
+    if len(cleaned) <= EXCERPT_CHARS:
+        return cleaned
+    cut = cleaned[:EXCERPT_CHARS]
+    boundary = cut.rfind(" ")
+    return (cut[:boundary] if boundary > 0 else cut).rstrip()
 
 
 def _block_evidence(block: Block, side: Side) -> list[Evidence]:
@@ -184,7 +202,7 @@ def _block_evidence(block: Block, side: Side) -> list[Evidence]:
                 page=page,
                 word_ids=tuple(w.id for w in page_words),
                 bbox=block.bbox_for_page(page),
-                excerpt=_excerpt(" ".join(w.text for w in page_words)),
+                excerpt=_quoted_excerpt(" ".join(w.text for w in page_words)),
             )
         )
     return evidence
@@ -235,17 +253,41 @@ def _context_excerpt(block: Block, words: list[Word]) -> str:
             line_text = normalize(line.text)
             if cited and cited in line_text and len(line_text) <= EXCERPT_CHARS:
                 return line_text
-    return _excerpt(cited)
+    return _quoted_excerpt(cited)
+
+
+PAGE_EVIDENCE_MAX_WORDS = 60
 
 
 def _page_evidence(page: Page, side: Side) -> Evidence:
-    words = list(page.words)
+    """Evidence for a whole page that was added or removed.
+
+    The words cited and the excerpt shown must agree, because the traceability
+    checker rejects evidence that quotes something other than what it cites —
+    and rightly so. Truncating the excerpt at a character limit while still
+    citing every word breaks that agreement on any text-dense page, and the
+    change is then discarded: whole added pages vanished from the results.
+
+    So the opening words are taken only up to the excerpt's length, and exactly
+    those words are cited. The excerpt is a complete quotation of them, never an
+    abbreviation of a longer list.
+    """
+    cited: list[Word] = []
+    length = 0
+    for word in page.words[:PAGE_EVIDENCE_MAX_WORDS]:
+        addition = len(word.text) + (1 if cited else 0)
+        if cited and length + addition > EXCERPT_CHARS:
+            break
+        cited.append(word)
+        length += addition
+
+    excerpt = normalize(" ".join(word.text for word in cited)) if cited else None
     return Evidence(
         side=side,
         page=page.number,
-        word_ids=tuple(w.id for w in words[:60]),
+        word_ids=tuple(word.id for word in cited),
         bbox=BBox(x0=0, y0=0, x1=page.width, y1=page.height),
-        excerpt=_excerpt(" ".join(w.text for w in words[:60])) if words else None,
+        excerpt=excerpt,
     )
 
 

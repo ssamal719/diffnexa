@@ -10,6 +10,15 @@
         "evidence_completeness": 1.0
       }
     },
+    "dense-added-page": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
     "eligibility-wording-change": {
       "extraction_passed": true,
       "comparison": {

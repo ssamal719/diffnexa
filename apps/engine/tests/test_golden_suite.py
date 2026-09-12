@@ -25,6 +25,8 @@ EXPECTED_PAIRS = {
     "page-removed",
     "formatting-only",
     "multiple-changes",
+    # Evidence regression: a text-dense added page
+    "dense-added-page",
 }
 
 

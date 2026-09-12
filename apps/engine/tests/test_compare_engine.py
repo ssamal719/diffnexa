@@ -308,3 +308,70 @@ def test_rotated_pages_compare_normally(rotation):
     changes = [c for c in result.changes if c.noise_reason is None]
     assert [c.change_type for c in changes] == [ChangeType.NUMBER_CHANGED]
     assert (changes[0].old_value, changes[0].new_value) == ("627", "654")
+
+
+# ---------------------------------------------------------------- evidence excerpts
+
+
+def test_a_text_dense_added_page_is_reported_not_discarded():
+    """Regression: page evidence quoted less than it cited, so the page was dropped.
+
+    Evidence excerpts are checked against the words they cite. A page whose
+    opening words ran past the excerpt limit produced an excerpt that no longer
+    matched, the traceability check rejected it, and the whole added page
+    disappeared from the results.
+    """
+    clause = (
+        "The supplier shall ensure that every deliverable listed in this appendix is "
+        "accompanied by written evidence of testing, and that such evidence is retained "
+        "for the full duration of the agreement without exception or further notice."
+    )
+    old_pages = [["Agreement overview"], ["Signatures"]]
+    new_pages = [["Agreement overview"], [clause, clause], ["Signatures"]]
+
+    old, new = build(old_pages), build(new_pages)
+    outcome = compare_documents_verbose(old, new)
+
+    assert outcome.diagnostics.dropped_untraceable == 0, "no change may be silently discarded"
+    types = [c.change_type for c in outcome.result.changes if c.noise_reason is None]
+    assert ChangeType.PAGE_ADDED in types
+    assert verify_traceability(outcome.result, old, new) == []
+
+
+def test_page_evidence_quotes_exactly_the_words_it_cites():
+    # Many lines, so the page genuinely holds more words than one excerpt can quote.
+    lines = [f"Clause {index} sets out the applicable provision" for index in range(1, 26)]
+    document = extract_document(text_pdf([lines]))
+    page = document.page(1)
+
+    from diffnexa_engine.compare.engine import _page_evidence
+
+    evidence = _page_evidence(page, Side.NEW)
+    words = {word.id: word for word in page.words}
+    cited = " ".join(words[word_id].text for word_id in evidence.word_ids)
+
+    assert evidence.excerpt == cited, "the excerpt is the full quotation of the cited words"
+    assert "…" not in (evidence.excerpt or "")
+    assert len(evidence.word_ids) < len(page.words), "a long page is quoted in part"
+
+
+def test_block_evidence_excerpt_is_contained_in_the_words_it_cites():
+    """Long paragraphs keep full word coverage; the excerpt stays a true opening."""
+    paragraph = (
+        "Where a defect is identified after acceptance the supplier shall remedy that "
+        "defect at its own cost within a reasonable period agreed between the parties, "
+        "and shall bear any cost arising from the delay caused by that remedy."
+    )
+    old, new = build([["Overview"]]), build([["Overview", "", paragraph]])
+    result = compare_documents(old, new)
+
+    assert verify_traceability(result, old, new) == []
+    added = [c for c in result.changes if c.noise_reason is None]
+    assert added, "the added paragraph must be reported"
+    for change in added:
+        for evidence in change.evidence:
+            if evidence.excerpt and evidence.word_ids:
+                index = (old if evidence.side is Side.OLD else new).word_index()
+                cited = " ".join(index[word_id].text for word_id in evidence.word_ids)
+                assert evidence.excerpt in cited or cited in evidence.excerpt
+                assert "…" not in evidence.excerpt

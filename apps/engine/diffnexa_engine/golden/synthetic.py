@@ -53,6 +53,15 @@ PARA_A = "Section A. Applications must be submitted through the official portal 
 PARA_B = "Section B. Admit cards will be issued to eligible candidates by email."
 PARA_C = "Section C. The written examination will be held at district centres."
 ELIGIBILITY = "Candidates must hold a bachelor's degree from a recognised university."
+DENSE_CLAUSES = [
+    "Clause 1. The supplier shall ensure that every deliverable listed in this appendix "
+    "is accompanied by written evidence of testing, and that such evidence is retained "
+    "for the full duration of the agreement.",
+    "Clause 2. Acceptance of a deliverable shall be deemed to have occurred where no "
+    "written objection is received within ten working days of the date of submission.",
+    "Clause 3. Where a defect is identified after acceptance, the supplier shall remedy "
+    "that defect at its own cost within a reasonable period agreed by both parties.",
+]
 RESERVATION = (
     "Reservation for reserved categories will follow the rules issued by the "
     "state government and in force on the last date of application."
@@ -686,6 +695,77 @@ def _multiple_changes() -> SyntheticPair:
     )
 
 
+def _dense_added_page() -> SyntheticPair:
+    """A whole added page whose opening words run well past the excerpt limit.
+
+    This is the case that silently broke: evidence for such a page cited more
+    words than its excerpt could quote, the traceability check rejected it, and
+    the page-level change was discarded. The page only appeared as a handful of
+    text fragments, or not at all.
+    """
+    new_pages = base_pages()
+    new_pages.insert(
+        2,
+        [Block("heading", "Appendix C: Specification Clauses")]
+        + [Block("para", clause) for clause in DENSE_CLAUSES],
+    )
+    return SyntheticPair(
+        "dense-added-page",
+        DocSpec(base_pages()),
+        DocSpec(new_pages),
+        _spec(
+            "dense-added-page",
+            "A text-dense page is inserted as page 3. The page itself must be reported, "
+            "not only the text on it, and every piece of evidence must remain traceable.",
+            tags=["page", "evidence", "regression"],
+            extraction={
+                "old": _three_page_extraction(),
+                "new": {
+                    "page_count": 4,
+                    "scanned_pages": [],
+                    "must_contain": [
+                        {"page": 3, "text": "Appendix C: Specification Clauses"},
+                        {"page": 3, "text": "written evidence of testing"},
+                    ],
+                },
+            },
+            expected_changes=[
+                {"category": "page", "kind": "added", "new_page": 3},
+                {
+                    "category": "text",
+                    "kind": "added",
+                    "new": "Appendix C: Specification Clauses",
+                    "match": "contains",
+                    "new_page": 3,
+                },
+                {
+                    "category": "text",
+                    "kind": "added",
+                    "new": "written evidence of testing",
+                    "match": "contains",
+                    "new_page": 3,
+                },
+                {
+                    "category": "text",
+                    "kind": "added",
+                    "new": "ten working days",
+                    "match": "contains",
+                    "new_page": 3,
+                },
+                {
+                    "category": "text",
+                    "kind": "added",
+                    "new": "remedy that defect at its own cost",
+                    "match": "contains",
+                    "new_page": 3,
+                },
+            ],
+            unchanged_pages={"old": [1, 2, 3], "new": [1, 2, 4]},
+            must_not_report=[{"text": "of 3", "reason": "page-count footer, not a content change"}],
+        ),
+    )
+
+
 PAIR_BUILDERS: list[Callable[[], SyntheticPair]] = [
     _identical,
     _reflowed,
@@ -702,6 +782,7 @@ PAIR_BUILDERS: list[Callable[[], SyntheticPair]] = [
     _page_removed,
     _formatting_only,
     _multiple_changes,
+    _dense_added_page,
 ]
 
 

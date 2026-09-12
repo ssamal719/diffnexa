@@ -43,7 +43,13 @@ export default function PdfComparePage() {
             <Panel key={item.title} className="p-4">
               <div className="flex items-baseline justify-between gap-3">
                 <h3 className="font-medium">{item.title}</h3>
-                <span className="shrink-0 text-[0.75rem] font-medium text-caution">Planned</span>
+                <span
+                  className={`shrink-0 text-[0.75rem] font-medium ${
+                    item.status === "working" ? "text-added" : "text-caution"
+                  }`}
+                >
+                  {item.status === "working" ? "Working now" : "Planned"}
+                </span>
               </div>
               <p className="mt-1 text-[0.9rem] text-ink-soft">{item.detail}</p>
             </Panel>
@@ -92,31 +98,37 @@ export default function PdfComparePage() {
   );
 }
 
-const CAPABILITIES = [
+const CAPABILITIES: { title: string; detail: string; status: "working" | "planned" }[] = [
   {
+    status: "working",
     title: "Text that was added, removed or reworded",
     detail:
       "Compared in reading order across the whole document, so text that simply moved to the next page is not reported as a change.",
   },
   {
+    status: "working",
     title: "Numbers, with the difference calculated",
     detail:
       "For example a vacancy count of 627 becoming 654 is reported as one change of +27, not as a deletion and an addition.",
   },
   {
+    status: "working",
     title: "Dates and deadlines",
     detail:
       "A deadline moving from 30 September 2026 to 15 October 2026 is reported as one change, 15 days later.",
   },
   {
+    status: "planned",
     title: "Tables",
     detail: "Added and removed rows, changed headers, and individual cell values.",
   },
   {
+    status: "working",
     title: "Pages",
     detail: "Pages added, removed, or reordered, without every following page looking changed.",
   },
   {
+    status: "planned",
     title: "Images and visual changes",
     detail: "Replaced logos, new signatures and stamps, and layout changes with no text behind them.",
   },
@@ -124,14 +136,14 @@ const CAPABILITIES = [
 
 const FAQ = [
   {
-    question: "Is my document sent anywhere right now?",
+    question: "Is my document sent anywhere?",
     answer:
-      "No. In this release everything happens inside your browser. There is no upload, no server processing and no AI call.",
+      "Your PDFs go to the comparison engine, which reads them in memory and discards them as soon as the result is returned. Nothing is stored, and nothing is sent to any AI service.",
   },
   {
-    question: "Why is the compare button disabled?",
+    question: "Why is the compare button sometimes disabled?",
     answer:
-      "Because the comparison engine is not connected yet. A button that appeared to work but produced nothing real would be worse than an honest one that is switched off.",
+      "Because both files must be readable and the comparison engine must be running. A button that appeared to work but produced nothing real would be worse than an honest one that explains itself.",
   },
   {
     question: "What about scanned PDFs?",

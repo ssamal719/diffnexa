@@ -19,6 +19,12 @@ EXPECTED_PAIRS = {
     "eligibility-wording-change",
     "scanned-page",
     "rotated-page",
+    # Stage 2: comparison coverage
+    "text-added",
+    "text-removed",
+    "page-removed",
+    "formatting-only",
+    "multiple-changes",
 }
 
 

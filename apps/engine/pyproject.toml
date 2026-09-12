@@ -17,7 +17,16 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+service = [
+  "fastapi>=0.115,<1",
+  "uvicorn[standard]>=0.30,<1",
+  "python-multipart>=0.0.9,<1",
+]
 dev = [
+  "fastapi>=0.115,<1",
+  "uvicorn[standard]>=0.30,<1",
+  "python-multipart>=0.0.9,<1",
+  "httpx>=0.27,<1",
   "pytest>=8,<10",
   "reportlab>=4.2,<6",
   "ruff>=0.6",
@@ -45,3 +54,5 @@ ignore = ["B904"]
 # Embedded HTML/CSS templates are clearer on one line.
 "diffnexa_engine/reports/*.py" = ["E501"]
 "diffnexa_engine/golden/runner.py" = ["E501"]
+# FastAPI declares request parameters as argument defaults; that is its API.
+"diffnexa_engine/service/app.py" = ["B008"]

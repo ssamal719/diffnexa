@@ -40,6 +40,8 @@ class DocSpec:
     pages: list[list[Block]]
     rotate: dict[int, int] = field(default_factory=dict)  # page number -> degrees
     scanned: set[int] = field(default_factory=set)  # pages rendered as images only
+    # page number -> (font name, body size), for formatting-only differences
+    font_overrides: dict[int, tuple[str, float]] = field(default_factory=dict)
 
 
 INTRO = (
@@ -51,6 +53,10 @@ PARA_A = "Section A. Applications must be submitted through the official portal 
 PARA_B = "Section B. Admit cards will be issued to eligible candidates by email."
 PARA_C = "Section C. The written examination will be held at district centres."
 ELIGIBILITY = "Candidates must hold a bachelor's degree from a recognised university."
+RESERVATION = (
+    "Reservation for reserved categories will follow the rules issued by the "
+    "state government and in force on the last date of application."
+)
 HOW_TO_APPLY = (
     "Candidates must upload a recent photograph and signature. The Board will not "
     "accept applications sent by post or in person."
@@ -101,19 +107,22 @@ def _replace(pages: list[list[Block]], old: str, new: str) -> list[list[Block]]:
 # ---------------------------------------------------------------- rendering
 
 
-def _page_lines(page: list[Block]) -> list[tuple[str, float, str]]:
+def _page_lines(
+    page: list[Block], font_override: tuple[str, float] | None = None
+) -> list[tuple[str, float, str]]:
     """Lay out one page as (font, size, text) lines."""
     from reportlab.lib.utils import simpleSplit
 
+    body_font, body_size = font_override or ("Helvetica", 11.0)
     lines: list[tuple[str, float, str]] = []
     for block in page:
         if block.kind == "heading":
             lines.append(("Helvetica-Bold", 16.0, block.text))
         elif block.kind == "line":
-            lines.append(("Helvetica", 11.0, block.text))
+            lines.append((body_font, body_size, block.text))
         elif block.kind == "para":
-            for part in simpleSplit(block.text, "Helvetica", 11.0, block.width):
-                lines.append(("Helvetica", 11.0, part))
+            for part in simpleSplit(block.text, body_font, body_size, block.width):
+                lines.append((body_font, body_size, part))
         else:
             raise ValueError(f"unknown block kind {block.kind!r}")
         lines.append(("gap", 8.0, ""))
@@ -153,7 +162,7 @@ def render_pdf(spec: DocSpec, path: Path) -> None:
     c.setAuthor("Regional Public Service Board (synthetic test document)")
     total = len(spec.pages)
     for number, page in enumerate(spec.pages, start=1):
-        lines = _page_lines(page)
+        lines = _page_lines(page, spec.font_overrides.get(number))
         footer = FOOTER.format(n=number, total=total)
         if number in spec.scanned:
             image = _scanned_image(lines, footer)
@@ -364,7 +373,25 @@ def _inserted_page() -> SyntheticPair:
                     ],
                 },
             },
-            expected_changes=[{"category": "page", "kind": "added", "new_page": 3}],
+            # The page itself is reported, and so is the text it introduced: a
+            # reader needs to know what the new page actually says.
+            expected_changes=[
+                {"category": "page", "kind": "added", "new_page": 3},
+                {
+                    "category": "text",
+                    "kind": "added",
+                    "new": "Annexure: Revised Syllabus",
+                    "match": "contains",
+                    "new_page": 3,
+                },
+                {
+                    "category": "text",
+                    "kind": "added",
+                    "new": "general knowledge and reasoning",
+                    "match": "contains",
+                    "new_page": 3,
+                },
+            ],
             unchanged_pages={"old": [1, 2, 3], "new": [1, 2, 4]},
             must_not_report=[{"text": "of 3", "reason": "page-count footer, not a content change"}],
         ),
@@ -372,33 +399,39 @@ def _inserted_page() -> SyntheticPair:
 
 
 def _moved_paragraph() -> SyntheticPair:
+    """Section C moves from page 1 to the end of page 3.
+
+    A swap of two neighbouring paragraphs would be ambiguous — either one could
+    fairly be called "the one that moved". Moving a single paragraph to another
+    page has exactly one correct answer, and is the case that matters in real
+    documents.
+    """
     new_pages = base_pages()
-    first = new_pages[0]
-    b = next(x for x in first if x.text == PARA_B)
-    c = next(x for x in first if x.text == PARA_C)
-    i, j = first.index(b), first.index(c)
-    first[i], first[j] = c, b
+    section_c = next(b for b in new_pages[0] if b.text == PARA_C)
+    new_pages[0].remove(section_c)
+    new_pages[2].append(section_c)
     return SyntheticPair(
         "moved-paragraph",
         DocSpec(base_pages()),
         DocSpec(new_pages),
         _spec(
             "moved-paragraph",
-            "Sections B and C swap places. The text is unchanged; one section moved.",
+            "Section C moves from page 1 to page 3. Its wording is unchanged, so it "
+            "must be reported as moved rather than as a deletion plus an addition.",
             tags=["moved-text"],
             extraction={"old": _three_page_extraction(), "new": _three_page_extraction()},
             expected_changes=[
                 {
                     "category": "text",
                     "kind": "moved",
-                    "old": "Admit cards will be issued",
-                    "new": "Admit cards will be issued",
+                    "old": "The written examination",
+                    "new": "The written examination",
                     "match": "contains",
                     "old_page": 1,
-                    "new_page": 1,
+                    "new_page": 3,
                 }
             ],
-            unchanged_pages={"old": [2, 3], "new": [2, 3]},
+            unchanged_pages={"old": [2], "new": [2]},
         ),
     )
 
@@ -468,6 +501,191 @@ def _rotated() -> SyntheticPair:
     )
 
 
+def _text_added() -> SyntheticPair:
+    new_pages = base_pages()
+    new_pages[1].append(Block("para", RESERVATION))
+    return SyntheticPair(
+        "text-added",
+        DocSpec(base_pages()),
+        DocSpec(new_pages),
+        _spec(
+            "text-added",
+            "A new paragraph about reservation is added to page 2.",
+            tags=["text"],
+            extraction={
+                "old": _three_page_extraction(),
+                "new": _three_page_extraction(
+                    must_contain=[{"page": 2, "text": "Reservation for reserved categories"}]
+                ),
+            },
+            expected_changes=[
+                {
+                    "category": "text",
+                    "kind": "added",
+                    "new": "Reservation for reserved categories",
+                    "match": "contains",
+                    "new_page": 2,
+                }
+            ],
+            unchanged_pages={"old": [1, 3], "new": [1, 3]},
+        ),
+    )
+
+
+def _text_removed() -> SyntheticPair:
+    new_pages = base_pages()
+    new_pages[0] = [b for b in new_pages[0] if b.text != PARA_B]
+    return SyntheticPair(
+        "text-removed",
+        DocSpec(base_pages()),
+        DocSpec(new_pages),
+        _spec(
+            "text-removed",
+            "The paragraph about admit cards is deleted from page 1.",
+            tags=["text"],
+            extraction={"old": _three_page_extraction(), "new": _three_page_extraction()},
+            expected_changes=[
+                {
+                    "category": "text",
+                    "kind": "removed",
+                    "old": "Admit cards will be issued",
+                    "match": "contains",
+                    "old_page": 1,
+                }
+            ],
+            unchanged_pages={"old": [2, 3], "new": [2, 3]},
+        ),
+    )
+
+
+def _page_removed() -> SyntheticPair:
+    new_pages = base_pages()
+    del new_pages[1]
+    return SyntheticPair(
+        "page-removed",
+        DocSpec(base_pages()),
+        DocSpec(new_pages),
+        _spec(
+            "page-removed",
+            "Page 2 (vacancies and eligibility) is deleted. Every footer becomes "
+            "'Page n of 2', which is noise, and the old page 3 is now page 2.",
+            tags=["page", "footer"],
+            extraction={
+                "old": _three_page_extraction(),
+                "new": {
+                    "page_count": 2,
+                    "scanned_pages": [],
+                    "must_contain": [{"page": 2, "text": "Last date to apply"}],
+                },
+            },
+            # The page, and the content lost with it.
+            expected_changes=[
+                {"category": "page", "kind": "removed", "old_page": 2},
+                {
+                    "category": "text",
+                    "kind": "removed",
+                    "old": "Vacancies and Eligibility",
+                    "match": "contains",
+                    "old_page": 2,
+                },
+                {
+                    "category": "text",
+                    "kind": "removed",
+                    "old": "Total Vacancies: 627",
+                    "match": "contains",
+                    "old_page": 2,
+                },
+            ],
+            unchanged_pages={"old": [1, 3], "new": [1, 2]},
+            must_not_report=[{"text": "of 3", "reason": "page-count footer, not a content change"}],
+        ),
+    )
+
+
+def _formatting_only() -> SyntheticPair:
+    """Identical words, different type. No content change may be reported."""
+    new_pages = base_pages()
+    new_pages[1] = [Block(b.kind, b.text, b.width) for b in new_pages[1]]
+    return SyntheticPair(
+        "formatting-only",
+        DocSpec(base_pages()),
+        DocSpec(new_pages, font_overrides={2: ("Helvetica-Oblique", 12.0)}),
+        _spec(
+            "formatting-only",
+            "Page 2 is set in a different font and size. The words are identical, so "
+            "no content change may be reported.",
+            tags=["false-positive-trap", "formatting"],
+            extraction={"old": _three_page_extraction(), "new": _three_page_extraction()},
+            unchanged_pages={"old": [1, 2, 3], "new": [1, 2, 3]},
+            must_not_report=[{"text": "Total Vacancies", "reason": "only the typeface changed"}],
+        ),
+    )
+
+
+def _multiple_changes() -> SyntheticPair:
+    """One realistic corrigendum: several changes of different kinds at once."""
+    pages = _replace(base_pages(), "Total Vacancies: 627", "Total Vacancies: 654")
+    pages = _replace(pages, "30 September 2026", "15 October 2026")
+    pages = _replace(pages, "Maximum age: 30 years", "Maximum age: 32 years")
+    pages[1].append(Block("para", RESERVATION))
+    return SyntheticPair(
+        "multiple-changes",
+        DocSpec(base_pages()),
+        DocSpec(pages),
+        _spec(
+            "multiple-changes",
+            "A corrigendum changing the vacancy count, the maximum age, the deadline, "
+            "and adding a paragraph about reservation.",
+            tags=["number", "date", "text", "realistic"],
+            extraction={
+                "old": _three_page_extraction(),
+                "new": _three_page_extraction(
+                    must_contain=[
+                        {"page": 2, "text": "Total Vacancies: 654"},
+                        {"page": 3, "text": "15 October 2026"},
+                    ]
+                ),
+            },
+            expected_changes=[
+                {
+                    "category": "number",
+                    "kind": "modified",
+                    "label": "Total Vacancies",
+                    "old": "627",
+                    "new": "654",
+                    "old_page": 2,
+                    "new_page": 2,
+                },
+                {
+                    "category": "number",
+                    "kind": "modified",
+                    "label": "Maximum age",
+                    "old": "30",
+                    "new": "32",
+                    "old_page": 2,
+                    "new_page": 2,
+                },
+                {
+                    "category": "date",
+                    "kind": "modified",
+                    "old": "30 September 2026",
+                    "new": "15 October 2026",
+                    "old_page": 3,
+                    "new_page": 3,
+                },
+                {
+                    "category": "text",
+                    "kind": "added",
+                    "new": "Reservation for reserved categories",
+                    "match": "contains",
+                    "new_page": 2,
+                },
+            ],
+            unchanged_pages={"old": [1], "new": [1]},
+        ),
+    )
+
+
 PAIR_BUILDERS: list[Callable[[], SyntheticPair]] = [
     _identical,
     _reflowed,
@@ -479,6 +697,11 @@ PAIR_BUILDERS: list[Callable[[], SyntheticPair]] = [
     _wording_change,
     _scanned,
     _rotated,
+    _text_added,
+    _text_removed,
+    _page_removed,
+    _formatting_only,
+    _multiple_changes,
 ]
 
 

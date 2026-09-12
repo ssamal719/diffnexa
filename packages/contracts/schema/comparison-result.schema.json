@@ -126,6 +126,26 @@
         "category": {
           "$ref": "#/$defs/ChangeCategory"
         },
+        "confidence": {
+          "default": 1.0,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "delta": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Delta"
+        },
         "evidence": {
           "items": {
             "$ref": "#/$defs/Evidence"

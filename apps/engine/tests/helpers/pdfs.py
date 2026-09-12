@@ -74,3 +74,18 @@ PNG_BYTES = (
     b"\x1f\x15\xc4\x89\x00\x00\x00\rIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00\x05\x18\xd8N\x00\x00"
     b"\x00\x00IEND\xaeB`\x82"
 )
+
+
+def padded_pdf(data: bytes, target_bytes: int) -> bytes:
+    """A valid PDF grown past `target_bytes` by adding one large unused stream.
+
+    Used to test size limits without shipping a large fixture file.
+    """
+    with pikepdf.open(io.BytesIO(data)) as pdf:
+        padding = max(target_bytes - len(data), 1024)
+        stream = pikepdf.Stream(pdf, b"0" * padding)
+        stream.stream_dict["/Type"] = pikepdf.Name("/EmbeddedFile")
+        pdf.Root["/DiffNexaTestPadding"] = pdf.make_indirect(stream)
+        out = io.BytesIO()
+        pdf.save(out, compress_streams=False)
+        return out.getvalue()

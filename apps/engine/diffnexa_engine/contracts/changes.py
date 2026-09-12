@@ -60,6 +60,60 @@ class ChangeCategory(StrEnum):
     LAYOUT = "layout"
 
 
+class ChangeType(StrEnum):
+    """The named change types the interface and reports use.
+
+    A change type is derived from `kind` + `category`, so there is exactly one
+    place where the naming lives and the two can never disagree.
+    """
+
+    PAGE_ADDED = "PAGE_ADDED"
+    PAGE_REMOVED = "PAGE_REMOVED"
+    PAGE_MOVED = "PAGE_MOVED"
+    TEXT_ADDED = "TEXT_ADDED"
+    TEXT_REMOVED = "TEXT_REMOVED"
+    TEXT_MODIFIED = "TEXT_MODIFIED"
+    TEXT_MOVED = "TEXT_MOVED"
+    NUMBER_CHANGED = "NUMBER_CHANGED"
+    DATE_CHANGED = "DATE_CHANGED"
+    IDENTIFIER_CHANGED = "IDENTIFIER_CHANGED"
+    TABLE_CHANGED = "TABLE_CHANGED"
+    IMAGE_CHANGED = "IMAGE_CHANGED"
+    LINK_CHANGED = "LINK_CHANGED"
+    METADATA_CHANGED = "METADATA_CHANGED"
+    FORMATTING_CHANGED = "FORMATTING_CHANGED"
+    LAYOUT_CHANGED = "LAYOUT_CHANGED"
+
+
+_KIND_SUFFIX = {
+    ChangeKind.ADDED: "ADDED",
+    ChangeKind.REMOVED: "REMOVED",
+    ChangeKind.MODIFIED: "MODIFIED",
+    ChangeKind.MOVED: "MOVED",
+}
+
+# Categories whose changes are always named "<CATEGORY>_CHANGED", because an
+# added or removed number is still a numeric change to the reader.
+_ALWAYS_CHANGED = {
+    ChangeCategory.NUMBER: ChangeType.NUMBER_CHANGED,
+    ChangeCategory.DATE: ChangeType.DATE_CHANGED,
+    ChangeCategory.IDENTIFIER: ChangeType.IDENTIFIER_CHANGED,
+    ChangeCategory.TABLE: ChangeType.TABLE_CHANGED,
+    ChangeCategory.IMAGE: ChangeType.IMAGE_CHANGED,
+    ChangeCategory.LINK: ChangeType.LINK_CHANGED,
+    ChangeCategory.METADATA: ChangeType.METADATA_CHANGED,
+    ChangeCategory.FORMATTING: ChangeType.FORMATTING_CHANGED,
+    ChangeCategory.LAYOUT: ChangeType.LAYOUT_CHANGED,
+}
+
+
+def derive_change_type(kind: ChangeKind, category: ChangeCategory) -> ChangeType:
+    fixed = _ALWAYS_CHANGED.get(category)
+    if fixed is not None:
+        return fixed
+    return ChangeType(f"{category.value.upper()}_{_KIND_SUFFIX[kind]}")
+
+
 class Importance(StrEnum):
     CRITICAL = "critical"
     HIGH = "high"
@@ -106,7 +160,12 @@ class Change(_Frozen):
     label: str | None = Field(default=None, max_length=200)
     old_value: str | None = Field(default=None, max_length=5000)
     new_value: str | None = Field(default=None, max_length=5000)
+    # The calculated difference, where one is meaningful ("+27 (+4.31%)").
+    delta: str | None = Field(default=None, max_length=200)
     evidence: tuple[Evidence, ...] = Field(min_length=1)
+    # How certain the deterministic engine is that this pairing is right. It is
+    # derived from measured evidence (alignment similarity), never guessed.
+    confidence: float = Field(default=1.0, ge=0.0, le=1.0)
     # Set when the engine believes this is not a meaningful change (e.g. "page number").
     noise_reason: str | None = Field(default=None, max_length=200)
     rule_importance: Importance | None = None
@@ -125,6 +184,10 @@ class Change(_Frozen):
         if self.category is not ChangeCategory.METADATA and any(e.scope == "document" for e in self.evidence):
             raise ValueError("only metadata changes may use document-level evidence")
         return self
+
+    @property
+    def change_type(self) -> ChangeType:
+        return derive_change_type(self.kind, self.category)
 
     def evidence_pages(self, side: Side) -> set[int]:
         return {e.page for e in self.evidence if e.side is side and e.page is not None}

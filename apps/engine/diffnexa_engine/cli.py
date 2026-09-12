@@ -2,6 +2,8 @@
 
     diffnexa probe FILE.pdf                    validate a file and show its page count
     diffnexa extract FILE.pdf [--out DIR]      write an extraction report (HTML + JSON)
+    diffnexa compare OLD.pdf NEW.pdf            compare two PDFs
+    diffnexa serve                             run the engine service for the website
     diffnexa golden generate                   regenerate the synthetic golden pairs
     diffnexa golden run                        run the golden suite and the accuracy ratchet
     diffnexa golden run --update-baseline --reason "why"
@@ -80,6 +82,7 @@ def cmd_golden_generate(args: argparse.Namespace) -> int:
 
 
 def cmd_golden_run(args: argparse.Namespace) -> int:
+    from diffnexa_engine.compare import compare_documents
     from diffnexa_engine.golden.baseline import find_regressions, load_baseline, write_baseline
     from diffnexa_engine.golden.loader import discover_pairs
     from diffnexa_engine.golden.runner import render_summary_markdown, run_suite, write_reports
@@ -101,7 +104,7 @@ def cmd_golden_run(args: argparse.Namespace) -> int:
         return 1
 
     report_dir = Path(args.report_dir) if args.report_dir else root / "reports" / "golden"
-    suite = run_suite(pairs, comparator=None, report_dir=report_dir)
+    suite = run_suite(pairs, comparator=compare_documents, report_dir=report_dir)
     baseline_path = root / "golden" / "baseline.json"
     current = suite.metrics()
     regressions, new_pairs = find_regressions(load_baseline(baseline_path), current)
@@ -129,6 +132,65 @@ def cmd_golden_run(args: argparse.Namespace) -> int:
     if new_pairs and not failed:
         print("New pairs are not in the baseline yet. Record them with --update-baseline --reason.")
     return 1 if failed else 0
+
+
+def cmd_compare(args: argparse.Namespace) -> int:
+    from diffnexa_engine.compare import compare_documents_verbose
+    from diffnexa_engine.contracts import Side
+
+    try:
+        old = extract_file(args.old)
+        new = extract_file(args.new)
+    except DocumentError as exc:
+        print(f"Rejected ({exc.code.value}): {exc.user_message}")
+        return 1
+
+    outcome = compare_documents_verbose(old, new)
+    changes = outcome.result.changes
+    meaningful = [c for c in changes if c.noise_reason is None]
+
+    print(f"{len(meaningful)} change(s) found ({len(changes) - len(meaningful)} filtered as noise)")
+    for change in meaningful:
+        pages_old = sorted(change.evidence_pages(Side.OLD))
+        pages_new = sorted(change.evidence_pages(Side.NEW))
+        location = f"old p{pages_old or '-'} / new p{pages_new or '-'}"
+        print(f"\n  {change.change_type}  [{location}]")
+        if change.label:
+            print(f"    {change.label}")
+        if change.old_value is not None:
+            print(f"    previous: {change.old_value}")
+        if change.new_value is not None:
+            print(f"    new:      {change.new_value}")
+        if change.delta:
+            print(f"    difference: {change.delta}")
+
+    for note in outcome.diagnostics.notes:
+        print(f"\nNote: {note}")
+
+    if args.json:
+        path = Path(args.json)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(outcome.result.model_dump_json(indent=2), encoding="utf-8")
+        print(f"\nResult written to {path}")
+    return 0
+
+
+def cmd_serve(args: argparse.Namespace) -> int:
+    try:
+        import uvicorn
+
+        from diffnexa_engine.service import build_app
+    except ImportError:
+        print(
+            "The engine service needs its optional dependencies. Install them with:\n"
+            '    pip install -e "apps/engine[service]"'
+        )
+        return 1
+
+    print(f"DiffNexa engine listening on http://{args.host}:{args.port}")
+    print("Documents are compared in memory and never written to disk. Press Ctrl+C to stop.")
+    uvicorn.run(build_app(), host=args.host, port=args.port, log_level="warning")
+    return 0
 
 
 def cmd_schema(args: argparse.Namespace) -> int:
@@ -189,6 +251,17 @@ def build_parser() -> argparse.ArgumentParser:
     g.add_argument("--update-baseline", action="store_true")
     g.add_argument("--reason")
     g.set_defaults(func=cmd_golden_run)
+
+    p = sub.add_parser("compare", help="compare two PDFs and list the changes")
+    p.add_argument("old", help="the previous version")
+    p.add_argument("new", help="the new version")
+    p.add_argument("--json", help="also write the full result to this file")
+    p.set_defaults(func=cmd_compare)
+
+    p = sub.add_parser("serve", help="run the engine as a local service for the website")
+    p.add_argument("--host", default="127.0.0.1", help="default: localhost only")
+    p.add_argument("--port", type=int, default=8000)
+    p.set_defaults(func=cmd_serve)
 
     p = sub.add_parser("schema", help="write or check JSON schemas")
     p.add_argument("--check", action="store_true")

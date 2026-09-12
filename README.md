@@ -1,7 +1,7 @@
 # DiffNexa
 
 **Know What Changed.** DiffNexa compares two versions of a document and explains
-the changes that matter. The first product is Advanced AI PDF Compare.
+the changes that matter. The first product is Advanced AI PDF Compare. Website Change Detector is now available.
 
 This repository is at **Stage 1: the foundation**. It can validate and read PDFs,
 it enforces that every change must carry evidence, and it has the accuracy test

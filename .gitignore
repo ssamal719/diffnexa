@@ -9,14 +9,20 @@ __pycache__/
 # Node / Next.js
 node_modules/
 .next/
-out/
-apps/web/public/pdf.worker.min.mjs
 *.tsbuildinfo
 next-env.d.ts
+# Generated in the web app, not source:
+/apps/web/out/
+/apps/web/public/pdf.worker.min.mjs
 
-# Generated test material and reports
-golden/.generated/
-reports/
+# Generated test material and reports.
+# These patterns are deliberately anchored with a leading slash so they match
+# ONLY these top-level folders. An unanchored "reports/" would also match any
+# folder named "reports" anywhere in the tree — including the engine's own
+# source package apps/engine/diffnexa_engine/reports/, which is exactly how that
+# package was silently left out of the first commit.
+/golden/.generated/
+/reports/
 
 # Environment and OS
 .env

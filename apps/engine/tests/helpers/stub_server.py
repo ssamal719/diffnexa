@@ -118,6 +118,19 @@ class _Handler(BaseHTTPRequestHandler):
             except (BrokenPipeError, ConnectionResetError, OSError):
                 pass
 
+        elif path == "/page":
+            self._send(200, server.page_html)
+
+        elif path == "/page-changed":
+            self._send(200, server.page_html.replace(b"50,000", b"75,000"))
+
+        elif path == "/js-shell":
+            self._send(
+                200,
+                b"<!doctype html><html><head><title>App</title></head><body>"
+                b'<div id="root"></div><script>window.__NEXT_DATA__={};</script></body></html>',
+            )
+
         elif path == "/plain":
             self._send(200, b"just text", "text/plain")
 
@@ -182,6 +195,14 @@ class StubServer:
 
     robots_body: bytes = b"User-agent: *\nAllow: /\n"
     robots_status: int = 200
+    page_html: bytes = (
+        b"<!doctype html><html><head><title>Service Terms</title>"
+        b'<meta name="description" content="Terms for the service."></head><body><main>'
+        b"<h1>Service Terms</h1><h2>Pricing</h2>"
+        b"<p>The standard plan costs 50,000 per year for each licence.</p>"
+        b"<p>Delivery is scheduled for 30 June 2026 at the agreed location.</p>"
+        b"</main></body></html>"
+    )
 
     def __post_init__(self) -> None:
         self.requests: list[str] = []

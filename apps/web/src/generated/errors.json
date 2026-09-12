@@ -1,5 +1,5 @@
 {
-  "_comment": "Single source of truth for user-facing document error codes and messages. The engine (Python) and the website (TypeScript) are each tested against this file so their wording can never drift apart.",
+  "_comment": "Single source of truth for user-facing error codes and messages. 'messages' covers document (PDF) errors; 'web_messages' covers webpage errors. The engine (Python) and the website (TypeScript) are each tested against this file so their wording can never drift apart.",
   "messages": {
     "not_pdf": "This file isn't a PDF. Choose a file that ends in .pdf and was saved as a PDF.",
     "empty_file": "This file is empty. Choose the PDF again, or re-save it and try once more.",
@@ -9,5 +9,17 @@
     "corrupted": "This PDF appears to be damaged and can't be read. Re-download or re-export it and try again.",
     "no_pages": "This PDF has no pages to compare. Choose a different file.",
     "extraction_failed": "Unable to read this PDF's contents. Try re-saving it as a new PDF and upload it again."
+  },
+  "web_messages": {
+    "url_not_allowed": "This address can't be checked. DiffNexa only reads public web pages over http or https, and some sites ask not to be read automatically.",
+    "url_unreachable": "That page couldn't be reached. Check the address is correct and the site is online, then try again.",
+    "url_not_html": "That address isn't a web page. DiffNexa reads web pages; for a PDF, use PDF Compare instead.",
+    "page_needs_javascript": "This page builds its content in the browser, so DiffNexa can't read it yet. Pages that work today are ones whose text is in the page itself.",
+    "page_too_large": "That page is larger than DiffNexa can read. Try a specific page rather than a very long one.",
+    "snapshot_mismatch": "That saved capture is for a different address. Choose the capture that matches the page you're checking.",
+    "snapshot_unreadable": "That file isn't a DiffNexa capture, or it's damaged. Choose the file you downloaded when you captured the page.",
+    "fetch_timeout": "That page took too long to respond. It may be slow right now, so try again in a moment.",
+    "engine_unavailable": "The service that reads web pages isn't responding right now. Nothing is wrong with the address you entered.",
+    "bad_request": "Something was missing from that request. Enter a web address and try again."
   }
 }

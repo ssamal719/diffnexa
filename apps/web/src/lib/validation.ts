@@ -14,6 +14,15 @@ export type ErrorCode = keyof typeof errorsContract.messages;
 
 export const ERROR_MESSAGES: Record<ErrorCode, string> = errorsContract.messages;
 
+/** Webpage errors, kept separate from document errors but sharing one source. */
+export type WebErrorCode = keyof typeof errorsContract.web_messages;
+
+export const WEB_ERROR_MESSAGES: Record<WebErrorCode, string> = errorsContract.web_messages;
+
+export function webErrorMessage(code: string): string | null {
+  return code in WEB_ERROR_MESSAGES ? WEB_ERROR_MESSAGES[code as WebErrorCode] : null;
+}
+
 export function errorMessage(code: ErrorCode): string {
   return ERROR_MESSAGES[code];
 }

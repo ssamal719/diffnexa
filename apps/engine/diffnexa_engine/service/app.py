@@ -30,6 +30,16 @@ from diffnexa_engine.config import EngineLimits
 from diffnexa_engine.contracts import Side
 from diffnexa_engine.errors import USER_MESSAGES, DocumentError, ErrorCode
 from diffnexa_engine.service.auth import check_credentials, configured_secret
+from diffnexa_engine.web.api import (
+    MAX_SNAPSHOT_BYTES,
+    STATUS_FOR_CODE,
+    capture,
+    compare_against,
+    read_snapshot,
+    serialize_snapshot,
+    serialize_web_comparison,
+)
+from diffnexa_engine.web.errors import WebErrorCode, WebRequestError
 
 MAX_REQUEST_BYTES_HEADROOM = 2 * 1024 * 1024  # room for multipart overhead
 
@@ -114,6 +124,34 @@ def build_app():  # noqa: C901 - a single route with explicit error handling
             "authenticated": credentials_ok,
         }
 
+    def web_error(exc: WebRequestError) -> JSONResponse:
+        """The same error shape Tool 1 uses. `exc.detail` stays in the log."""
+        return JSONResponse(
+            status_code=STATUS_FOR_CODE.get(exc.code, 400),
+            content={"error": {"code": exc.code.value, "message": exc.user_message, "side": None}},
+        )
+
+    @app.post("/v1/web/snapshot")
+    async def web_snapshot(request: Request) -> Any:
+        try:
+            payload = await _read_json(request)
+            snapshot = capture(payload.get("url", ""))
+        except WebRequestError as exc:
+            return web_error(exc)
+        return JSONResponse(content={"snapshot": serialize_snapshot(snapshot)})
+
+    @app.post("/v1/web/compare")
+    async def web_compare(request: Request) -> Any:
+        started = time.perf_counter()
+        try:
+            payload = await _read_json(request)
+            previous = read_snapshot(payload.get("previous_snapshot"))
+            outcome = compare_against(payload.get("url", ""), previous)
+        except WebRequestError as exc:
+            return web_error(exc)
+        elapsed_ms = int((time.perf_counter() - started) * 1000)
+        return JSONResponse(content=serialize_web_comparison(outcome, elapsed_ms))
+
     @app.post("/v1/compare")
     async def compare_endpoint(
         previous: UploadFile = File(...),
@@ -137,6 +175,33 @@ def build_app():  # noqa: C901 - a single route with explicit error handling
         return JSONResponse(content=serialize_outcome(outcome, elapsed_ms))
 
     return app
+
+
+async def _read_json(request: Any) -> dict[str, Any]:
+    """Read a JSON body, refusing anything oversized or malformed.
+
+    The size is checked before the body is parsed, so an enormous or hostile
+    payload is rejected rather than buffered and handed to the parser.
+    """
+    declared = request.headers.get("content-length")
+    if declared and declared.isdigit() and int(declared) > MAX_SNAPSHOT_BYTES:
+        raise WebRequestError(WebErrorCode.PAGE_TOO_LARGE, f"declared {declared} bytes")
+
+    raw = await request.body()
+    if len(raw) > MAX_SNAPSHOT_BYTES:
+        raise WebRequestError(WebErrorCode.PAGE_TOO_LARGE, f"{len(raw)} bytes")
+    if not raw:
+        raise WebRequestError(WebErrorCode.BAD_REQUEST, "empty body")
+
+    import json
+
+    try:
+        payload = json.loads(raw)
+    except (ValueError, RecursionError) as exc:
+        raise WebRequestError(WebErrorCode.BAD_REQUEST, f"unreadable body: {exc}") from exc
+    if not isinstance(payload, dict):
+        raise WebRequestError(WebErrorCode.BAD_REQUEST, "body must be an object")
+    return payload
 
 
 def serialize_outcome(outcome: Any, processing_ms: int) -> dict[str, Any]:

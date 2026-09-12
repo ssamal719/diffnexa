@@ -1,0 +1,203 @@
+"""A local HTTP server for testing the fetcher.
+
+The test suite must never touch the public internet: it has to be deterministic,
+offline and fast. This serves every hostile response shape the fetcher has to
+survive — oversized bodies, compression bombs, redirect loops, slow trickles,
+wrong content types — from 127.0.0.1.
+
+Because the fetcher refuses loopback addresses by design, tests that use this
+server pass a policy with `allow_private_addresses=True`. That switch exists for
+exactly this purpose and is off by default in production; a test asserts that.
+"""
+
+from __future__ import annotations
+
+import gzip
+import threading
+import time
+import zlib
+from dataclasses import dataclass
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+HTML = (
+    b"<!doctype html><html><body><h1>Terms of service</h1><p>Payment is due within 30 days.</p></body></html>"
+)
+
+
+class _Handler(BaseHTTPRequestHandler):
+    protocol_version = "HTTP/1.1"
+
+    def log_message(self, *args: object) -> None:  # keep test output clean
+        return
+
+    def _send(self, status: int, body: bytes, content_type: str = "text/html", **headers: str):
+        self.send_response(status)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(body)))
+        for name, value in headers.items():
+            self.send_header(name.replace("_", "-"), value)
+        self.end_headers()
+        self.wfile.write(body)
+
+    def do_GET(self) -> None:  # noqa: N802 - required by BaseHTTPRequestHandler
+        path = self.path.split("?")[0]
+        server: StubServer = self.server.stub  # type: ignore[attr-defined]
+        server.requests.append(self.path)
+
+        if path == "/robots.txt":
+            self._send(server.robots_status, server.robots_body, "text/plain")
+
+        elif path == "/":
+            self._send(200, HTML)
+
+        elif path == "/changed":
+            self._send(
+                200,
+                HTML.replace(b"30 days", b"14 days"),
+            )
+
+        elif path == "/gzip":
+            body = gzip.compress(HTML)
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html")
+            self.send_header("Content-Encoding", "gzip")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        elif path == "/bomb":
+            # ~50 MB of zeros compressing to a few kilobytes.
+            raw = b"\0" * (50 * 1024 * 1024)
+            body = gzip.compress(raw)
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html")
+            self.send_header("Content-Encoding", "gzip")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        elif path == "/deflate-bomb":
+            body = zlib.compress(b"\0" * (50 * 1024 * 1024))
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html")
+            self.send_header("Content-Encoding", "deflate")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        elif path == "/huge":
+            # Oversized and honest about it, so the declared length is refused.
+            body = b"<html>" + b"x" * (8 * 1024 * 1024) + b"</html>"
+            self._send(200, body)
+
+        elif path == "/huge-undeclared":
+            # Oversized without a usable Content-Length, so only streaming catches it.
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html")
+            self.send_header("Transfer-Encoding", "chunked")
+            self.end_headers()
+            chunk = b"x" * 65536
+            try:
+                for _ in range(200):  # 13 MB if fully read
+                    self.wfile.write(b"%X\r\n" % len(chunk) + chunk + b"\r\n")
+                self.wfile.write(b"0\r\n\r\n")
+            except (BrokenPipeError, ConnectionResetError):
+                pass  # the fetcher hung up early, which is the point
+
+        elif path == "/slow":
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html")
+            self.send_header("Transfer-Encoding", "chunked")
+            self.end_headers()
+            try:
+                for _ in range(60):
+                    self.wfile.write(b"4\r\nslow\r\n")
+                    self.wfile.flush()
+                    time.sleep(0.5)
+                self.wfile.write(b"0\r\n\r\n")
+            except (BrokenPipeError, ConnectionResetError, OSError):
+                pass
+
+        elif path == "/plain":
+            self._send(200, b"just text", "text/plain")
+
+        elif path == "/pdf":
+            self._send(200, b"%PDF-1.7 not a webpage", "application/pdf")
+
+        elif path == "/no-type":
+            self.send_response(200)
+            self.send_header("Content-Length", str(len(HTML)))
+            self.end_headers()
+            self.wfile.write(HTML)
+
+        elif path.startswith("/redirect-chain/"):
+            step = int(path.rsplit("/", 1)[1])
+            target = "/" if step <= 1 else f"/redirect-chain/{step - 1}"
+            self._send(302, b"", "text/html", Location=target)
+
+        elif path == "/redirect-to-private":
+            self._send(302, b"", "text/html", Location="http://169.254.169.254/latest/meta-data/")
+
+        elif path == "/redirect-to-file":
+            self._send(302, b"", "text/html", Location="file:///etc/passwd")
+
+        elif path == "/redirect-blocked-port":
+            self._send(302, b"", "text/html", Location="http://127.0.0.1:22/")
+
+        elif path == "/redirect-loop":
+            self._send(302, b"", "text/html", Location="/redirect-loop")
+
+        elif path == "/redirect-no-location":
+            self.send_response(302)
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+
+        elif path == "/missing":
+            self._send(404, b"gone")
+
+        elif path == "/error":
+            self._send(500, b"broken")
+
+        elif path == "/blocked":
+            self._send(200, HTML)
+
+        else:
+            self._send(404, b"not found")
+
+
+class _Server(ThreadingHTTPServer):
+    """Silences the traceback printed when the fetcher hangs up early.
+
+    Abandoning an oversized or slow response mid-stream is exactly what several
+    tests assert, so the resulting broken pipe is expected, not a failure.
+    """
+
+    def handle_error(self, request: object, client_address: object) -> None:
+        return
+
+
+@dataclass
+class StubServer:
+    """A throwaway HTTP server on localhost, controllable per test."""
+
+    robots_body: bytes = b"User-agent: *\nAllow: /\n"
+    robots_status: int = 200
+
+    def __post_init__(self) -> None:
+        self.requests: list[str] = []
+        self._server = _Server(("127.0.0.1", 0), _Handler)
+        self._server.stub = self  # type: ignore[attr-defined]
+        self._thread = threading.Thread(target=self._server.serve_forever, daemon=True)
+        self._thread.start()
+
+    @property
+    def port(self) -> int:
+        return self._server.server_address[1]
+
+    def url(self, path: str = "/") -> str:
+        return f"http://127.0.0.1:{self.port}{path}"
+
+    def stop(self) -> None:
+        self._server.shutdown()
+        self._server.server_close()
+        self._thread.join(timeout=5)

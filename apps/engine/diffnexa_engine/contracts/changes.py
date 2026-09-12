@@ -123,31 +123,95 @@ class Importance(StrEnum):
 
 
 class Evidence(_Frozen):
+    """Where a change came from, in terms the source format can actually answer.
+
+    Three scopes, and a piece of evidence uses exactly one of them:
+
+    * ``page`` — a place on a page of a document: a page number, plus the words
+      or the area on it. This is what PDFs can prove.
+    * ``document`` — a property of the file as a whole, such as its title. Only
+      metadata changes may use it.
+    * ``node`` — a place in a captured webpage: the snapshot it came from, the
+      content node, and the words cited within that node. A webpage has no pages
+      and no coordinates, so inventing them would be inventing evidence.
+
+    The fields of one scope are forbidden on the others, checked below, so page
+    evidence can never quietly become node evidence or the reverse.
+    """
+
     side: Side
-    scope: Literal["page", "document"] = "page"
+    scope: Literal["page", "document", "node"] = "page"
+
+    # page scope
     page: int | None = Field(default=None, ge=1)
     bbox: BBox | None = None
     word_ids: tuple[str, ...] = ()
-    excerpt: str | None = Field(default=None, max_length=1000)
-    # For document-scope evidence only, e.g. "metadata.title".
+
+    # document scope, e.g. "metadata.title"
     field: str | None = Field(default=None, max_length=100)
+
+    # node scope: a place in a captured webpage
+    snapshot_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+    node_id: str | None = Field(default=None, max_length=64)
+    node_path: str | None = Field(default=None, max_length=500)
+    section_path: tuple[str, ...] = ()
+    token_ids: tuple[str, ...] = ()
+    text_range: tuple[int, int] | None = None
+
+    excerpt: str | None = Field(default=None, max_length=1000)
 
     @model_validator(mode="after")
     def _has_location(self) -> Evidence:
         if self.excerpt is not None and not self.excerpt.strip():
             raise ValueError("excerpt must not be blank")
+
+        page_fields = self.page is not None or self.bbox is not None or bool(self.word_ids)
+        node_fields = (
+            self.snapshot_sha256 is not None
+            or self.node_id is not None
+            or self.node_path is not None
+            or bool(self.section_path)
+            or bool(self.token_ids)
+            or self.text_range is not None
+        )
+
         if self.scope == "page":
+            if node_fields:
+                raise ValueError("page-scope evidence must not carry webpage fields")
             if self.page is None:
                 raise ValueError("page-scope evidence must name a page")
             if self.bbox is None and not self.word_ids:
                 raise ValueError("page-scope evidence needs word_ids or a bbox")
             if self.field is not None:
                 raise ValueError("'field' is only allowed on document-scope evidence")
-        else:
-            if self.page is not None or self.bbox is not None or self.word_ids:
+
+        elif self.scope == "document":
+            if page_fields:
                 raise ValueError("document-scope evidence must not name a page or location")
+            if node_fields:
+                raise ValueError("document-scope evidence must not carry webpage fields")
             if not self.field:
                 raise ValueError("document-scope evidence must name the field it refers to")
+
+        else:  # node
+            if page_fields:
+                raise ValueError("node-scope evidence must not carry page or bbox fields")
+            if self.field is not None:
+                raise ValueError("'field' is only allowed on document-scope evidence")
+            if not self.snapshot_sha256:
+                raise ValueError("node-scope evidence must name the snapshot it came from")
+            if not self.node_id:
+                raise ValueError("node-scope evidence must name the node it came from")
+            if not self.token_ids and self.text_range is None:
+                raise ValueError("node-scope evidence needs token_ids or a text range")
+            if self.text_range is not None:
+                start, end = self.text_range
+                if start < 0 or end <= start:
+                    raise ValueError("a text range must be a positive span")
+            if len(set(self.token_ids)) != len(self.token_ids):
+                raise ValueError("token_ids must not repeat")
+            if any(not token.startswith(f"{self.node_id}-") for token in self.token_ids):
+                raise ValueError("every cited token must belong to the cited node")
         return self
 
 
@@ -183,6 +247,11 @@ class Change(_Frozen):
             raise ValueError("a modified change must state both the old and the new value")
         if self.category is not ChangeCategory.METADATA and any(e.scope == "document" for e in self.evidence):
             raise ValueError("only metadata changes may use document-level evidence")
+        scopes = {e.scope for e in self.evidence}
+        if "node" in scopes and scopes - {"node"}:
+            # A single change is evidenced from one source. Mixing a webpage node
+            # with a document page would mean neither checker could verify it all.
+            raise ValueError("a change cannot mix webpage evidence with document evidence")
         return self
 
     @property

@@ -305,6 +305,7 @@
     },
     "Evidence": {
       "additionalProperties": false,
+      "description": "Where a change came from, in terms the source format can actually answer.\n\nThree scopes, and a piece of evidence uses exactly one of them:\n\n* ``page`` \u2014 a place on a page of a document: a page number, plus the words\n  or the area on it. This is what PDFs can prove.\n* ``document`` \u2014 a property of the file as a whole, such as its title. Only\n  metadata changes may use it.\n* ``node`` \u2014 a place in a captured webpage: the snapshot it came from, the\n  content node, and the words cited within that node. A webpage has no pages\n  and no coordinates, so inventing them would be inventing evidence.\n\nThe fields of one scope are forbidden on the others, checked below, so page\nevidence can never quietly become node evidence or the reverse.",
       "properties": {
         "bbox": {
           "anyOf": [
@@ -343,6 +344,32 @@
           "default": null,
           "title": "Field"
         },
+        "node_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Node Id"
+        },
+        "node_path": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Node Path"
+        },
         "page": {
           "anyOf": [
             {
@@ -360,13 +387,65 @@
           "default": "page",
           "enum": [
             "page",
-            "document"
+            "document",
+            "node"
           ],
           "title": "Scope",
           "type": "string"
         },
+        "section_path": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Section Path",
+          "type": "array"
+        },
         "side": {
           "$ref": "#/$defs/Side"
+        },
+        "snapshot_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Snapshot Sha256"
+        },
+        "text_range": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "integer"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Text Range"
+        },
+        "token_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Token Ids",
+          "type": "array"
         },
         "word_ids": {
           "default": [],

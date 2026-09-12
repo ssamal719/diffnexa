@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "pairs": {
+    "deadline-date-change": {
+      "extraction_passed": true,
+      "comparison": null
+    },
+    "eligibility-wording-change": {
+      "extraction_passed": true,
+      "comparison": null
+    },
+    "identical-notice": {
+      "extraction_passed": true,
+      "comparison": null
+    },
+    "indian-number-format": {
+      "extraction_passed": true,
+      "comparison": null
+    },
+    "inserted-page": {
+      "extraction_passed": true,
+      "comparison": null
+    },
+    "moved-paragraph": {
+      "extraction_passed": true,
+      "comparison": null
+    },
+    "reflowed-paragraph": {
+      "extraction_passed": true,
+      "comparison": null
+    },
+    "rotated-page": {
+      "extraction_passed": true,
+      "comparison": null
+    },
+    "scanned-page": {
+      "extraction_passed": true,
+      "comparison": null
+    },
+    "vacancy-number-change": {
+      "extraction_passed": true,
+      "comparison": null
+    }
+  }
+}

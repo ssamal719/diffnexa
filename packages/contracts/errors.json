@@ -1,0 +1,13 @@
+{
+  "_comment": "Single source of truth for user-facing document error codes and messages. The engine (Python) and the website (TypeScript) are each tested against this file so their wording can never drift apart.",
+  "messages": {
+    "not_pdf": "This file isn't a PDF. Choose a file that ends in .pdf and was saved as a PDF.",
+    "empty_file": "This file is empty. Choose the PDF again, or re-save it and try once more.",
+    "file_too_large": "This PDF is larger than the current size limit. Choose a smaller file.",
+    "too_many_pages": "This PDF has more pages than the current page limit. Choose a shorter document.",
+    "password_protected": "This PDF is password protected. Remove the password in your PDF reader, save a copy, and upload that copy.",
+    "corrupted": "This PDF appears to be damaged and can't be read. Re-download or re-export it and try again.",
+    "no_pages": "This PDF has no pages to compare. Choose a different file.",
+    "extraction_failed": "Unable to read this PDF's contents. Try re-saving it as a new PDF and upload it again."
+  }
+}

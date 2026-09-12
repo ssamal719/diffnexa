@@ -1,0 +1,354 @@
+{
+  "$defs": {
+    "ChangeCategory": {
+      "enum": [
+        "text",
+        "number",
+        "date",
+        "identifier",
+        "table",
+        "image",
+        "page",
+        "link",
+        "metadata",
+        "formatting",
+        "layout"
+      ],
+      "title": "ChangeCategory",
+      "type": "string"
+    },
+    "ChangeKind": {
+      "enum": [
+        "added",
+        "removed",
+        "modified",
+        "moved"
+      ],
+      "title": "ChangeKind",
+      "type": "string"
+    },
+    "DocumentExpectation": {
+      "additionalProperties": false,
+      "properties": {
+        "must_contain": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/TextExpectation"
+          },
+          "title": "Must Contain",
+          "type": "array"
+        },
+        "page_count": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page Count"
+        },
+        "scanned_pages": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scanned Pages"
+        }
+      },
+      "title": "DocumentExpectation",
+      "type": "object"
+    },
+    "ExpectedChange": {
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "$ref": "#/$defs/ChangeCategory"
+        },
+        "kind": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ChangeKind"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Label"
+        },
+        "match": {
+          "default": "exact",
+          "enum": [
+            "exact",
+            "contains"
+          ],
+          "title": "Match",
+          "type": "string"
+        },
+        "new": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "New"
+        },
+        "new_page": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "New Page"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        },
+        "old": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Old"
+        },
+        "old_page": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Old Page"
+        }
+      },
+      "required": [
+        "category"
+      ],
+      "title": "ExpectedChange",
+      "type": "object"
+    },
+    "ExtractionExpectations": {
+      "additionalProperties": false,
+      "properties": {
+        "new": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DocumentExpectation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "old": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DocumentExpectation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "ExtractionExpectations",
+      "type": "object"
+    },
+    "MustNotReport": {
+      "additionalProperties": false,
+      "properties": {
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "title": "MustNotReport",
+      "type": "object"
+    },
+    "TextExpectation": {
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "minimum": 1,
+          "title": "Page",
+          "type": "integer"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "page",
+        "text"
+      ],
+      "title": "TextExpectation",
+      "type": "object"
+    },
+    "UnchangedPages": {
+      "additionalProperties": false,
+      "properties": {
+        "new": {
+          "default": [],
+          "items": {
+            "type": "integer"
+          },
+          "title": "New",
+          "type": "array"
+        },
+        "old": {
+          "default": [],
+          "items": {
+            "type": "integer"
+          },
+          "title": "Old",
+          "type": "array"
+        }
+      },
+      "title": "UnchangedPages",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "description": {
+      "minLength": 1,
+      "title": "Description",
+      "type": "string"
+    },
+    "expected_changes": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/ExpectedChange"
+      },
+      "title": "Expected Changes",
+      "type": "array"
+    },
+    "extraction": {
+      "$ref": "#/$defs/ExtractionExpectations",
+      "default": {
+        "new": null,
+        "old": null
+      }
+    },
+    "max_unexpected_changes": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Max Unexpected Changes",
+      "type": "integer"
+    },
+    "must_not_report": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/MustNotReport"
+      },
+      "title": "Must Not Report",
+      "type": "array"
+    },
+    "pair": {
+      "pattern": "^[a-z0-9][a-z0-9-]{1,79}$",
+      "title": "Pair",
+      "type": "string"
+    },
+    "source": {
+      "enum": [
+        "synthetic",
+        "public",
+        "private-approved"
+      ],
+      "title": "Source",
+      "type": "string"
+    },
+    "tags": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Tags",
+      "type": "array"
+    },
+    "unchanged_pages": {
+      "$ref": "#/$defs/UnchangedPages",
+      "default": {
+        "new": [],
+        "old": []
+      }
+    }
+  },
+  "required": [
+    "pair",
+    "description",
+    "source"
+  ],
+  "title": "GoldenSpec",
+  "type": "object"
+}

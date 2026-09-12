@@ -1,0 +1,491 @@
+{
+  "$defs": {
+    "BBox": {
+      "additionalProperties": false,
+      "properties": {
+        "x0": {
+          "title": "X0",
+          "type": "number"
+        },
+        "x1": {
+          "title": "X1",
+          "type": "number"
+        },
+        "y0": {
+          "title": "Y0",
+          "type": "number"
+        },
+        "y1": {
+          "title": "Y1",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "title": "BBox",
+      "type": "object"
+    },
+    "DocumentMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "author": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Author"
+        },
+        "creation_date": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Creation Date"
+        },
+        "creator": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Creator"
+        },
+        "modification_date": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Modification Date"
+        },
+        "producer": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Producer"
+        },
+        "subject": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Subject"
+        },
+        "title": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Title"
+        }
+      },
+      "title": "DocumentMetadata",
+      "type": "object"
+    },
+    "DocumentSource": {
+      "additionalProperties": false,
+      "properties": {
+        "is_encrypted": {
+          "default": false,
+          "title": "Is Encrypted",
+          "type": "boolean"
+        },
+        "pdf_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pdf Version"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "minimum": 1,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sha256",
+        "size_bytes"
+      ],
+      "title": "DocumentSource",
+      "type": "object"
+    },
+    "ExtractionInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "engine_version": {
+          "title": "Engine Version",
+          "type": "string"
+        },
+        "extractor": {
+          "title": "Extractor",
+          "type": "string"
+        },
+        "warnings": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Warnings",
+          "type": "array"
+        }
+      },
+      "required": [
+        "engine_version",
+        "extractor"
+      ],
+      "title": "ExtractionInfo",
+      "type": "object"
+    },
+    "ImageRegion": {
+      "additionalProperties": false,
+      "properties": {
+        "bbox": {
+          "$ref": "#/$defs/BBox"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "source_height": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Height"
+        },
+        "source_width": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Width"
+        }
+      },
+      "required": [
+        "id",
+        "bbox"
+      ],
+      "title": "ImageRegion",
+      "type": "object"
+    },
+    "LinkRegion": {
+      "additionalProperties": false,
+      "properties": {
+        "bbox": {
+          "$ref": "#/$defs/BBox"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "uri": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Uri"
+        }
+      },
+      "required": [
+        "id",
+        "bbox"
+      ],
+      "title": "LinkRegion",
+      "type": "object"
+    },
+    "Page": {
+      "additionalProperties": false,
+      "properties": {
+        "height": {
+          "exclusiveMinimum": 0,
+          "title": "Height",
+          "type": "number"
+        },
+        "image_coverage": {
+          "default": 0.0,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Image Coverage",
+          "type": "number"
+        },
+        "images": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ImageRegion"
+          },
+          "title": "Images",
+          "type": "array"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Label"
+        },
+        "likely_scanned": {
+          "default": false,
+          "title": "Likely Scanned",
+          "type": "boolean"
+        },
+        "links": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/LinkRegion"
+          },
+          "title": "Links",
+          "type": "array"
+        },
+        "number": {
+          "minimum": 1,
+          "title": "Number",
+          "type": "integer"
+        },
+        "rotation": {
+          "default": 0,
+          "enum": [
+            0,
+            90,
+            180,
+            270
+          ],
+          "title": "Rotation",
+          "type": "integer"
+        },
+        "text_layer": {
+          "$ref": "#/$defs/TextLayerStatus"
+        },
+        "width": {
+          "exclusiveMinimum": 0,
+          "title": "Width",
+          "type": "number"
+        },
+        "words": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Word"
+          },
+          "title": "Words",
+          "type": "array"
+        }
+      },
+      "required": [
+        "number",
+        "width",
+        "height",
+        "text_layer"
+      ],
+      "title": "Page",
+      "type": "object"
+    },
+    "TextLayerStatus": {
+      "enum": [
+        "present",
+        "absent",
+        "unreadable"
+      ],
+      "title": "TextLayerStatus",
+      "type": "string"
+    },
+    "TextSource": {
+      "description": "Where a word's text came from.",
+      "enum": [
+        "text_layer",
+        "ocr"
+      ],
+      "title": "TextSource",
+      "type": "string"
+    },
+    "Word": {
+      "additionalProperties": false,
+      "properties": {
+        "bbox": {
+          "$ref": "#/$defs/BBox"
+        },
+        "bold": {
+          "default": false,
+          "title": "Bold",
+          "type": "boolean"
+        },
+        "confidence": {
+          "default": 1.0,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "font_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Font Name"
+        },
+        "font_size": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Font Size"
+        },
+        "id": {
+          "pattern": "^p(?P<page>[1-9][0-9]*)-w(?P<index>0|[1-9][0-9]*)$",
+          "title": "Id",
+          "type": "string"
+        },
+        "italic": {
+          "default": false,
+          "title": "Italic",
+          "type": "boolean"
+        },
+        "source": {
+          "$ref": "#/$defs/TextSource",
+          "default": "text_layer"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "upright": {
+          "default": true,
+          "title": "Upright",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "text",
+        "bbox"
+      ],
+      "title": "Word",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "extraction": {
+      "$ref": "#/$defs/ExtractionInfo"
+    },
+    "metadata": {
+      "$ref": "#/$defs/DocumentMetadata",
+      "default": {
+        "author": null,
+        "creation_date": null,
+        "creator": null,
+        "modification_date": null,
+        "producer": null,
+        "subject": null,
+        "title": null
+      }
+    },
+    "pages": {
+      "items": {
+        "$ref": "#/$defs/Page"
+      },
+      "minItems": 1,
+      "title": "Pages",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1",
+      "default": "1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/DocumentSource"
+    }
+  },
+  "required": [
+    "source",
+    "pages",
+    "extraction"
+  ],
+  "title": "Document",
+  "type": "object"
+}

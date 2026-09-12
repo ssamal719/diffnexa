@@ -1,0 +1,50 @@
+name: Engine
+
+# Accuracy gate for the comparison engine. Runs on every change.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Tests, lint and golden suite
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install the engine
+        working-directory: apps/engine
+        run: pip install -e ".[dev]"
+
+      - name: Check code style
+        working-directory: apps/engine
+        run: |
+          ruff check .
+          ruff format --check .
+
+      - name: Run engine tests
+        working-directory: apps/engine
+        run: pytest -q
+
+      - name: Check the shared schemas are up to date
+        run: diffnexa schema --check
+
+      # Fails if any golden pair gets worse than the recorded baseline.
+      - name: Run the golden suite
+        run: diffnexa golden run
+
+      - name: Upload accuracy reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-reports
+          path: reports/golden/
+          retention-days: 14

@@ -1,0 +1,51 @@
+name: Web
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Lint, types, tests and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      # The web tests read real PDFs produced by the engine's golden generator.
+      - name: Generate test PDFs
+        run: |
+          pip install -e "apps/engine[dev]"
+          diffnexa golden generate
+
+      - name: Install web dependencies
+        working-directory: apps/web
+        run: npm ci
+
+      - name: Check code style
+        working-directory: apps/web
+        run: npm run lint
+
+      - name: Check types
+        working-directory: apps/web
+        run: npm run typecheck
+
+      - name: Run web tests
+        working-directory: apps/web
+        run: npm test
+
+      - name: Build the site
+        working-directory: apps/web
+        run: npm run build

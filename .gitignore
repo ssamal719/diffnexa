@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+apps/web/public/pdf.worker.min.mjs
+*.tsbuildinfo
+next-env.d.ts
+
+# Generated test material and reports
+golden/.generated/
+reports/
+
+# Environment and OS
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db

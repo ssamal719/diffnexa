@@ -1,0 +1,66 @@
+@import "tailwindcss";
+@import "@fontsource-variable/public-sans";
+
+/*
+  DiffNexa design tokens.
+
+  The product is document software, so the interface behaves like a well-set
+  page: one typeface, flat surfaces, hairline rules instead of shadows, and
+  restrained colour. Meaning is never carried by colour alone - every state also
+  has a word or an icon beside it.
+*/
+
+@theme {
+  --font-sans: "Public Sans Variable", ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink: #14202c;          /* primary text */
+  --color-ink-soft: #4a5a6a;     /* secondary text */
+  --color-paper: #ffffff;
+  --color-surface: #f4f6f8;      /* page background */
+  --color-surface-sunken: #eaeef2; /* drop target while dragging */
+  --color-rule: #d7dee5;         /* hairline borders */
+  --color-rule-strong: #b6c2cd;
+
+  --color-signal: #12557f;       /* primary action, focus */
+  --color-signal-soft: #e6eef5;
+  --color-added: #1b6b3a;
+  --color-removed: #a4262c;
+  --color-caution: #8a5a00;
+  --color-caution-soft: #fdf6e6;
+
+  --radius-panel: 4px;
+}
+
+html {
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  line-height: 1.55;
+}
+
+/* Numbers in file sizes, page counts and change counts line up in columns. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* One visible focus style everywhere, including for keyboard users. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

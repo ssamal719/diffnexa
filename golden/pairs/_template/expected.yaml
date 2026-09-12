@@ -1,0 +1,60 @@
+# Copy this folder, rename it (lowercase letters, numbers and hyphens only),
+# add old.pdf and new.pdf, then edit this file. The "pair" value must equal the
+# folder name. Remove any section you don't need.
+pair: recruitment-notice-corrigendum-01
+description: >
+  Official notice and its corrigendum. The vacancy count and the last date
+  changed; nothing else did.
+# public = anyone can download it; private-approved = you have permission to
+# keep it in this private repository. Never add confidential documents.
+source: public
+tags: [number, date]
+
+# What the extractor must find. Page numbers start at 1.
+extraction:
+  old:
+    page_count: 4
+    scanned_pages: []
+    must_contain:
+      - page: 3
+        text: "Total Vacancies: 627"
+  new:
+    page_count: 4
+    scanned_pages: []
+    must_contain:
+      - page: 3
+        text: "Total Vacancies: 654"
+
+# Every change that really happened.
+# category: text, number, date, identifier, table, image, page, link, metadata, formatting, layout
+# kind:     added, removed, modified, moved
+# match:    exact (default) or contains
+expected_changes:
+  - category: number
+    kind: modified
+    label: Total Vacancies
+    old: "627"
+    new: "654"
+    old_page: 3
+    new_page: 3
+  - category: date
+    kind: modified
+    label: Last date to apply
+    old: "30 September 2026"
+    new: "15 October 2026"
+    old_page: 2
+    new_page: 2
+
+# Pages where nothing meaningful changed. Any non-noise change reported only on
+# these pages counts as noise leakage.
+unchanged_pages:
+  old: [1, 4]
+  new: [1, 4]
+
+# Text that must never appear in a reported (non-noise) change.
+must_not_report:
+  - text: "Page 1 of"
+    reason: page-number footer
+
+# How many extra, unexplained changes are tolerated. Keep this at 0.
+max_unexpected_changes: 0

@@ -1,0 +1,185 @@
+"""The result contract: what a detected change is, and what counts as evidence.
+
+Rules enforced here (a change that breaks them cannot even be constructed):
+
+1. Every change carries at least one piece of evidence.
+2. Evidence points to a place in a source PDF: a page plus a location (word IDs
+   and/or a bounding box). Only metadata changes may use document-level evidence.
+3. Added changes need evidence from the new PDF, removed changes from the old PDF,
+   modified and moved changes from both.
+4. Modified changes state both the old and the new value.
+5. AI output is a separate `AIAnnotation` type. It can only describe an existing
+   change by ID; it has no fields for values, evidence or new changes.
+6. A ComparisonResult rejects annotations that point to unknown change IDs, and
+   evidence that points to pages outside the documents.
+
+Full traceability against the actual extracted documents (do the word IDs exist,
+is the box inside the page, does the excerpt match those words) is checked by
+`diffnexa_engine.contracts.traceability.verify_traceability`.
+"""
+
+from __future__ import annotations
+
+from enum import StrEnum
+from typing import Literal
+
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+from diffnexa_engine.model.document import BBox
+
+RESULT_SCHEMA_VERSION: Literal["1"] = "1"
+
+
+class _Frozen(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+
+class Side(StrEnum):
+    OLD = "old"
+    NEW = "new"
+
+
+class ChangeKind(StrEnum):
+    ADDED = "added"
+    REMOVED = "removed"
+    MODIFIED = "modified"
+    MOVED = "moved"
+
+
+class ChangeCategory(StrEnum):
+    TEXT = "text"
+    NUMBER = "number"
+    DATE = "date"
+    IDENTIFIER = "identifier"
+    TABLE = "table"
+    IMAGE = "image"
+    PAGE = "page"
+    LINK = "link"
+    METADATA = "metadata"
+    FORMATTING = "formatting"
+    LAYOUT = "layout"
+
+
+class Importance(StrEnum):
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+    INFORMATIONAL = "informational"
+
+
+class Evidence(_Frozen):
+    side: Side
+    scope: Literal["page", "document"] = "page"
+    page: int | None = Field(default=None, ge=1)
+    bbox: BBox | None = None
+    word_ids: tuple[str, ...] = ()
+    excerpt: str | None = Field(default=None, max_length=1000)
+    # For document-scope evidence only, e.g. "metadata.title".
+    field: str | None = Field(default=None, max_length=100)
+
+    @model_validator(mode="after")
+    def _has_location(self) -> Evidence:
+        if self.excerpt is not None and not self.excerpt.strip():
+            raise ValueError("excerpt must not be blank")
+        if self.scope == "page":
+            if self.page is None:
+                raise ValueError("page-scope evidence must name a page")
+            if self.bbox is None and not self.word_ids:
+                raise ValueError("page-scope evidence needs word_ids or a bbox")
+            if self.field is not None:
+                raise ValueError("'field' is only allowed on document-scope evidence")
+        else:
+            if self.page is not None or self.bbox is not None or self.word_ids:
+                raise ValueError("document-scope evidence must not name a page or location")
+            if not self.field:
+                raise ValueError("document-scope evidence must name the field it refers to")
+        return self
+
+
+class Change(_Frozen):
+    id: str = Field(min_length=1, max_length=64)
+    seq: int = Field(ge=0)
+    kind: ChangeKind
+    category: ChangeCategory
+    subtype: str | None = Field(default=None, max_length=50)
+    label: str | None = Field(default=None, max_length=200)
+    old_value: str | None = Field(default=None, max_length=5000)
+    new_value: str | None = Field(default=None, max_length=5000)
+    evidence: tuple[Evidence, ...] = Field(min_length=1)
+    # Set when the engine believes this is not a meaningful change (e.g. "page number").
+    noise_reason: str | None = Field(default=None, max_length=200)
+    rule_importance: Importance | None = None
+
+    @model_validator(mode="after")
+    def _evidence_matches_kind(self) -> Change:
+        sides = {e.side for e in self.evidence}
+        if self.kind is ChangeKind.ADDED and Side.NEW not in sides:
+            raise ValueError("an added change needs evidence from the new PDF")
+        if self.kind is ChangeKind.REMOVED and Side.OLD not in sides:
+            raise ValueError("a removed change needs evidence from the old PDF")
+        if self.kind in (ChangeKind.MODIFIED, ChangeKind.MOVED) and sides != {Side.OLD, Side.NEW}:
+            raise ValueError(f"a {self.kind.value} change needs evidence from both PDFs")
+        if self.kind is ChangeKind.MODIFIED and (self.old_value is None or self.new_value is None):
+            raise ValueError("a modified change must state both the old and the new value")
+        if self.category is not ChangeCategory.METADATA and any(e.scope == "document" for e in self.evidence):
+            raise ValueError("only metadata changes may use document-level evidence")
+        return self
+
+    def evidence_pages(self, side: Side) -> set[int]:
+        return {e.page for e in self.evidence if e.side is side and e.page is not None}
+
+
+class AIAnnotation(_Frozen):
+    """AI commentary on one existing change. Deliberately has no value or evidence fields."""
+
+    change_id: str = Field(min_length=1, max_length=64)
+    importance: Importance | None = None
+    title: str | None = Field(default=None, max_length=120)
+    explanation: str | None = Field(default=None, max_length=1000)
+    impact: str | None = Field(default=None, max_length=1000)
+    action_required: bool | None = None
+    confidence: float = Field(ge=0.0, le=1.0)
+    needs_review: bool = False
+
+
+class DocumentRef(_Frozen):
+    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    page_count: int = Field(ge=1)
+
+
+class ComparisonResult(_Frozen):
+    schema_version: Literal["1"] = RESULT_SCHEMA_VERSION
+    engine_version: str
+    old_document: DocumentRef
+    new_document: DocumentRef
+    changes: tuple[Change, ...] = ()
+    annotations: tuple[AIAnnotation, ...] = ()
+
+    @model_validator(mode="after")
+    def _consistent(self) -> ComparisonResult:
+        ids = [c.id for c in self.changes]
+        if len(ids) != len(set(ids)):
+            raise ValueError("change IDs must be unique")
+        seqs = [c.seq for c in self.changes]
+        if len(seqs) != len(set(seqs)):
+            raise ValueError("change sequence numbers must be unique")
+
+        page_counts = {Side.OLD: self.old_document.page_count, Side.NEW: self.new_document.page_count}
+        for change in self.changes:
+            for ev in change.evidence:
+                if ev.page is not None and ev.page > page_counts[ev.side]:
+                    raise ValueError(
+                        f"change {change.id} cites page {ev.page} of the {ev.side.value} PDF, "
+                        f"which has only {page_counts[ev.side]} pages"
+                    )
+
+        known = set(ids)
+        annotated: set[str] = set()
+        for ann in self.annotations:
+            if ann.change_id not in known:
+                raise ValueError(f"annotation refers to unknown change {ann.change_id!r}")
+            if ann.change_id in annotated:
+                raise ValueError(f"more than one annotation for change {ann.change_id!r}")
+            annotated.add(ann.change_id)
+        return self

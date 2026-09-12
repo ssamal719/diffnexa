@@ -1,0 +1,405 @@
+/**
+ * Tests for the report layer: what the summary says, how filters narrow the
+ * list, and how changes are described in plain language.
+ *
+ * These guard the promise that the interface only ever shows what the engine
+ * found. Nothing here may invent a value, a page or an importance ranking.
+ */
+
+import { describe, expect, it } from "vitest";
+
+import type { Change, ComparisonResponse } from "@/lib/comparison";
+import {
+  CATEGORIES,
+  NO_FILTERS,
+  applyFilters,
+  buildReport,
+  categoryOf,
+  describeLocation,
+  describePageDelta,
+  describeScope,
+  editKindOf,
+  headlineFor,
+  pageBuckets,
+  primaryPage,
+  toggle,
+} from "@/lib/report";
+
+function change(overrides: Partial<Change> = {}): Change {
+  return {
+    id: "c0",
+    seq: 0,
+    type: "TEXT_MODIFIED",
+    kind: "modified",
+    category: "text",
+    label: null,
+    oldValue: "the supplier shall deliver",
+    newValue: "the supplier must deliver",
+    delta: null,
+    confidence: 1,
+    isNoise: false,
+    noiseReason: null,
+    oldPages: [3],
+    newPages: [3],
+    evidence: [
+      { side: "old", page: 3, excerpt: "the supplier shall deliver", bbox: null, wordCount: 4 },
+      { side: "new", page: 3, excerpt: "the supplier must deliver", bbox: null, wordCount: 4 },
+    ],
+    ...overrides,
+  };
+}
+
+function result(changes: Change[], previousPages = 10, revisedPages = 10): ComparisonResponse {
+  return {
+    engineVersion: "test",
+    processingMs: 1200,
+    documents: {
+      previous: { pageCount: previousPages, sha256: "a".repeat(64) },
+      revised: { pageCount: revisedPages, sha256: "b".repeat(64) },
+    },
+    counts: {
+      total: changes.length,
+      meaningful: changes.filter((c) => !c.isNoise).length,
+      noise: changes.filter((c) => c.isNoise).length,
+    },
+    changes,
+    diagnostics: {
+      ocrRequired: false,
+      previousScannedPages: [],
+      revisedScannedPages: [],
+      previousPagesWithoutText: [],
+      revisedPagesWithoutText: [],
+      notes: [],
+    },
+  };
+}
+
+// ---------------------------------------------------------------- vocabulary
+
+describe("plain language", () => {
+  it("never shows the engine's internal names as headlines", () => {
+    const samples: Change[] = [
+      change({ type: "TEXT_ADDED", kind: "added" }),
+      change({ type: "NUMBER_CHANGED" }),
+      change({ type: "DATE_CHANGED" }),
+      change({ type: "PAGE_ADDED", kind: "added" }),
+    ];
+    for (const sample of samples) {
+      const headline = headlineFor(sample);
+      expect(headline).not.toMatch(/_/);
+      expect(headline).not.toMatch(/[A-Z]{4,}/);
+    }
+  });
+
+  it("describes each kind of change the way a person would", () => {
+    expect(headlineFor(change({ type: "TEXT_ADDED", kind: "added" }))).toBe("Content added");
+    expect(headlineFor(change({ type: "TEXT_REMOVED", kind: "removed" }))).toBe("Content removed");
+    expect(headlineFor(change({ type: "TEXT_MODIFIED" }))).toBe("Content rewritten");
+    expect(headlineFor(change({ type: "NUMBER_CHANGED" }))).toBe("Value changed");
+    expect(headlineFor(change({ type: "DATE_CHANGED" }))).toBe("Date changed");
+    expect(headlineFor(change({ type: "PAGE_ADDED", kind: "added" }))).toBe("Page added");
+  });
+
+  it("sorts every change type into one of the four working categories", () => {
+    expect(categoryOf(change({ type: "NUMBER_CHANGED" }))).toBe("values");
+    expect(categoryOf(change({ type: "DATE_CHANGED" }))).toBe("dates");
+    expect(categoryOf(change({ type: "TEXT_ADDED" }))).toBe("content");
+    expect(categoryOf(change({ type: "PAGE_REMOVED" }))).toBe("pages");
+    // Anything the engine may add later lands in content rather than vanishing.
+    expect(categoryOf(change({ type: "METADATA_CHANGED" }))).toBe("content");
+    expect(CATEGORIES.map((c) => c.id)).toEqual(["content", "values", "dates", "pages"]);
+  });
+
+  it("calls a modification 'changed' rather than 'modified'", () => {
+    expect(editKindOf(change({ kind: "modified" }))).toBe("changed");
+    expect(editKindOf(change({ kind: "moved" }))).toBe("moved");
+  });
+
+  it("describes where a change is, including when it moved pages", () => {
+    expect(describeLocation(change({ oldPages: [3], newPages: [3] }))).toBe("Page 3");
+    expect(describeLocation(change({ oldPages: [3], newPages: [5] }))).toBe("Page 3 → 5");
+    expect(describeLocation(change({ oldPages: [7], newPages: [] }))).toBe(
+      "Page 7 (previous version)",
+    );
+  });
+});
+
+// ---------------------------------------------------------------- the summary
+
+describe("the summary", () => {
+  it("counts changes and the pages they sit on", () => {
+    const report = buildReport(
+      result([
+        change({ id: "a", seq: 0, newPages: [2], oldPages: [2] }),
+        change({ id: "b", seq: 1, newPages: [2], oldPages: [2] }),
+        change({ id: "c", seq: 2, newPages: [8], oldPages: [8] }),
+      ]),
+    );
+    expect(report.totalMeaningful).toBe(3);
+    expect(report.pagesAffected).toBe(2);
+    expect(describeScope(report)).toBe("3 changes across 2 pages");
+  });
+
+  it("uses singular wording for a single change on a single page", () => {
+    const report = buildReport(result([change()]));
+    expect(describeScope(report)).toBe("1 change across 1 page");
+  });
+
+  it("reports no differences when there are none", () => {
+    const report = buildReport(result([]));
+    expect(report.totalMeaningful).toBe(0);
+    expect(describeScope(report)).toBe("No differences found");
+  });
+
+  it("keeps minor differences out of the headline but does not discard them", () => {
+    const report = buildReport(
+      result([
+        change({ id: "real" }),
+        change({ id: "footer", isNoise: true, noiseReason: "Repeated page footer" }),
+      ]),
+    );
+    expect(report.totalMeaningful).toBe(1);
+    expect(report.minor).toHaveLength(1);
+    expect(report.minor[0].noiseReason).toBe("Repeated page footer");
+  });
+
+  it("explains the page-count difference between the two documents", () => {
+    expect(describePageDelta(buildReport(result([], 10, 10)))).toBe("Both versions have 10 pages");
+    expect(describePageDelta(buildReport(result([], 10, 13)))).toBe(
+      "10 → 13 pages · 3 pages longer",
+    );
+    expect(describePageDelta(buildReport(result([], 10, 9)))).toBe("10 → 9 pages · 1 page shorter");
+  });
+
+  it("counts each category from the engine's own classification", () => {
+    const report = buildReport(
+      result([
+        change({ id: "a", seq: 0, type: "NUMBER_CHANGED" }),
+        change({ id: "b", seq: 1, type: "NUMBER_CHANGED" }),
+        change({ id: "c", seq: 2, type: "DATE_CHANGED" }),
+        change({ id: "d", seq: 3, type: "TEXT_ADDED", kind: "added" }),
+      ]),
+    );
+    const counts = Object.fromEntries(report.categories.map((c) => [c.id, c.count]));
+    expect(counts).toEqual({ content: 1, values: 2, dates: 1, pages: 0 });
+  });
+
+  it("shows the mix of additions, removals and rewrites", () => {
+    const report = buildReport(
+      result([
+        change({ id: "a", seq: 0, kind: "added", type: "TEXT_ADDED" }),
+        change({ id: "b", seq: 1, kind: "added", type: "TEXT_ADDED" }),
+        change({ id: "c", seq: 2, kind: "removed", type: "TEXT_REMOVED" }),
+        change({ id: "d", seq: 3, kind: "modified" }),
+      ]),
+    );
+    expect(report.mix).toEqual([
+      { kind: "added", count: 2 },
+      { kind: "removed", count: 1 },
+      { kind: "changed", count: 1 },
+    ]);
+  });
+
+  it("does not claim an importance ranking the engine cannot provide", () => {
+    const report = buildReport(result([change()]));
+    expect(report).not.toHaveProperty("important");
+    expect(Object.keys(report)).not.toContain("attention");
+  });
+});
+
+// ---------------------------------------------------------------- the page map
+
+describe("the page map", () => {
+  it("has one column per page of the revised document", () => {
+    expect(pageBuckets([], 6)).toHaveLength(6);
+  });
+
+  it("shows which pages changed and how much, relative to the busiest page", () => {
+    const buckets = pageBuckets(
+      [
+        change({ id: "a", newPages: [2] }),
+        change({ id: "b", newPages: [2] }),
+        change({ id: "c", newPages: [2] }),
+        change({ id: "d", newPages: [5] }),
+      ],
+      6,
+    );
+    expect(buckets[1]).toEqual({ page: 2, count: 3, intensity: 1 });
+    expect(buckets[4]).toMatchObject({ page: 5, count: 1 });
+    expect(buckets[4].intensity).toBeCloseTo(1 / 3);
+    expect(buckets[0]).toEqual({ page: 1, count: 0, intensity: 0 });
+  });
+
+  it("anchors a change to the revised document, falling back to the previous one", () => {
+    expect(primaryPage(change({ oldPages: [2], newPages: [4] }))).toEqual({ page: 4, side: "new" });
+    expect(primaryPage(change({ oldPages: [2], newPages: [] }))).toEqual({ page: 2, side: "old" });
+    expect(primaryPage(change({ oldPages: [], newPages: [] }))).toBeNull();
+  });
+
+  it("still shows a removal that exists only beyond the revised document's length", () => {
+    const buckets = pageBuckets([change({ oldPages: [12], newPages: [] })], 8);
+    expect(buckets).toHaveLength(12);
+    expect(buckets[11].count).toBe(1);
+  });
+});
+
+// ---------------------------------------------------------------- filtering
+
+describe("filters", () => {
+  const report = buildReport(
+    result([
+      change({
+        id: "text1",
+        seq: 0,
+        type: "TEXT_ADDED",
+        kind: "added",
+        oldValue: null,
+        newValue: "The supplier shall provide quarterly reports.",
+        newPages: [2],
+        oldPages: [],
+        evidence: [
+          {
+            side: "new",
+            page: 2,
+            excerpt: "The supplier shall provide quarterly reports.",
+            bbox: null,
+            wordCount: 6,
+          },
+        ],
+      }),
+      change({
+        id: "num1",
+        seq: 1,
+        type: "NUMBER_CHANGED",
+        label: "Contract value",
+        oldValue: "50,000",
+        newValue: "75,000",
+        delta: "+25,000 (+50%)",
+        newPages: [4],
+        oldPages: [4],
+        evidence: [
+          { side: "old", page: 4, excerpt: "Contract value: 50,000", bbox: null, wordCount: 3 },
+          { side: "new", page: 4, excerpt: "Contract value: 75,000", bbox: null, wordCount: 3 },
+        ],
+      }),
+      change({
+        id: "date1",
+        seq: 2,
+        type: "DATE_CHANGED",
+        label: "Delivery date",
+        oldValue: "30 June 2026",
+        newValue: "15 July 2026",
+        delta: "15 days later",
+        newPages: [4],
+        oldPages: [4],
+        evidence: [
+          { side: "old", page: 4, excerpt: "Delivery date: 30 June 2026", bbox: null, wordCount: 5 },
+          { side: "new", page: 4, excerpt: "Delivery date: 15 July 2026", bbox: null, wordCount: 5 },
+        ],
+      }),
+      change({
+        id: "minor1",
+        seq: 3,
+        isNoise: true,
+        noiseReason: "Repeated header",
+        newPages: [9],
+        oldPages: [9],
+      }),
+    ]),
+  );
+
+  it("shows every meaningful change when nothing is selected", () => {
+    expect(applyFilters(report, NO_FILTERS).map((c) => c.id)).toEqual(["text1", "num1", "date1"]);
+  });
+
+  it("narrows to a category when a summary tile is clicked", () => {
+    expect(applyFilters(report, { ...NO_FILTERS, categories: ["values"] }).map((c) => c.id)).toEqual(
+      ["num1"],
+    );
+  });
+
+  it("combines categories, because tiles are additive", () => {
+    expect(
+      applyFilters(report, { ...NO_FILTERS, categories: ["values", "dates"] }).map((c) => c.id),
+    ).toEqual(["num1", "date1"]);
+  });
+
+  it("narrows to a page when a page column is clicked", () => {
+    expect(applyFilters(report, { ...NO_FILTERS, pages: [4] }).map((c) => c.id)).toEqual([
+      "num1",
+      "date1",
+    ]);
+  });
+
+  it("narrows to a kind of edit when a mix segment is clicked", () => {
+    expect(applyFilters(report, { ...NO_FILTERS, kinds: ["added"] }).map((c) => c.id)).toEqual([
+      "text1",
+    ]);
+  });
+
+  it("applies several filters together", () => {
+    const filtered = applyFilters(report, {
+      ...NO_FILTERS,
+      categories: ["values", "dates"],
+      pages: [4],
+      kinds: ["changed"],
+    });
+    expect(filtered.map((c) => c.id)).toEqual(["num1", "date1"]);
+  });
+
+  it("searches values, wording and evidence", () => {
+    expect(applyFilters(report, { ...NO_FILTERS, query: "75,000" }).map((c) => c.id)).toEqual([
+      "num1",
+    ]);
+    expect(applyFilters(report, { ...NO_FILTERS, query: "quarterly" }).map((c) => c.id)).toEqual([
+      "text1",
+    ]);
+    // Searching a label finds the change even when the wording differs.
+    expect(applyFilters(report, { ...NO_FILTERS, query: "delivery" }).map((c) => c.id)).toEqual([
+      "date1",
+    ]);
+    expect(applyFilters(report, { ...NO_FILTERS, query: "nothing here" })).toEqual([]);
+  });
+
+  it("hides minor differences unless they are asked for", () => {
+    expect(applyFilters(report, NO_FILTERS).some((c) => c.isNoise)).toBe(false);
+    const withMinor = applyFilters(report, { ...NO_FILTERS, includeMinor: true });
+    expect(withMinor.map((c) => c.id)).toContain("minor1");
+  });
+
+  it("returns changes in document order so the list reads like the document", () => {
+    const pages = applyFilters(report, { ...NO_FILTERS, includeMinor: true }).map(
+      (c) => primaryPage(c)?.page,
+    );
+    expect(pages).toEqual([...pages].sort((a, b) => (a ?? 0) - (b ?? 0)));
+  });
+
+  it("toggles a selection off when the same element is clicked again", () => {
+    expect(toggle(["values"], "values")).toEqual([]);
+    expect(toggle([], "values")).toEqual(["values"]);
+    expect(toggle(["values"], "dates")).toEqual(["values", "dates"]);
+  });
+});
+
+// ---------------------------------------------------------------- integrity
+
+describe("the report never invents anything", () => {
+  it("passes engine values through untouched", () => {
+    const original = change({ oldValue: "50,000", newValue: "75,000", delta: "+25,000 (+50%)" });
+    const [shown] = applyFilters(buildReport(result([original])), NO_FILTERS);
+    expect(shown.oldValue).toBe("50,000");
+    expect(shown.newValue).toBe("75,000");
+    expect(shown.delta).toBe("+25,000 (+50%)");
+  });
+
+  it("keeps every change's evidence intact", () => {
+    const [shown] = applyFilters(buildReport(result([change()])), NO_FILTERS);
+    expect(shown.evidence).toHaveLength(2);
+    expect(shown.evidence.every((item) => item.page !== null && item.excerpt)).toBe(true);
+  });
+
+  it("never adds a change that was not in the result", () => {
+    const report = buildReport(result([change({ id: "only" })]));
+    expect([...report.changes, ...report.minor].map((c) => c.id)).toEqual(["only"]);
+  });
+});

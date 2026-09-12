@@ -1,103 +1,161 @@
-import { Badge } from "@/components/ui/Badge";
+"use client";
+
+import { forwardRef, useState } from "react";
+
+import type { Change } from "@/lib/comparison";
 import {
-  changeLocation,
-  describeType,
-  excerptFor,
-  type Change,
-} from "@/lib/comparison";
+  EDIT_KIND_MARK,
+  categoryOf,
+  describeLocation,
+  editKindOf,
+  headlineFor,
+} from "@/lib/report";
+
+const TONE = {
+  added: "text-added",
+  removed: "text-removed",
+  changed: "text-signal",
+  moved: "text-ink-soft",
+} as const;
 
 /**
  * One detected change.
  *
- * Added, removed and changed are distinguished by a word and a symbol as well
- * as by colour, so the meaning survives greyscale and colour blindness.
+ * The headline is plain language ("Value changed"), not the engine's internal
+ * name. The old and new values sit side by side because that comparison is the
+ * whole point. Evidence is one click away rather than always open, so a list of
+ * twenty changes stays scannable.
+ *
+ * Nothing here is computed: values, differences, pages and quotations all come
+ * from the comparison result.
  */
-const KIND_MARK: Record<Change["kind"], { symbol: string; word: string; className: string }> = {
-  added: { symbol: "+", word: "Added", className: "text-added" },
-  removed: { symbol: "−", word: "Removed", className: "text-removed" },
-  modified: { symbol: "±", word: "Changed", className: "text-signal" },
-  moved: { symbol: "→", word: "Moved", className: "text-ink-soft" },
-};
-
-export function ChangeCard({ change }: { change: Change }) {
-  const mark = KIND_MARK[change.kind];
-  const location = changeLocation(change);
-  const oldExcerpt = excerptFor(change, "old");
-  const newExcerpt = excerptFor(change, "new");
+export const ChangeCard = forwardRef<
+  HTMLElement,
+  { change: Change; index: number; total: number; isCurrent: boolean; onFocus: () => void }
+>(function ChangeCard({ change, index, total, isCurrent, onFocus }, ref) {
+  const [showEvidence, setShowEvidence] = useState(false);
+  const kind = editKindOf(change);
+  const category = categoryOf(change);
+  const oldEvidence = change.evidence.find((item) => item.side === "old" && item.excerpt);
+  const newEvidence = change.evidence.find((item) => item.side === "new" && item.excerpt);
 
   return (
-    <article className="border-t border-rule py-3 first:border-t-0">
-      <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-        <span className={`font-semibold ${mark.className}`}>
-          <span aria-hidden="true">{mark.symbol} </span>
-          {describeType(change.type)}
-        </span>
-        {change.label && <span className="text-ink-soft">· {change.label}</span>}
-        {location && (
-          <span className="tabular text-[0.85rem] text-ink-soft">· {location}</span>
-        )}
-        {change.isNoise && <Badge tone="neutral">Probably not important</Badge>}
-      </div>
+    <article
+      ref={ref}
+      tabIndex={-1}
+      onFocus={onFocus}
+      aria-label={`Change ${index + 1} of ${total}: ${headlineFor(change)}, ${describeLocation(change)}`}
+      className={[
+        "scroll-mt-24 rounded-[var(--radius-panel)] border bg-paper p-4 transition-colors",
+        isCurrent ? "border-signal ring-1 ring-signal/20" : "border-rule",
+      ].join(" ")}
+    >
+      <header className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <h3 className="font-semibold">
+          <span aria-hidden="true" className={`${TONE[kind]} mr-1.5`}>
+            {EDIT_KIND_MARK[kind]}
+          </span>
+          {headlineFor(change)}
+        </h3>
+        {change.label && <p className="text-ink-soft">{change.label}</p>}
+        <p className="tabular ml-auto text-[0.82rem] text-ink-soft">{describeLocation(change)}</p>
+      </header>
 
-      {(change.oldValue || change.newValue) && (
-        <dl className="mt-2 grid gap-x-4 gap-y-1 sm:grid-cols-[6rem_1fr]">
-          {change.oldValue && (
-            <>
-              <dt className="text-[0.85rem] text-ink-soft">Previous</dt>
-              <dd className="break-words">
-                <span className="bg-[#fdf0f0] px-1 py-0.5 line-through decoration-removed/50">
-                  {change.oldValue}
-                </span>
-              </dd>
-            </>
-          )}
-          {change.newValue && (
-            <>
-              <dt className="text-[0.85rem] text-ink-soft">New</dt>
-              <dd className="break-words">
-                <span className="bg-[#f1f7f3] px-1 py-0.5 underline decoration-added/50">
-                  {change.newValue}
-                </span>
-              </dd>
-            </>
-          )}
-          {change.delta && (
-            <>
-              <dt className="text-[0.85rem] text-ink-soft">Difference</dt>
-              <dd className="tabular font-medium">{change.delta}</dd>
-            </>
-          )}
-        </dl>
+      {category === "values" || category === "dates" ? (
+        <ValueComparison change={change} />
+      ) : (
+        <TextComparison change={change} />
       )}
 
-      {(oldExcerpt || newExcerpt) && (
-        <details className="mt-2">
-          <summary className="cursor-pointer text-[0.85rem] text-signal">
-            Evidence from the documents
-          </summary>
-          <div className="mt-1 space-y-1 border-l-2 border-rule pl-3 text-[0.85rem] text-ink-soft">
-            {oldExcerpt && (
-              <p>
-                <span className="font-medium text-ink">Previous PDF</span>
-                {change.oldPages.length > 0 && (
-                  <span className="tabular"> (page {change.oldPages[0]})</span>
-                )}
-                : “{oldExcerpt}”
+      {(oldEvidence || newEvidence) && (
+        <div className="mt-3 border-t border-rule pt-2">
+          <button
+            type="button"
+            onClick={() => setShowEvidence((open) => !open)}
+            aria-expanded={showEvidence}
+            className="text-[0.85rem] font-medium text-signal hover:underline"
+          >
+            {showEvidence ? "Hide evidence" : "View evidence"}
+          </button>
+
+          {showEvidence && (
+            <div className="mt-2 space-y-2 text-[0.85rem]">
+              <p className="text-ink-soft">
+                Taken directly from the documents. This is the surrounding text DiffNexa read.
               </p>
-            )}
-            {newExcerpt && (
-              <p>
-                <span className="font-medium text-ink">New PDF</span>
-                {change.newPages.length > 0 && (
-                  <span className="tabular"> (page {change.newPages[0]})</span>
-                )}
-                : “{newExcerpt}”
-              </p>
-            )}
-            {change.noiseReason && <p>Why this is marked unimportant: {change.noiseReason}</p>}
-          </div>
-        </details>
+              {oldEvidence && (
+                <Quote label="Previous document" page={oldEvidence.page} text={oldEvidence.excerpt!} />
+              )}
+              {newEvidence && (
+                <Quote label="New document" page={newEvidence.page} text={newEvidence.excerpt!} />
+              )}
+              {change.noiseReason && (
+                <p className="text-ink-soft">Marked minor because: {change.noiseReason}</p>
+              )}
+            </div>
+          )}
+        </div>
       )}
     </article>
+  );
+});
+
+function Quote({ label, page, text }: { label: string; page: number | null; text: string }) {
+  return (
+    <figure className="border-l-2 border-rule pl-3">
+      <figcaption className="text-[0.78rem] font-medium text-ink-soft">
+        {label}
+        {page !== null && <span className="tabular"> · page {page}</span>}
+      </figcaption>
+      <blockquote className="mt-0.5 text-ink">“{text}”</blockquote>
+    </figure>
+  );
+}
+
+/** Figures and dates: the two values, and the difference the engine calculated. */
+function ValueComparison({ change }: { change: Change }) {
+  return (
+    <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+      <span className="tabular rounded-[3px] bg-[#fdf0f0] px-2 py-1 line-through decoration-removed/60">
+        {change.oldValue}
+      </span>
+      <span aria-hidden="true" className="text-ink-soft">
+        →
+      </span>
+      <span className="tabular rounded-[3px] bg-[#f1f7f3] px-2 py-1 font-medium">
+        {change.newValue}
+      </span>
+      {change.delta && (
+        <span className="tabular rounded-full border border-rule px-2 py-0.5 text-[0.82rem] font-medium">
+          {change.delta}
+        </span>
+      )}
+    </div>
+  );
+}
+
+/** Wording: before and after, stacked on small screens, side by side on wide ones. */
+function TextComparison({ change }: { change: Change }) {
+  const both = change.oldValue && change.newValue;
+  return (
+    <div className={`mt-3 grid gap-3 ${both ? "md:grid-cols-2" : ""}`}>
+      {change.oldValue && (
+        <Side label="Previous" tone="removed" text={change.oldValue} />
+      )}
+      {change.newValue && <Side label="New" tone="added" text={change.newValue} />}
+    </div>
+  );
+}
+
+function Side({ label, tone, text }: { label: string; tone: "added" | "removed"; text: string }) {
+  const styles =
+    tone === "added"
+      ? "border-added/30 bg-[#f1f7f3]"
+      : "border-removed/30 bg-[#fdf0f0]";
+  return (
+    <div className={`rounded-[3px] border ${styles} p-2`}>
+      <p className="text-[0.78rem] font-medium text-ink-soft">{label}</p>
+      <p className="mt-0.5 break-words">{text}</p>
+    </div>
   );
 }

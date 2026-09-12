@@ -19,11 +19,11 @@ export default function PdfComparePage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 md:py-10">
       <h1 className="text-[1.75rem] font-semibold tracking-tight md:text-[2rem]">
-        Compare Two PDFs and See Exactly What Changed
+        Compare two documents and see exactly what changed
       </h1>
       <p className="mt-2 max-w-[60ch] text-ink-soft">
-        DiffNexa compares text, numbers, tables, pages and meaning—and explains the changes that
-        matter.
+        Upload two versions of a contract, report, policy or proposal. DiffNexa shows you what
+        changed, where it changed, and the exact wording behind every difference.
       </p>
 
       <div className="mt-6">
@@ -32,7 +32,7 @@ export default function PdfComparePage() {
 
       <section className="mt-10" aria-labelledby="what-it-finds">
         <h2 id="what-it-finds" className="text-[1.15rem] font-semibold">
-          What DiffNexa is being built to find
+          What DiffNexa finds
         </h2>
         <p className="mt-1 max-w-[65ch] text-[0.95rem] text-ink-soft">
           Each capability is listed with its honest status, so nothing on this page claims more
@@ -101,36 +101,38 @@ export default function PdfComparePage() {
 const CAPABILITIES: { title: string; detail: string; status: "working" | "planned" }[] = [
   {
     status: "working",
-    title: "Text that was added, removed or reworded",
+    title: "Wording that was added, removed or rewritten",
     detail:
-      "Compared in reading order across the whole document, so text that simply moved to the next page is not reported as a change.",
+      "Compared across the whole document in reading order, so a clause that simply moved to the next page is not reported as a change.",
   },
   {
     status: "working",
-    title: "Numbers, with the difference calculated",
+    title: "Figures, with the difference worked out",
     detail:
-      "For example a vacancy count of 627 becoming 654 is reported as one change of +27, not as a deletion and an addition.",
+      "A contract value moving from 50,000 to 75,000 is reported as one change of +25,000, not as a deletion and an addition.",
   },
   {
     status: "working",
     title: "Dates and deadlines",
     detail:
-      "A deadline moving from 30 September 2026 to 15 October 2026 is reported as one change, 15 days later.",
+      "A delivery date moving from 30 June to 15 July is reported as one change, 15 days later.",
+  },
+  {
+    status: "working",
+    title: "Pages added, removed or moved",
+    detail:
+      "New appendices and deleted sections are identified without every following page looking rewritten.",
   },
   {
     status: "planned",
     title: "Tables",
-    detail: "Added and removed rows, changed headers, and individual cell values.",
-  },
-  {
-    status: "working",
-    title: "Pages",
-    detail: "Pages added, removed, or reordered, without every following page looking changed.",
+    detail:
+      "Row, column and cell-level comparison. Figures inside tables are already found as value changes.",
   },
   {
     status: "planned",
-    title: "Images and visual changes",
-    detail: "Replaced logos, new signatures and stamps, and layout changes with no text behind them.",
+    title: "Images and layout",
+    detail: "Replaced logos, diagrams and signatures, and visual changes with no text behind them.",
   },
 ];
 
@@ -143,16 +145,16 @@ const FAQ = [
   {
     question: "Why is the compare button sometimes disabled?",
     answer:
-      "Because both files must be readable and the comparison engine must be running. A button that appeared to work but produced nothing real would be worse than an honest one that explains itself.",
+      "Both documents must be readable and the comparison service must be reachable. A button that looked ready but produced nothing would be worse than one that explains itself.",
   },
   {
     question: "What about scanned PDFs?",
     answer:
-      "Pages that are images with no text behind them are detected and flagged rather than silently mis-compared. Reading that text (OCR) is planned for a later release.",
+      "Pages that are images with no text behind them are detected and flagged rather than silently mis-compared. Reading that text is planned for a later release.",
   },
   {
     question: "Which files are supported?",
     answer:
-      "PDF only for now. Password-protected, encrypted and damaged files are refused with a clear explanation rather than a technical error.",
+      "PDF only for now. Password-protected and damaged files are refused with a clear explanation of what to do, rather than a technical error.",
   },
 ];

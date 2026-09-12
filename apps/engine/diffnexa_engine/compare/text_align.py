@@ -42,11 +42,18 @@ from __future__ import annotations
 from dataclasses import dataclass
 from difflib import SequenceMatcher
 from enum import StrEnum
+from typing import Generic, TypeVar
 
-from diffnexa_engine.compare.blocks import Block
 from diffnexa_engine.compare.normalize import normalize, normalize_key
+from diffnexa_engine.model.content import ContentBlock
 
 SIMILARITY_THRESHOLD = 0.55
+
+# Alignment needs only text and words, so it is written against the shared
+# ContentBlock protocol rather than the PDF adapter's Block. The type variable
+# keeps callers precise: give it Blocks and the pairs hold Blocks, with every
+# PDF-specific field still available.
+BlockT = TypeVar("BlockT", bound=ContentBlock)
 MIN_BLOCK_CHARS_FOR_FUZZY = 3
 
 
@@ -59,10 +66,10 @@ class PairKind(StrEnum):
 
 
 @dataclass(frozen=True)
-class BlockPair:
+class BlockPair(Generic[BlockT]):
     kind: PairKind
-    old: Block | None
-    new: Block | None
+    old: BlockT | None
+    new: BlockT | None
     similarity: float = 1.0
 
 
@@ -76,13 +83,13 @@ class Segment:
     new_word_ids: tuple[str, ...]
 
 
-def align_blocks(old_blocks: list[Block], new_blocks: list[Block]) -> list[BlockPair]:
+def align_blocks(old_blocks: list[BlockT], new_blocks: list[BlockT]) -> list[BlockPair[BlockT]]:
     old_keys = [normalize_key(b.text) for b in old_blocks]
     new_keys = [normalize_key(b.text) for b in new_blocks]
 
-    pairs: list[BlockPair] = []
-    unmatched_old: list[Block] = []
-    unmatched_new: list[Block] = []
+    pairs: list[BlockPair[BlockT]] = []
+    unmatched_old: list[BlockT] = []
+    unmatched_new: list[BlockT] = []
 
     matcher = SequenceMatcher(a=old_keys, b=new_keys, autojunk=False)
     for tag, i1, i2, j1, j2 in matcher.get_opcodes():
@@ -100,8 +107,8 @@ def align_blocks(old_blocks: list[Block], new_blocks: list[Block]) -> list[Block
 
 
 def _pair_region(
-    old_region: list[Block], new_region: list[Block]
-) -> tuple[list[BlockPair], list[Block], list[Block]]:
+    old_region: list[BlockT], new_region: list[BlockT]
+) -> tuple[list[BlockPair[BlockT]], list[BlockT], list[BlockT]]:
     """Pair up edited paragraphs within one region, best match first."""
     candidates: list[tuple[float, int, int]] = []
     for i, old in enumerate(old_region):
@@ -113,7 +120,7 @@ def _pair_region(
 
     used_old: set[int] = set()
     used_new: set[int] = set()
-    pairs: list[BlockPair] = []
+    pairs: list[BlockPair[BlockT]] = []
     for score, i, j in candidates:
         if i in used_old or j in used_new:
             continue
@@ -135,10 +142,10 @@ def _similarity(left: str, right: str) -> float:
     return SequenceMatcher(a=a, b=b, autojunk=False).ratio()
 
 
-def _detect_moves(old_blocks: list[Block], new_blocks: list[Block]) -> list[BlockPair]:
+def _detect_moves(old_blocks: list[BlockT], new_blocks: list[BlockT]) -> list[BlockPair[BlockT]]:
     """Identical text that vanished in one place and appeared in another moved."""
     remaining_new = list(new_blocks)
-    pairs: list[BlockPair] = []
+    pairs: list[BlockPair[BlockT]] = []
     matched_old: set[int] = set()
 
     for index, old in enumerate(old_blocks):
@@ -158,10 +165,10 @@ def _detect_moves(old_blocks: list[Block], new_blocks: list[Block]) -> list[Bloc
     return pairs
 
 
-def word_segments(old: Block, new: Block) -> list[Segment]:
+def word_segments(old: ContentBlock, new: ContentBlock) -> list[Segment]:
     """The differing runs of words between two paired paragraphs."""
-    old_words = list(old.words)
-    new_words = list(new.words)
+    old_words = list(old.tokens)
+    new_words = list(new.tokens)
     old_keys = [normalize_key(w.text) for w in old_words]
     new_keys = [normalize_key(w.text) for w in new_words]
 

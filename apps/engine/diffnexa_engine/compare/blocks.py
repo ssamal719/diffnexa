@@ -97,6 +97,15 @@ class Block:
         return tuple(word for line in self.lines for word in line.words)
 
     @property
+    def tokens(self) -> tuple[Word, ...]:
+        """The block's words, under the name the shared ContentBlock protocol uses.
+
+        `words` is kept because the PDF code reads more naturally with it; this
+        is the same tuple, so the two can never disagree.
+        """
+        return self.words
+
+    @property
     def word_ids(self) -> tuple[str, ...]:
         return tuple(word.id for word in self.words)
 

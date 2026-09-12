@@ -4,10 +4,17 @@ import { CompareDesk } from "@/components/upload/CompareDesk";
 import { Panel } from "@/components/ui/Panel";
 
 export const metadata: Metadata = {
-  title: "AI PDF Compare — See Exactly What Changed",
+  title: "PDF Compare — Find What Changed Between Two PDF Versions",
   description:
-    "Compare two PDFs and see exactly what changed: text, numbers, dates, tables and pages, with evidence for every change.",
+    "Compare two versions of a PDF and find changes in text, numbers, dates and pages, with the page number and wording behind every change.",
   alternates: { canonical: "/pdf-compare" },
+  openGraph: {
+    type: "website",
+    url: "/pdf-compare",
+    title: "PDF Compare — Find What Changed Between Two PDF Versions",
+    description:
+      "Compare two versions of a PDF and find changes in text, numbers, dates and pages, with the page number and wording behind every change.",
+  },
 };
 
 /**

@@ -6,12 +6,35 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: {
-    default: "DiffNexa — Know What Changed.",
+    default: "DiffNexa — Compare Documents and Web Pages",
     template: "%s | DiffNexa",
   },
   description:
-    "DiffNexa compares two versions of a document and explains the changes that matter.",
+    "Compare PDF documents and public web pages to see exactly what changed, with clear evidence you can verify.",
+  openGraph: {
+    type: "website",
+    siteName: "DiffNexa",
+    title: "DiffNexa — Compare Documents and Web Pages",
+    description:
+      "Compare PDF documents and public web pages to see exactly what changed, with clear evidence you can verify.",
+  },
 };
+
+/** The two tools, listed once so the header and the homepage cannot disagree. */
+export const TOOLS = [
+  {
+    href: "/pdf-compare",
+    name: "PDF Compare",
+    summary:
+      "Compare two PDF versions and find changes in text, numbers, dates, and pages.",
+  },
+  {
+    href: "/website-compare",
+    name: "Website Change Detector",
+    summary:
+      "Capture a public webpage and later compare it against your saved baseline to see what changed.",
+  },
+] as const;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -25,11 +48,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
 
         <header className="border-b border-rule bg-paper">
-          <div className="mx-auto flex max-w-5xl items-baseline gap-3 px-4 py-3">
+          <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-5 gap-y-2 px-4 py-3">
             <Link href="/" className="text-[1.05rem] font-semibold tracking-tight">
               DiffNexa
             </Link>
-            <span className="text-[0.85rem] text-ink-soft">Know What Changed.</span>
+            {/* Ordinary links, so both tools are reachable and crawlable. */}
+            <nav aria-label="Tools" className="flex flex-wrap gap-x-4 gap-y-1">
+              {TOOLS.map((tool) => (
+                <Link
+                  key={tool.href}
+                  href={tool.href}
+                  className="text-[0.9rem] text-ink-soft hover:text-ink hover:underline"
+                >
+                  {tool.name}
+                </Link>
+              ))}
+            </nav>
           </div>
         </header>
 
@@ -38,8 +72,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <footer className="mt-12 border-t border-rule bg-paper">
           <div className="mx-auto max-w-5xl px-4 py-6 text-[0.85rem] text-ink-soft">
             <p>
-              DiffNexa is in early development. This release checks PDFs on your own device;
-              comparison, accounts and reports are still being built.
+              DiffNexa helps you compare documents and public web pages, and verify what changed.
+              Every change points back to the page or page number it came from.
+            </p>
+            <p className="mt-2">
+              Comparison is deterministic: the same two files always produce the same result, and
+              no AI is used to decide what changed.
             </p>
           </div>
         </footer>

@@ -140,6 +140,14 @@ Architecture: **GitHub → Hostinger (Next.js) → Render (Python engine)**. No 
 
 ### On Hostinger (the site)
 
+- [ ] **`NEXT_PUBLIC_SITE_URL` set at BUILD time**, e.g.
+      `NEXT_PUBLIC_SITE_URL=https://your-domain.com npm run build`. Next.js
+      inlines this when it compiles, so setting it only on the running server
+      has no effect: canonical links, Open Graph tags and the sitemap would all
+      point at localhost, which tells search engines the real pages do not
+      exist. The build prints a warning when it is missing.
+- [ ] After deploying, check `/sitemap.xml` and a page's canonical link show the
+      real domain
 - [ ] `ENGINE_URL` = the Render address, **no trailing slash**
 - [ ] `ENGINE_SHARED_SECRET` = the same value as Render
 - [ ] `ENGINE_HEALTH_TIMEOUT_MS` left at its 60,000 default if the engine sleeps

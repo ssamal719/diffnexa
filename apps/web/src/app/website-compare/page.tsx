@@ -3,10 +3,17 @@ import type { Metadata } from "next";
 import { WebsiteDesk } from "@/components/website/WebsiteDesk";
 
 export const metadata: Metadata = {
-  title: "Website Change Detector — See What Changed on a Web Page",
+  title: "Website Change Detector — Compare a Web Page With Your Baseline",
   description:
-    "Capture a web page today and find out exactly what changed when you check it later: wording, prices, dates, tables and links.",
+    "Capture a public web page, then compare it against your saved baseline to find changes in wording, numbers, dates, tables, links and page details.",
   alternates: { canonical: "/website-compare" },
+  openGraph: {
+    type: "website",
+    url: "/website-compare",
+    title: "Website Change Detector — Compare a Web Page With Your Baseline",
+    description:
+      "Capture a public web page, then compare it against your saved baseline to find changes in wording, numbers, dates, tables, links and page details.",
+  },
 };
 
 /**

@@ -20,7 +20,7 @@ yet — that arrives in Stage 3.
 
 ## Run it on your computer
 
-You need [Node.js 22+](https://nodejs.org) and [Python 3.11+](https://python.org).
+You need [Node.js 22+](https://nodejs.org) and [Python 3.11+](https://www.python.org/downloads/).
 
 **The website:**
 

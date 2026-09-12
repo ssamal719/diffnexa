@@ -14,6 +14,7 @@ dependencies = [
   "pdfplumber>=0.11.4,<0.12",
   "pikepdf>=9,<11",
   "PyYAML>=6,<7",
+  "lxml>=5,<7",
 ]
 
 [project.optional-dependencies]

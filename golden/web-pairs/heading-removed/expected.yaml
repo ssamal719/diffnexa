@@ -1,0 +1,14 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: heading-removed
+description: A section heading and its paragraph are deleted.
+url: https://example.com/agreement
+expected_changes:
+- category: text
+  kind: removed
+  old: Termination
+  subtype: heading
+- category: text
+  kind: removed
+  old: Either party may terminate
+  match: contains
+max_unexpected_changes: 0

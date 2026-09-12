@@ -1,0 +1,11 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: content-moved
+description: A paragraph moves from Delivery to Pricing. Its wording is unchanged.
+url: https://example.com/agreement
+expected_changes:
+- category: text
+  kind: moved
+  old: Invoices are issued
+  new: Invoices are issued
+  match: contains
+max_unexpected_changes: 0

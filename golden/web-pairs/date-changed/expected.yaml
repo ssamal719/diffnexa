@@ -1,0 +1,11 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: date-changed
+description: The delivery date moves, reported as one change.
+url: https://example.com/agreement
+expected_changes:
+- category: date
+  kind: modified
+  old: 30 June 2026
+  new: 15 July 2026
+  delta: 15 days later
+max_unexpected_changes: 0

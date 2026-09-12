@@ -1,0 +1,11 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: title-changed
+description: The page title changes.
+url: https://example.com/agreement
+expected_changes:
+- category: metadata
+  kind: modified
+  old: Service Agreement | Example
+  new: Master Services Agreement | Example
+  subtype: title
+max_unexpected_changes: 0

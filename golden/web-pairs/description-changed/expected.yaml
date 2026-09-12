@@ -1,0 +1,11 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: description-changed
+description: The meta description changes.
+url: https://example.com/agreement
+expected_changes:
+- category: metadata
+  kind: modified
+  old: The standard terms for professional services.
+  new: Updated terms for professional services.
+  subtype: meta_description
+max_unexpected_changes: 0

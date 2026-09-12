@@ -1,0 +1,12 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: list-item-modified
+description: A bullet is reworded.
+url: https://example.com/agreement
+expected_changes:
+- category: text
+  kind: modified
+  old: twelve
+  new: twenty-four
+  match: contains
+  subtype: list_item
+max_unexpected_changes: 0

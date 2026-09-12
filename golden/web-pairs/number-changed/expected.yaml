@@ -1,0 +1,12 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: number-changed
+description: The licence price rises from 50,000 to 75,000.
+url: https://example.com/agreement
+expected_changes:
+- category: number
+  kind: modified
+  old: 50,000
+  new: 75,000
+  delta: +25000 (+50%)
+  section: Pricing
+max_unexpected_changes: 0

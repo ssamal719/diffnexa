@@ -1,0 +1,13 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: noise-only-changes
+description: Navigation, footer and a cookie banner change. None of it is content.
+url: https://example.com/agreement
+expected_changes: []
+must_not_report:
+- text: Blog
+  reason: navigation is not content
+- text: Copyright
+  reason: the footer is not content
+- text: cookies
+  reason: a consent banner is not content
+max_unexpected_changes: 0

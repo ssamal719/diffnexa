@@ -1,0 +1,37 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: combined-update
+description: 'A realistic revision: price, date, a new clause, a renamed heading and
+  a table edit.'
+url: https://example.com/agreement
+expected_changes:
+- category: metadata
+  kind: modified
+  subtype: title
+  old: Service Agreement | Example
+  new: Service Agreement (2026 revision) | Example
+- category: number
+  kind: modified
+  old: 50,000
+  new: 75,000
+  delta: +25000 (+50%)
+  section: Pricing
+- category: date
+  kind: modified
+  old: 30 June 2026
+  new: 15 July 2026
+  delta: 15 days later
+- category: text
+  kind: added
+  new: Termination
+  subtype: heading
+- category: text
+  kind: added
+  new: Either party may terminate
+  match: contains
+- category: number
+  kind: modified
+  old: 90,000
+  new: 95,000
+  subtype: table_cell
+  delta: +5000 (+5.56%)
+max_unexpected_changes: 0

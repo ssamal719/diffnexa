@@ -21,7 +21,7 @@ is the box inside the page, does the excerpt match those words) is checked by
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -188,8 +188,19 @@ class Evidence(_Frozen):
         elif self.scope == "document":
             if page_fields:
                 raise ValueError("document-scope evidence must not name a page or location")
-            if node_fields:
-                raise ValueError("document-scope evidence must not carry webpage fields")
+            # A title or description belongs to the whole source, not to any node,
+            # so document scope stays the right home for it. When that source is a
+            # webpage it still has to be provable, which is what the snapshot
+            # fingerprint is for; the node-level fields remain forbidden.
+            located_in_a_node = (
+                self.node_id is not None
+                or self.node_path is not None
+                or bool(self.section_path)
+                or bool(self.token_ids)
+                or self.text_range is not None
+            )
+            if located_in_a_node:
+                raise ValueError("document-scope evidence must not point inside a node")
             if not self.field:
                 raise ValueError("document-scope evidence must name the field it refers to")
 
@@ -276,15 +287,36 @@ class AIAnnotation(_Frozen):
 
 
 class DocumentRef(_Frozen):
+    """One side of a comparison, when that side is a paginated document."""
+
+    kind: Literal["document"] = "document"
     sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     page_count: int = Field(ge=1)
+
+
+class SnapshotRef(_Frozen):
+    """One side of a comparison, when that side is a captured webpage.
+
+    A webpage has no pages, so there is no page count here. Inventing one to fit
+    the document shape would put a number in the result that nothing could
+    verify. What a snapshot does have is the address it came from and how much
+    content was found, and those are recorded instead.
+    """
+
+    kind: Literal["snapshot"] = "snapshot"
+    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    url: str = Field(min_length=1, max_length=2048)
+    node_count: int = Field(ge=0)
+
+
+SourceRef = Annotated[DocumentRef | SnapshotRef, Field(discriminator="kind")]
 
 
 class ComparisonResult(_Frozen):
     schema_version: Literal["1"] = RESULT_SCHEMA_VERSION
     engine_version: str
-    old_document: DocumentRef
-    new_document: DocumentRef
+    old_document: SourceRef
+    new_document: SourceRef
     changes: tuple[Change, ...] = ()
     annotations: tuple[AIAnnotation, ...] = ()
 
@@ -297,13 +329,25 @@ class ComparisonResult(_Frozen):
         if len(seqs) != len(set(seqs)):
             raise ValueError("change sequence numbers must be unique")
 
-        page_counts = {Side.OLD: self.old_document.page_count, Side.NEW: self.new_document.page_count}
+        sources = {Side.OLD: self.old_document, Side.NEW: self.new_document}
         for change in self.changes:
             for ev in change.evidence:
-                if ev.page is not None and ev.page > page_counts[ev.side]:
+                source = sources[ev.side]
+                if ev.page is not None:
+                    if not isinstance(source, DocumentRef):
+                        raise ValueError(
+                            f"change {change.id} cites a page of the {ev.side.value} side, "
+                            "which is a webpage and has none"
+                        )
+                    if ev.page > source.page_count:
+                        raise ValueError(
+                            f"change {change.id} cites page {ev.page} of the {ev.side.value} PDF, "
+                            f"which has only {source.page_count} pages"
+                        )
+                if ev.scope == "node" and not isinstance(source, SnapshotRef):
                     raise ValueError(
-                        f"change {change.id} cites page {ev.page} of the {ev.side.value} PDF, "
-                        f"which has only {page_counts[ev.side]} pages"
+                        f"change {change.id} cites a webpage node on the {ev.side.value} side, "
+                        "which is a document"
                     )
 
         known = set(ids)

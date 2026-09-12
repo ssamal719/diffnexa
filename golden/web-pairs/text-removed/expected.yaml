@@ -1,0 +1,10 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: text-removed
+description: The introductory paragraph is deleted.
+url: https://example.com/agreement
+expected_changes:
+- category: text
+  kind: removed
+  old: This agreement sets out the terms
+  match: contains
+max_unexpected_changes: 0

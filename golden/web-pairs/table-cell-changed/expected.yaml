@@ -1,0 +1,17 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: table-cell-changed
+description: One price in the table changes. The rest of the table must not be reported.
+url: https://example.com/agreement
+expected_changes:
+- category: number
+  kind: modified
+  old: 90,000
+  new: 95,000
+  subtype: table_cell
+  delta: +5000 (+5.56%)
+must_not_report:
+- text: 50,000
+  reason: the Standard row did not change
+- text: Unlimited
+  reason: no such value exists
+max_unexpected_changes: 0

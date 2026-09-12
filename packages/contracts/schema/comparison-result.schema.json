@@ -284,7 +284,14 @@
     },
     "DocumentRef": {
       "additionalProperties": false,
+      "description": "One side of a comparison, when that side is a paginated document.",
       "properties": {
+        "kind": {
+          "const": "document",
+          "default": "document",
+          "title": "Kind",
+          "type": "string"
+        },
         "page_count": {
           "minimum": 1,
           "title": "Page Count",
@@ -480,6 +487,41 @@
       ],
       "title": "Side",
       "type": "string"
+    },
+    "SnapshotRef": {
+      "additionalProperties": false,
+      "description": "One side of a comparison, when that side is a captured webpage.\n\nA webpage has no pages, so there is no page count here. Inventing one to fit\nthe document shape would put a number in the result that nothing could\nverify. What a snapshot does have is the address it came from and how much\ncontent was found, and those are recorded instead.",
+      "properties": {
+        "kind": {
+          "const": "snapshot",
+          "default": "snapshot",
+          "title": "Kind",
+          "type": "string"
+        },
+        "node_count": {
+          "minimum": 0,
+          "title": "Node Count",
+          "type": "integer"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "url": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sha256",
+        "url",
+        "node_count"
+      ],
+      "title": "SnapshotRef",
+      "type": "object"
     }
   },
   "additionalProperties": false,
@@ -505,10 +547,40 @@
       "type": "string"
     },
     "new_document": {
-      "$ref": "#/$defs/DocumentRef"
+      "discriminator": {
+        "mapping": {
+          "document": "#/$defs/DocumentRef",
+          "snapshot": "#/$defs/SnapshotRef"
+        },
+        "propertyName": "kind"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/DocumentRef"
+        },
+        {
+          "$ref": "#/$defs/SnapshotRef"
+        }
+      ],
+      "title": "New Document"
     },
     "old_document": {
-      "$ref": "#/$defs/DocumentRef"
+      "discriminator": {
+        "mapping": {
+          "document": "#/$defs/DocumentRef",
+          "snapshot": "#/$defs/SnapshotRef"
+        },
+        "propertyName": "kind"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/DocumentRef"
+        },
+        {
+          "$ref": "#/$defs/SnapshotRef"
+        }
+      ],
+      "title": "Old Document"
     },
     "schema_version": {
       "const": "1",

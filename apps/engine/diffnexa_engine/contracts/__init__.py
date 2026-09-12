@@ -10,6 +10,8 @@ from diffnexa_engine.contracts.changes import (
     Evidence,
     Importance,
     Side,
+    SnapshotRef,
+    SourceRef,
     derive_change_type,
 )
 from diffnexa_engine.contracts.comparator import Comparator
@@ -28,6 +30,8 @@ __all__ = [
     "Evidence",
     "Importance",
     "Side",
+    "SnapshotRef",
+    "SourceRef",
     "TraceIssue",
     "derive_change_type",
     "normalize_text",

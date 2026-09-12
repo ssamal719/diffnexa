@@ -1,0 +1,11 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: percentage-changed
+description: A discount percentage changes. No percentage-of-a-percentage is claimed.
+url: https://example.com/agreement
+expected_changes:
+- category: number
+  kind: modified
+  old: 10%
+  new: 15%
+  delta: '+5'
+max_unexpected_changes: 0

@@ -1,0 +1,11 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: currency-changed
+description: A currency amount changes, keeping its symbol.
+url: https://example.com/agreement
+expected_changes:
+- category: number
+  kind: modified
+  old: $1,200
+  new: $1,800
+  delta: +600 (+50%)
+max_unexpected_changes: 0

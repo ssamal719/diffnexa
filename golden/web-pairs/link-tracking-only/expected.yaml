@@ -1,0 +1,11 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: link-tracking-only
+description: Only campaign tags on a link change. Nothing may be reported.
+url: https://example.com/agreement
+expected_changes: []
+must_not_report:
+- text: utm_source
+  reason: campaign tags are not a change
+- text: example.com/guide
+  reason: the destination is the same
+max_unexpected_changes: 0

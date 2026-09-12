@@ -22,6 +22,38 @@ from diffnexa_engine.contracts.changes import Change, Side
 from diffnexa_engine.contracts.traceability import TraceIssue
 from diffnexa_engine.web.snapshot import Snapshot
 
+# Document-scope fields a webpage can prove, and where to read them back from.
+METADATA_SOURCES = {
+    "metadata.title": lambda snapshot: snapshot.metadata.title,
+    "metadata.description": lambda snapshot: snapshot.metadata.meta_description,
+    "metadata.canonical": lambda snapshot: snapshot.metadata.canonical_url,
+    "source.final_url": lambda snapshot: snapshot.source.final_url,
+}
+
+
+def _check_metadata_evidence(change_id: str, evidence, snapshot: Snapshot) -> list[TraceIssue]:
+    """A title belongs to the page, not to any node, so it is proven differently.
+
+    The snapshot fingerprint says which capture the value came from, and the
+    value itself is read back out of that capture and compared. Nothing is taken
+    on trust.
+    """
+    if evidence.snapshot_sha256 != snapshot.content_sha256:
+        return [TraceIssue(change_id, f"metadata evidence cites a different {evidence.side.value} snapshot")]
+
+    reader = METADATA_SOURCES.get(evidence.field or "")
+    if reader is None:
+        return [TraceIssue(change_id, f"unknown page property {evidence.field!r}")]
+
+    actual = reader(snapshot)
+    if actual is None:
+        return [
+            TraceIssue(change_id, f"{evidence.field} is not present in the {evidence.side.value} snapshot")
+        ]
+    if evidence.excerpt and normalize(evidence.excerpt) not in normalize(actual):
+        return [TraceIssue(change_id, f"{evidence.field} does not say what the evidence quotes")]
+    return []
+
 
 def verify_web_traceability(
     changes: Iterable[Change], old_snapshot: Snapshot, new_snapshot: Snapshot
@@ -37,9 +69,15 @@ def verify_web_traceability(
 
     for change in changes:
         for evidence in change.evidence:
+            if evidence.scope == "document":
+                # A page property such as the title. Verified against the
+                # snapshot rather than against any node.
+                issues.extend(_check_metadata_evidence(change.id, evidence, snapshots[evidence.side]))
+                continue
+
             if evidence.scope != "node":
-                # Page and document evidence belong to the PDF checker. Seeing it
-                # here means a change was built against the wrong source.
+                # Page evidence belongs to the PDF checker. Seeing it here means a
+                # change was built against the wrong source.
                 issues.append(
                     TraceIssue(
                         change.id,

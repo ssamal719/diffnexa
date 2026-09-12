@@ -1,0 +1,14 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: heading-added
+description: A new section heading appears.
+url: https://example.com/agreement
+expected_changes:
+- category: text
+  kind: added
+  new: Termination
+  subtype: heading
+- category: text
+  kind: added
+  new: Either party may terminate
+  match: contains
+max_unexpected_changes: 0

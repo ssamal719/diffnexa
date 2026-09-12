@@ -9,6 +9,17 @@
 
 import { checkPageCount, checkSignature, type CheckResult, type UploadLimits } from "@/lib/validation";
 
+/**
+ * Where the browser fetches the PDF.js worker.
+ *
+ * This is an application route, not a file in public/, because the worker is an
+ * ES module and browsers refuse to run a module script unless the server
+ * declares it as JavaScript. Serving it ourselves means the Content-Type is
+ * correct everywhere, without configuring MIME types on the web server.
+ * See src/app/pdf-worker/route.ts.
+ */
+export const PDF_WORKER_URL = "/pdf-worker";
+
 export type PdfInspection =
   | { ok: true; pageCount: number; encrypted: boolean }
   | { ok: false; code: import("@/lib/validation").ErrorCode };
@@ -24,7 +35,7 @@ async function loadPdfJs(): Promise<PdfJs> {
     // older than roughly 2024. The legacy build behaves identically on modern
     // browsers and keeps the tool working on older office machines and phones.
     pdfjsPromise = import("pdfjs-dist/legacy/build/pdf.mjs").then((pdfjs) => {
-      pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+      pdfjs.GlobalWorkerOptions.workerSrc = PDF_WORKER_URL;
       return pdfjs;
     });
   }

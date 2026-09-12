@@ -24,6 +24,13 @@ from diffnexa_engine.reports.extraction_report import render_extraction_html
 
 @dataclass
 class PairOutcome:
+    """One pair's result.
+
+    `score` is a PDF `PairScore` or the webpage suite's `WebPairScore`. The two
+    are separate types because they are scored from different sources, but they
+    report the same four metrics, which is all anything downstream reads.
+    """
+
     name: str
     source: str
     description: str

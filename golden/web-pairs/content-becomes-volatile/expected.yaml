@@ -1,0 +1,15 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: content-becomes-volatile
+description: A real sentence is replaced by a relative timestamp. A whole block arriving
+  is shown rather than assumed to be furniture.
+url: https://example.com/terms
+expected_changes:
+- category: text
+  kind: removed
+  old: reviewed by the compliance team
+  match: contains
+- category: text
+  kind: added
+  new: Updated 6 minutes ago
+  match: contains
+max_unexpected_changes: 0

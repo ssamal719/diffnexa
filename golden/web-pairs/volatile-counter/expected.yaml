@@ -1,0 +1,9 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: volatile-counter
+description: Only a view counter ticks.
+url: https://example.com/terms
+expected_changes: []
+must_not_report:
+- text: views
+  reason: an interface counter is not content
+max_unexpected_changes: 0

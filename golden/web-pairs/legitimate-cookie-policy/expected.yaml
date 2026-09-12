@@ -1,0 +1,12 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: legitimate-cookie-policy
+description: A cookie policy page is edited. Words associated with consent banners
+  must not make legitimate content invisible.
+url: https://example.com/terms
+expected_changes:
+- category: text
+  kind: modified
+  old: manage your cookie preferences
+  new: withdraw consent
+  match: contains
+max_unexpected_changes: 0

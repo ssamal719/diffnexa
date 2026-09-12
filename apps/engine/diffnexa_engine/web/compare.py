@@ -49,6 +49,7 @@ from diffnexa_engine.contracts.changes import (
 )
 from diffnexa_engine.contracts.web_traceability import verify_web_traceability
 from diffnexa_engine.web.snapshot import ContentNode, NodeRole, RenderNote, Snapshot
+from diffnexa_engine.web.volatility import mark_volatile
 
 EXCERPT_CHARS = 240
 MAX_EVIDENCE_TOKENS = 60
@@ -169,12 +170,22 @@ def _metadata_evidence(snapshot: Snapshot, side: Side, field_name: str, value: s
 
 
 class _Builder:
+    """Collects changes, and remembers the text each one sits inside.
+
+    The surrounding text is not part of the change — the values and evidence are
+    — but it is what lets the volatility rules tell a ticking clock from a price.
+    """
+
     def __init__(self) -> None:
         self._changes: list[Change] = []
+        self.contexts: dict[str, tuple[str, str]] = {}
 
-    def add(self, **fields: object) -> None:
+    def add(self, context: tuple[str, str] | None = None, **fields: object) -> None:
         seq = len(self._changes)
-        self._changes.append(Change(id=f"c{seq}", seq=seq, **fields))  # type: ignore[arg-type]
+        change = Change(id=f"c{seq}", seq=seq, **fields)  # type: ignore[arg-type]
+        self._changes.append(change)
+        if context:
+            self.contexts[change.id] = context
 
     def finish(self) -> tuple[Change, ...]:
         return tuple(self._changes)
@@ -245,6 +256,7 @@ def _emit_block_changes(
                 subtype=subtype_of(pair.new),
                 label=_label_for(pair.new),
                 new_value=_excerpt(pair.new.text),
+                context=(pair.new.text, pair.new.text),
                 evidence=(_node_evidence(new, pair.new, Side.NEW),),
             )
         elif pair.kind is PairKind.REMOVED and pair.old is not None:
@@ -254,6 +266,7 @@ def _emit_block_changes(
                 subtype=subtype_of(pair.old),
                 label=_label_for(pair.old),
                 old_value=_excerpt(pair.old.text),
+                context=(pair.old.text, pair.old.text),
                 evidence=(_node_evidence(old, pair.old, Side.OLD),),
             )
         elif pair.kind is PairKind.MOVED and pair.old and pair.new:
@@ -344,6 +357,7 @@ def _emit_modified(
             new_value=new_value,
             delta=delta,
             confidence=confidence,
+            context=(pair.old.text, pair.new.text),
             evidence=tuple(evidence),
         )
 
@@ -391,6 +405,7 @@ def _emit_dates(
             new_value=new_value.text,
             delta=delta.summary if delta else None,
             confidence=confidence,
+            context=(pair.old.text, pair.new.text),
             evidence=(
                 _node_evidence(old, pair.old, Side.OLD, old_ids),
                 _node_evidence(new, pair.new, Side.NEW, new_ids),
@@ -480,6 +495,7 @@ def _compare_links(builder: _Builder, old: Snapshot, new: Snapshot) -> None:
                 label=_label_for(pair.new) or normalize(pair.new.text),
                 old_value=pair.old.href,
                 new_value=pair.new.href,
+                context=(pair.old.href or "", pair.new.href or ""),
                 evidence=(
                     _node_evidence(old, pair.old, Side.OLD),
                     _node_evidence(new, pair.new, Side.NEW),
@@ -596,6 +612,7 @@ def _compare_row(
             old_value=normalize(old_cell.text),
             new_value=normalize(new_cell.text),
             delta=delta,
+            context=(old_cell.text, new_cell.text),
             evidence=(
                 _node_evidence(old, old_cell, Side.OLD),
                 _node_evidence(new, new_cell, Side.NEW),
@@ -723,7 +740,9 @@ def compare_snapshots_verbose(old: Snapshot, new: Snapshot) -> WebComparisonOutc
     _compare_links(builder, old, new)
     _compare_tables(builder, old, new)
 
-    changes = builder.finish()
+    # Volatility is judged after the changes exist, so a volatile change keeps
+    # its evidence and its values and is explained rather than discarded.
+    changes = mark_volatile(builder.finish(), builder.contexts)
     result = ComparisonResult(
         engine_version=ENGINE_VERSION,
         old_document=SnapshotRef(

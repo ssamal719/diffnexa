@@ -1,0 +1,9 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: link-opaque-parameter
+description: A link gains a cache-busting parameter. The destination is unchanged.
+url: https://example.com/terms
+expected_changes: []
+must_not_report:
+- text: cb=
+  reason: a cache parameter is not a destination change
+max_unexpected_changes: 0

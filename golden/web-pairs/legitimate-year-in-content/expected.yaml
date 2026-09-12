@@ -1,0 +1,10 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: legitimate-year-in-content
+description: A contract year changes in a sentence. That is not a copyright line.
+url: https://example.com/terms
+expected_changes:
+- category: number
+  kind: modified
+  old: '2027'
+  new: '2029'
+max_unexpected_changes: 0

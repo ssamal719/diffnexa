@@ -1,0 +1,16 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: real-change-beside-volatile-text
+description: A price changes on a page whose timestamp also moved. Both are reported,
+  but only the price is meaningful.
+url: https://example.com/terms
+expected_changes:
+- category: number
+  kind: modified
+  old: 50,000
+  new: 75,000
+  delta: +25000 (+50%)
+  section: Pricing
+must_not_report:
+- text: minutes ago
+  reason: the timestamp is not the change
+max_unexpected_changes: 0

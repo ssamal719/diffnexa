@@ -1,0 +1,9 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: volatile-clock-time
+description: Only a rendered clock time changes.
+url: https://example.com/terms
+expected_changes: []
+must_not_report:
+- text: 09:14
+  reason: a printed clock time changes every capture
+max_unexpected_changes: 0

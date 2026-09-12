@@ -1,0 +1,9 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: volatile-relative-time
+description: Only a relative timestamp moves on. Nothing meaningful may be reported.
+url: https://example.com/terms
+expected_changes: []
+must_not_report:
+- text: minutes ago
+  reason: a relative timestamp moves on its own
+max_unexpected_changes: 0

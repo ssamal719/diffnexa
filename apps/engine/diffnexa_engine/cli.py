@@ -85,9 +85,15 @@ def cmd_golden_run(args: argparse.Namespace) -> int:
     from diffnexa_engine.compare import compare_documents
     from diffnexa_engine.golden.baseline import find_regressions, load_baseline, write_baseline
     from diffnexa_engine.golden.loader import discover_pairs
-    from diffnexa_engine.golden.runner import render_summary_markdown, run_suite, write_reports
+    from diffnexa_engine.golden.runner import (
+        PairOutcome,
+        render_summary_markdown,
+        run_suite,
+        write_reports,
+    )
     from diffnexa_engine.golden.spec import SpecError
     from diffnexa_engine.golden.synthetic import generate_synthetic_pairs
+    from diffnexa_engine.golden.web import discover_web_pairs, score_web_pair
 
     root = find_repo_root()
     synthetic_dir = root / "golden" / ".generated" / "synthetic"
@@ -105,6 +111,26 @@ def cmd_golden_run(args: argparse.Namespace) -> int:
 
     report_dir = Path(args.report_dir) if args.report_dir else root / "reports" / "golden"
     suite = run_suite(pairs, comparator=compare_documents, report_dir=report_dir)
+
+    # Webpage pairs are scored the same way and held to the same floor. Their
+    # names are prefixed so the two suites share one baseline without colliding.
+    try:
+        web_pairs = discover_web_pairs(root / "golden" / "web-pairs")
+    except Exception as exc:  # a malformed spec must fail loudly, not silently
+        print(f"Web golden spec error: {exc}")
+        return 1
+    for web_pair in web_pairs:
+        score, _before, _after = score_web_pair(web_pair)
+        suite.pairs.append(
+            PairOutcome(
+                name=f"web:{web_pair.name}",
+                source="web",
+                description=web_pair.spec.description,
+                extraction_failures=[],
+                comparison_status="scored",
+                score=score,  # same four metrics as a PDF pair
+            )
+        )
     baseline_path = root / "golden" / "baseline.json"
     current = suite.metrics()
     regressions, new_pairs = find_regressions(load_baseline(baseline_path), current)

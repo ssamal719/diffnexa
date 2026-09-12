@@ -1,0 +1,9 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: volatile-last-updated
+description: Only the 'last updated' line changes.
+url: https://example.com/terms
+expected_changes: []
+must_not_report:
+- text: Last updated
+  reason: a freshness line is not content
+max_unexpected_changes: 0

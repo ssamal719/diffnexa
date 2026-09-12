@@ -1,0 +1,11 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: real-date-not-volatile
+description: A delivery date changes. A date in content is not a freshness line.
+url: https://example.com/terms
+expected_changes:
+- category: date
+  kind: modified
+  old: 30 June 2026
+  new: 15 July 2026
+  delta: 15 days later
+max_unexpected_changes: 0

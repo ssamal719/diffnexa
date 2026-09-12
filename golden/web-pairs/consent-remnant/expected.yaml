@@ -1,0 +1,9 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: consent-remnant
+description: A consent notice survives extraction on one capture only.
+url: https://example.com/terms
+expected_changes: []
+must_not_report:
+- text: We use cookies
+  reason: a consent notice is not content
+max_unexpected_changes: 0

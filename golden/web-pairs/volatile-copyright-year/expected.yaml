@@ -1,0 +1,9 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: volatile-copyright-year
+description: Only the copyright year rolls over, inside the main content.
+url: https://example.com/terms
+expected_changes: []
+must_not_report:
+- text: Copyright
+  reason: a copyright year turns over on its own
+max_unexpected_changes: 0

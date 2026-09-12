@@ -29,17 +29,25 @@ from diffnexa_engine.compare import compare_documents_verbose
 from diffnexa_engine.config import EngineLimits
 from diffnexa_engine.contracts import Side
 from diffnexa_engine.errors import USER_MESSAGES, DocumentError, ErrorCode
+from diffnexa_engine.service.auth import check_credentials, configured_secret
 
 MAX_REQUEST_BYTES_HEADROOM = 2 * 1024 * 1024  # room for multipart overhead
 
 
 def build_app():  # noqa: C901 - a single route with explicit error handling
     """Create the FastAPI application. Imported lazily so FastAPI stays optional."""
-    from fastapi import FastAPI, File, UploadFile
+    from fastapi import FastAPI, File, Request, UploadFile
     from fastapi.middleware.cors import CORSMiddleware
     from fastapi.responses import JSONResponse
 
     limits = EngineLimits.from_env()
+    secret = configured_secret()
+    if secret is None:
+        print(
+            "WARNING: ENGINE_SHARED_SECRET is not set, so this engine accepts requests "
+            "from anyone who can reach it. Set it here and on the website before "
+            "exposing this service to the internet."
+        )
     app = FastAPI(
         title="DiffNexa engine",
         version=ENGINE_VERSION,
@@ -62,8 +70,39 @@ def build_app():  # noqa: C901 - a single route with explicit error handling
             content={"error": {"code": code.value, "message": USER_MESSAGES[code], "side": side}},
         )
 
+    # /v1/* requires the shared secret. /healthz deliberately does not: hosting
+    # platforms check it on a fixed URL and cannot be told to send a header, so
+    # requiring one there would make the platform believe a healthy engine is
+    # down and restart it in a loop. It returns only the engine version and the
+    # configured limits — no document data and nothing secret.
+    @app.middleware("http")
+    async def require_shared_secret(request: Request, call_next):
+        if request.url.path.startswith("/v1/"):
+            allowed, status = check_credentials(request.headers.get("authorization"), secret)
+            if not allowed:
+                return JSONResponse(
+                    status_code=status or 401,
+                    content={
+                        "error": {
+                            "code": "unauthorized" if status == 401 else "forbidden",
+                            "message": (
+                                "This engine requires credentials."
+                                if status == 401
+                                else "The credentials presented are not valid for this engine."
+                            ),
+                            "side": None,
+                        }
+                    },
+                )
+        return await call_next(request)
+
     @app.get("/healthz")
-    def healthz() -> dict[str, Any]:
+    def healthz(request: Request) -> dict[str, Any]:
+        # Reports whether the caller's credentials would be accepted, so a
+        # mismatched secret shows up as a clear misconfiguration instead of a
+        # healthy-looking engine that refuses every comparison. This reveals
+        # nothing: it says yes or no about credentials already presented.
+        credentials_ok, _ = check_credentials(request.headers.get("authorization"), secret)
         return {
             "status": "ok",
             "engine_version": ENGINE_VERSION,
@@ -71,6 +110,8 @@ def build_app():  # noqa: C901 - a single route with explicit error handling
                 "max_file_bytes": limits.max_file_bytes,
                 "max_pages": limits.max_pages,
             },
+            "requires_auth": secret is not None,
+            "authenticated": credentials_ok,
         }
 
     @app.post("/v1/compare")

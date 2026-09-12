@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 
-import { COMPARE_TIMEOUT_MS, ENGINE_URL, MAX_UPLOAD_BYTES } from "@/lib/engine-config";
+import {
+  COMPARE_TIMEOUT_MS,
+  ENGINE_URL,
+  engineAuthHeaders,
+  MAX_UPLOAD_BYTES,
+} from "@/lib/engine-config";
 import { ERROR_MESSAGES, type ErrorCode } from "@/lib/validation";
 
 export const runtime = "nodejs";
@@ -58,6 +63,7 @@ export async function POST(request: Request) {
   try {
     response = await fetch(`${ENGINE_URL}/v1/compare`, {
       method: "POST",
+      headers: engineAuthHeaders(),
       body: outgoing,
       signal: AbortSignal.timeout(COMPARE_TIMEOUT_MS),
     });

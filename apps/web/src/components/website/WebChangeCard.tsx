@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useState } from "react";
+import { forwardRef, useState, type ReactNode } from "react";
 
 import { Badge } from "@/components/ui/Badge";
 import {
@@ -29,8 +29,20 @@ const TONE = {
  */
 export const WebChangeCard = forwardRef<
   HTMLElement,
-  { change: WebChange; index: number; total: number; isCurrent: boolean; onFocus: () => void }
->(function WebChangeCard({ change, index, total, isCurrent, onFocus }, ref) {
+  {
+    change: WebChange;
+    index: number;
+    total: number;
+    isCurrent: boolean;
+    onFocus: () => void;
+    /**
+     * Optional extra detail rendered under the values — the Policy Monitor uses
+     * it for the clause topics a change touches. Website Change Detector passes
+     * nothing, so its cards are unchanged.
+     */
+    footer?: ReactNode;
+  }
+>(function WebChangeCard({ change, index, total, isCurrent, onFocus, footer }, ref) {
   const [showEvidence, setShowEvidence] = useState(false);
   const kind = editKindOf(change);
   const category = categoryOf(change);
@@ -87,6 +99,8 @@ export const WebChangeCard = forwardRef<
           {change.newValue && <Side label="After" tone="added" text={change.newValue} />}
         </div>
       )}
+
+      {footer}
 
       {(before || after) && (
         <div className="mt-3 border-t border-rule pt-2">

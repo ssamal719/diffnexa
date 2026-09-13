@@ -85,6 +85,7 @@ def cmd_golden_run(args: argparse.Namespace) -> int:
     from diffnexa_engine.compare import compare_documents
     from diffnexa_engine.golden.baseline import find_regressions, load_baseline, write_baseline
     from diffnexa_engine.golden.loader import discover_pairs
+    from diffnexa_engine.golden.policy import discover_policy_pairs, score_policy_pair
     from diffnexa_engine.golden.runner import (
         PairOutcome,
         render_summary_markdown,
@@ -129,6 +130,25 @@ def cmd_golden_run(args: argparse.Namespace) -> int:
                 extraction_failures=[],
                 comparison_status="scored",
                 score=score,  # same four metrics as a PDF pair
+            )
+        )
+
+    # Policy pairs score the same four metrics, plus their own topic checks.
+    try:
+        policy_pairs = discover_policy_pairs(root / "golden" / "policy-pairs")
+    except Exception as exc:
+        print(f"Policy golden spec error: {exc}")
+        return 1
+    for policy_pair in policy_pairs:
+        score, _before, _after, _classification = score_policy_pair(policy_pair)
+        suite.pairs.append(
+            PairOutcome(
+                name=f"policy:{policy_pair.name}",
+                source="policy",
+                description=policy_pair.spec.description,
+                extraction_failures=[],
+                comparison_status="scored",
+                score=score,
             )
         )
     baseline_path = root / "golden" / "baseline.json"

@@ -1,0 +1,12 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+pair: section-heading-renamed
+description: Only a heading changes. The topic must come from the heading itself.
+url: https://example.com/terms
+expected_changes:
+- old: Cancellation and termination
+  new: Ending your subscription
+  subtype: heading
+  topics:
+  - cancellation
+max_unexpected_changes: 0

@@ -1,0 +1,15 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+pair: help-page-not-a-policy
+description: A help page using policy vocabulary in an everyday sense.
+url: https://example.com/help
+expected_changes:
+- old: Move
+  new: Relocate
+  expect_no_topic: true
+forbidden_topics:
+- cancellation
+- data_sharing
+- data_retention
+- acceptable_use
+max_unexpected_changes: 0

@@ -1,0 +1,18 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+pair: article-about-policies
+description: A news article discussing policies. Writing about clauses is not a clause.
+url: https://example.com/blog/arbitration
+expected_changes:
+- old: 1,200
+  new: 1,500
+  expect_no_topic: true
+forbidden_topics:
+- dispute_resolution
+- refunds
+- liability
+- data_sharing
+- privacy_rights
+absent_topics:
+- fees_and_pricing
+max_unexpected_changes: 0

@@ -33,7 +33,7 @@ from diffnexa_engine.policy.signals import (
     ClauseTopic,
     SignalSource,
     signals_for,
-)
+)  # noqa: F401 - ClauseSignal is used in annotations below
 from diffnexa_engine.web.snapshot import NodeRole, Snapshot
 
 
@@ -90,7 +90,7 @@ def _heading_of(change: Change) -> str | None:
     return change.label
 
 
-def _text_of(change: Change, snapshots: dict[Side, Snapshot] | None = None) -> str:
+def _texts_of(change: Change, snapshots: dict[Side, Snapshot] | None = None) -> list[str]:
     """Everything about this change that could indicate a topic.
 
     The changed values alone are usually too short to indicate anything: "30"
@@ -99,6 +99,12 @@ def _text_of(change: Change, snapshots: dict[Side, Snapshot] | None = None) -> s
     sentence around it — "you may cancel your subscription by giving 30 days
     notice" — so where evidence names a node, the node's full text is read from
     the snapshot it came from.
+
+    The pieces are kept separate rather than joined into one string. Joining them
+    let a phrase match across the seam between two fragments — "refunds 14 our
+    refund polic" was matched from a value, a label and an excerpt run together —
+    and a phrase that exists nowhere in the document cannot be shown to a reader
+    as the reason for a topic.
 
     This uses the evidence that already exists rather than adding any, so a
     classification can only ever be based on text the comparison already proved.
@@ -118,14 +124,30 @@ def _text_of(change: Change, snapshots: dict[Side, Snapshot] | None = None) -> s
                 if node is not None:
                     parts.append(node.text)
 
-    return " ".join(parts)
+    return parts
 
 
 def classify_change(
     change: Change, snapshots: dict[Side, Snapshot] | None = None
 ) -> tuple[ClauseSignal, ...]:
-    """The clause topics this change touches, or an empty tuple if none is clear."""
-    return signals_for(_text_of(change, snapshots), heading=_heading_of(change))
+    """The clause topics this change touches, or an empty tuple if none is clear.
+
+    Each piece of text is examined on its own, and the first match for a topic
+    wins. A heading match is preferred, because a heading is the document's own
+    statement about what the section covers.
+    """
+    heading = _heading_of(change)
+    found: dict[ClauseTopic, ClauseSignal] = {}
+
+    if heading:
+        for signal in signals_for("", heading=heading):
+            found.setdefault(signal.topic, signal)
+
+    for text in _texts_of(change, snapshots):
+        for signal in signals_for(text):
+            found.setdefault(signal.topic, signal)
+
+    return tuple(topic_signal for topic in ClauseTopic if (topic_signal := found.get(topic)))
 
 
 def _document_presence(snapshot: Snapshot) -> dict[ClauseTopic, TopicPresence]:

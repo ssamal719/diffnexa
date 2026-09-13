@@ -1,0 +1,11 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+pair: effective-date-changed
+description: The policy's own effective date changes. A date in a policy is not a
+  freshness line.
+url: https://example.com/privacy
+expected_changes:
+- category: date
+  old: 1 January 2026
+  new: 1 March 2026
+max_unexpected_changes: 0

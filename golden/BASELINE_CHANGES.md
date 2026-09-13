@@ -17,3 +17,7 @@ Adds the dense-added-page pair: a text-dense inserted page whose evidence cited 
 ## 2026-09-12
 
 W6: adds the webpage golden suite to the shared accuracy ratchet, recording the floor for all 42 web pairs alongside the 16 PDF pairs. Web pairs are prefixed 'web:' and scored on the same four metrics, so a future change cannot silently reduce recall, raise false positives, raise noise leakage or reduce evidence completeness on either tool.
+
+## 2026-09-13
+
+P3: adds the policy golden suite to the shared accuracy ratchet. 29 policy pairs covering all 14 clause topics plus negative and structural cases, scored on the same four metrics as the PDF and webpage suites, so recall cannot fall and false positives, noise leakage or untraceable evidence cannot rise on any of the three tools without failing the build.

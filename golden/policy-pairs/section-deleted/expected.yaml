@@ -1,0 +1,16 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+pair: section-deleted
+description: A whole clause is removed. Its evidence exists only on the baseline side.
+url: https://example.com/terms
+expected_changes:
+- old: Automatic renewal
+  kind: removed
+  subtype: heading
+  topics:
+  - auto_renewal
+- old: renews automatically
+  kind: removed
+  topics:
+  - auto_renewal
+max_unexpected_changes: 0

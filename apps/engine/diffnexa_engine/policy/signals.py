@@ -196,6 +196,8 @@ TOPIC_RULES: tuple[TopicRules, ...] = (
         "Data sharing",
         "Who else receives the information, and where it goes.",
         (
+            r"data sharing",
+            r"sharing (?:of )?(?:your |personal )?(?:data|information)",
             r"share(?:d|s)? (?:your |personal |such )?(?:data|information) with",
             r"third[- ]part(?:y|ies) (?:provider|processor|service|partner|recipient)",
             r"(?:sub-?)?processors?\b",

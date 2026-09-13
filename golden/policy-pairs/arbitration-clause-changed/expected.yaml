@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+pair: arbitration-clause-changed
+description: The arbitration venue changes.
+url: https://example.com/terms
+expected_changes:
+- new: Dublin
+  topics:
+  - dispute_resolution
+max_unexpected_changes: 0

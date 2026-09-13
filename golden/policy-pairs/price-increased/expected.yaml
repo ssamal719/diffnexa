@@ -1,0 +1,11 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+pair: price-increased
+description: The subscription price rises.
+url: https://example.com/terms
+expected_changes:
+- old: '480'
+  new: '600'
+  topics:
+  - fees_and_pricing
+max_unexpected_changes: 0

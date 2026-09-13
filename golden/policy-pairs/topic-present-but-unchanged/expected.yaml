@@ -1,0 +1,19 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+pair: topic-present-but-unchanged
+description: Only the retention period changes. Other topics exist in the page and
+  did not change.
+url: https://example.com/privacy
+expected_changes:
+- old: '12'
+  new: '24'
+  topics:
+  - data_retention
+present_unchanged_topics:
+- data_sharing
+- privacy_rights
+absent_topics:
+- liability
+- governing_law
+- dispute_resolution
+max_unexpected_changes: 0

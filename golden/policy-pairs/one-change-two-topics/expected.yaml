@@ -1,0 +1,11 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+pair: one-change-two-topics
+description: A single sentence covers cancellation and refunds, so both apply.
+url: https://example.com/terms
+expected_changes:
+- new: after 30 days
+  topics:
+  - cancellation
+  - refunds
+max_unexpected_changes: 0

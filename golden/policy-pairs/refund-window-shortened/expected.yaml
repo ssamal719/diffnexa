@@ -1,0 +1,11 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+pair: refund-window-shortened
+description: The refund window is reduced.
+url: https://example.com/terms
+expected_changes:
+- old: '14'
+  new: '7'
+  topics:
+  - refunds
+max_unexpected_changes: 0

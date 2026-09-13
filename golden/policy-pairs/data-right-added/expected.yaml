@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+pair: data-right-added
+description: A portability right is added.
+url: https://example.com/privacy
+expected_changes:
+- new: portability
+  topics:
+  - privacy_rights
+max_unexpected_changes: 0

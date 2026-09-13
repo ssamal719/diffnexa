@@ -1,0 +1,15 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+pair: warranty-wording-changed
+description: The warranty disclaimer is reworded, which edits two sentences.
+url: https://example.com/terms
+expected_changes:
+- new: non-infringement
+  topics:
+  - warranties
+  match: contains
+- old: without warranties of any kind
+  topics:
+  - warranties
+  match: contains
+max_unexpected_changes: 0

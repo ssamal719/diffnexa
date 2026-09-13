@@ -1,0 +1,11 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+pair: auto-renewal-wording-changed
+description: The automatic renewal term changes.
+url: https://example.com/terms
+expected_changes:
+- old: twelve
+  new: twenty-four
+  topics:
+  - auto_renewal
+max_unexpected_changes: 0

@@ -1,0 +1,9 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+pair: cookie-duration-changed
+description: A cookie lifetime changes in the privacy policy.
+url: https://example.com/privacy
+expected_changes:
+- old: '90'
+  new: '180'
+max_unexpected_changes: 0

@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+pair: acceptable-use-restriction-added
+description: A new prohibited activity is listed.
+url: https://example.com/terms
+expected_changes:
+- new: automated agents
+  topics:
+  - acceptable_use
+max_unexpected_changes: 0

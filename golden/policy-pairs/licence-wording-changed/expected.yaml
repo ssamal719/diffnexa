@@ -1,0 +1,18 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+pair: licence-wording-changed
+description: The licence grant is reworded. Word-level alignment reports the edit
+  as one removal and one addition, both in the licence clause.
+url: https://example.com/terms
+expected_changes:
+- old: solely
+  kind: removed
+  topics:
+  - licence_and_ip
+  match: contains
+- new: and improve
+  kind: added
+  topics:
+  - licence_and_ip
+  match: contains
+max_unexpected_changes: 0

@@ -1,0 +1,22 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+pair: no-changes
+description: The same policy captured twice. Nothing may be reported or classified.
+url: https://example.com/terms
+expected_changes: []
+forbidden_topics:
+- liability
+- warranties
+- fees_and_pricing
+- payment_terms
+- refunds
+- cancellation
+- auto_renewal
+- data_retention
+- data_sharing
+- privacy_rights
+- licence_and_ip
+- acceptable_use
+- governing_law
+- dispute_resolution
+max_unexpected_changes: 0

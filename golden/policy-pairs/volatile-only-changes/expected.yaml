@@ -1,0 +1,15 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+pair: volatile-only-changes
+description: Only the freshness line and copyright year move. Neither is a policy
+  change.
+url: https://example.com/terms
+expected_changes: []
+forbidden_topics:
+- cancellation
+- liability
+- fees_and_pricing
+must_not_report:
+- text: Last updated
+  reason: a freshness line is not a policy change
+max_unexpected_changes: 0

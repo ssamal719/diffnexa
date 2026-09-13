@@ -1,0 +1,15 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+pair: section-added
+description: A new clause is added to the agreement.
+url: https://example.com/terms
+expected_changes:
+- new: Service levels
+  kind: added
+  subtype: heading
+  expect_no_topic: true
+- new: 99.9% availability
+  kind: added
+forbidden_topics:
+- liability
+max_unexpected_changes: 0

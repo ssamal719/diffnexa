@@ -1,0 +1,12 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+pair: subprocessor-removed
+description: A processor is removed from the list.
+url: https://example.com/privacy
+expected_changes:
+- old: Datadog
+  kind: removed
+  subtype: list_item
+  topics:
+  - data_sharing
+max_unexpected_changes: 0

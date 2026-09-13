@@ -1,0 +1,16 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+pair: governing-law-changed
+description: The governing law moves jurisdiction. The clause names it twice, so both
+  are reported.
+url: https://example.com/terms
+expected_changes:
+- new: Ireland
+  topics:
+  - governing_law
+  match: contains
+- new: Ireland
+  topics:
+  - governing_law
+  match: contains
+max_unexpected_changes: 0

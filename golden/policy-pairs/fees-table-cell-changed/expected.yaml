@@ -1,0 +1,14 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+pair: fees-table-cell-changed
+description: One price in the fees table changes. The rest of the table must not be
+  reported.
+url: https://example.com/terms
+expected_changes:
+- old: '960'
+  new: 1,150
+  subtype: table_cell
+must_not_report:
+- text: Unlimited
+  reason: that cell did not change
+max_unexpected_changes: 0

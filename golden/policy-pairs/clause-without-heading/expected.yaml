@@ -1,0 +1,12 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+pair: clause-without-heading
+description: A page with no headings at all. Classification must rely on the wording
+  alone.
+url: https://example.com/terms
+expected_changes:
+- old: '30'
+  new: '60'
+  topics:
+  - cancellation
+max_unexpected_changes: 0

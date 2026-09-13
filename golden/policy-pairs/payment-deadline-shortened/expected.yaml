@@ -1,0 +1,11 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+pair: payment-deadline-shortened
+description: Invoices become payable sooner.
+url: https://example.com/terms
+expected_changes:
+- old: '30'
+  new: '14'
+  topics:
+  - payment_terms
+max_unexpected_changes: 0

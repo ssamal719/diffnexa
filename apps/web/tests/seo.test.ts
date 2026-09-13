@@ -32,9 +32,34 @@ function titleOf(metadata: (typeof PAGES)[number]["metadata"]): string {
 
 describe("the two tools", () => {
   it("are listed once, so the header and homepage cannot disagree", () => {
-    expect(TOOLS.map((tool) => tool.href)).toEqual(["/pdf-compare", "/website-compare"]);
-    expect(TOOLS.map((tool) => tool.name)).toEqual(["PDF Compare", "Website Change Detector"]);
+    expect(TOOLS.map((tool) => tool.href)).toEqual([
+      "/pdf-compare",
+      "/website-compare",
+      "/policy-monitor",
+    ]);
+    expect(TOOLS.map((tool) => tool.name)).toEqual([
+      "PDF Compare",
+      "Website Change Detector",
+      "Policy & Terms Monitor",
+    ]);
     for (const tool of TOOLS) expect(tool.summary.length).toBeGreaterThan(30);
+  });
+
+  it("have one entry per public tool page", () => {
+    const toolPages = PAGES.filter((page) => page.path !== "/").map((page) => page.path);
+    expect(TOOLS.map((tool) => tool.href).sort()).toEqual(toolPages.sort());
+  });
+
+  it("describe the policy tool without claiming more than it does", () => {
+    const policy = TOOLS.find((tool) => tool.href === "/policy-monitor")!;
+    expect(policy.summary).toMatch(/baseline/i);
+    const wording = policy.summary.toLowerCase();
+    for (const claim of [
+      "\\bai\\b", "automatic", "automated", "alerts?", "scheduled?", "monitors? for you",
+      "legal advice", "compliance", "risks?", "history",
+    ]) {
+      expect(wording, `claims ${claim}`).not.toMatch(new RegExp(claim));
+    }
   });
 });
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { SiteHeader } from "@/components/site/SiteHeader";
+export { TOOLS } from "@/lib/tools";
 
 import "./globals.css";
 
@@ -20,21 +21,6 @@ export const metadata: Metadata = {
   },
 };
 
-/** The two tools, listed once so the header and the homepage cannot disagree. */
-export const TOOLS = [
-  {
-    href: "/pdf-compare",
-    name: "PDF Compare",
-    summary:
-      "Compare two PDF versions and find changes in text, numbers, dates, and pages.",
-  },
-  {
-    href: "/website-compare",
-    name: "Website Change Detector",
-    summary:
-      "Capture a public webpage and later compare it against your saved baseline to see what changed.",
-  },
-] as const;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -47,25 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to main content
         </a>
 
-        <header className="border-b border-rule bg-paper">
-          <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-5 gap-y-2 px-4 py-3">
-            <Link href="/" className="text-[1.05rem] font-semibold tracking-tight">
-              DiffNexa
-            </Link>
-            {/* Ordinary links, so both tools are reachable and crawlable. */}
-            <nav aria-label="Tools" className="flex flex-wrap gap-x-4 gap-y-1">
-              {TOOLS.map((tool) => (
-                <Link
-                  key={tool.href}
-                  href={tool.href}
-                  className="text-[0.9rem] text-ink-soft hover:text-ink hover:underline"
-                >
-                  {tool.name}
-                </Link>
-              ))}
-            </nav>
-          </div>
-        </header>
+        <SiteHeader />
 
         <main id="main">{children}</main>
 

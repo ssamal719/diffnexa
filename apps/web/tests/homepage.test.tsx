@@ -8,7 +8,9 @@ import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
 import HomePage from "@/app/page";
-import { TOOLS } from "@/app/layout";
+import { metadata as rootMetadata } from "@/app/layout";
+import { SiteHeader } from "@/components/site/SiteHeader";
+import { TOOLS } from "@/lib/tools";
 
 afterEach(cleanup);
 
@@ -42,11 +44,54 @@ describe("the homepage", () => {
     }
   });
 
-  it("uses ordinary crawlable links", () => {
+  it("uses ordinary crawlable links to all three tools", () => {
     render(<HomePage />);
     const hrefs = screen.getAllByRole("link").map((link) => link.getAttribute("href"));
     expect(hrefs).toContain("/pdf-compare");
     expect(hrefs).toContain("/website-compare");
+    expect(hrefs).toContain("/policy-monitor");
+  });
+
+  it("shows a card for every tool, each linking to its own page", () => {
+    render(<HomePage />);
+    const cards = screen.getAllByRole("article");
+    expect(cards).toHaveLength(3);
+
+    for (const tool of TOOLS) {
+      const card = cards.find((element) => element.textContent?.includes(tool.name));
+      expect(card, `no card for ${tool.name}`).toBeTruthy();
+      const link = within(card!).getByRole("link", { name: `Open ${tool.name}` });
+      expect(link.getAttribute("href")).toBe(tool.href);
+    }
+  });
+
+  it("describes the policy tool as a comparison against a saved baseline", () => {
+    render(<HomePage />);
+    const card = screen
+      .getAllByRole("article")
+      .find((element) => element.textContent?.includes("Policy & Terms Monitor"))!;
+    expect(card.textContent).toContain("baseline");
+    expect(card.textContent).toContain("which part of the document changed");
+  });
+
+  it("claims nothing the tools cannot do", () => {
+    render(<HomePage />);
+    const text = (document.body.textContent ?? "").toLowerCase();
+    for (const claim of [
+      "ai-powered", "artificial intelligence", "we monitor", "we alert", "automatically checks",
+      "risk score", "compliance", "legal advice", "24/7",
+    ]) {
+      expect(text, `claims ${claim}`).not.toContain(claim);
+    }
+  });
+
+  it("keeps the existing tools described as before", () => {
+    render(<HomePage />);
+    const text = document.body.textContent ?? "";
+    expect(text).toContain("Compare two PDF versions and find changes in text, numbers, dates, and pages.");
+    expect(text).toContain(
+      "Capture a public webpage and later compare it against your saved baseline to see what changed.",
+    );
   });
 
   it("explains how it works in the page text, not behind a script", () => {
@@ -119,5 +164,54 @@ describe("the policy monitor page", () => {
     const levels = screen.getAllByRole("heading").map((node) => Number(node.tagName.slice(1)));
     expect(Math.min(...levels)).toBe(1);
     expect(Math.max(...levels)).toBeLessThanOrEqual(3);
+  });
+});
+
+describe("site navigation", () => {
+  function renderHeader() {
+    // The real header the layout renders, not a copy of it.
+    const { container } = render(<SiteHeader />);
+    return container;
+  }
+
+  it("links to every tool from the header", () => {
+    const container = renderHeader();
+    const nav = container.querySelector('nav[aria-label="Tools"]')!;
+    const links = Array.from(nav.querySelectorAll("a"));
+
+    expect(links.map((link) => link.getAttribute("href"))).toEqual(
+      TOOLS.map((tool) => tool.href),
+    );
+    expect(links.map((link) => link.textContent)).toEqual(TOOLS.map((tool) => tool.name));
+  });
+
+  it("makes Policy Monitor directly reachable", () => {
+    const container = renderHeader();
+    const link = Array.from(container.querySelectorAll("a")).find(
+      (anchor) => anchor.getAttribute("href") === "/policy-monitor",
+    );
+    expect(link).toBeTruthy();
+    expect(link!.textContent).toBe("Policy & Terms Monitor");
+  });
+
+  it("wraps rather than overflowing on a narrow screen", () => {
+    const container = renderHeader();
+    const nav = container.querySelector('nav[aria-label="Tools"]')!;
+    const row = nav.parentElement!;
+    // Both the row and the nav wrap, so three tool names cannot force a
+    // horizontal scrollbar on a phone.
+    expect(row.className).toContain("flex-wrap");
+    expect(nav.className).toContain("flex-wrap");
+  });
+
+  it("names the navigation for assistive technology", () => {
+    const container = renderHeader();
+    expect(container.querySelector('nav[aria-label="Tools"]')).toBeTruthy();
+  });
+
+  it("keeps the site-wide metadata unchanged", () => {
+    expect(rootMetadata.description).toBe(
+      "Compare PDF documents and public web pages to see exactly what changed, with clear evidence you can verify.",
+    );
   });
 });

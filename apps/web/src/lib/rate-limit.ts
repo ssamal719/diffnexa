@@ -50,6 +50,17 @@ export const LIMITS: Record<string, RateLimit[]> = {
     { limit: 10, windowMs: 60_000 },
     { limit: 100, windowMs: 60 * 60_000 },
   ],
+  // Policy operations do the same work as the webpage ones — fetch a page and
+  // compare it — so they carry the same limits. Separate buckets mean checking
+  // a policy does not consume someone's allowance for checking a page.
+  "policy-capture": [
+    { limit: 10, windowMs: 60_000 },
+    { limit: 100, windowMs: 60 * 60_000 },
+  ],
+  "policy-compare": [
+    { limit: 10, windowMs: 60_000 },
+    { limit: 100, windowMs: 60 * 60_000 },
+  ],
 };
 
 type Hit = { at: number };

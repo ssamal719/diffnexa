@@ -93,6 +93,12 @@ class WebDiagnostics:
 class WebComparisonOutcome:
     result: ComparisonResult
     diagnostics: WebDiagnostics
+    #: The two captures this result came from. Carried so a caller that needs
+    #: the page's own content - the policy layer reads it to see which clauses
+    #: exist - does not have to fetch or re-extract anything. Nothing in the
+    #: serialised response changes.
+    previous: Snapshot | None = None
+    current: Snapshot | None = None
 
 
 # ---------------------------------------------------------------- evidence
@@ -765,7 +771,7 @@ def compare_snapshots_verbose(old: Snapshot, new: Snapshot) -> WebComparisonOutc
         diagnostics.notes.append(
             "One of these pages builds its content in the browser, so its text could not be read."
         )
-    return WebComparisonOutcome(result=result, diagnostics=diagnostics)
+    return WebComparisonOutcome(result=result, diagnostics=diagnostics, previous=old, current=new)
 
 
 def _drop_untraceable(result: ComparisonResult, old: Snapshot, new: Snapshot) -> tuple[ComparisonResult, int]:

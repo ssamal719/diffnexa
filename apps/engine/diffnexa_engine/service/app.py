@@ -29,6 +29,8 @@ from diffnexa_engine.compare import compare_documents_verbose
 from diffnexa_engine.config import EngineLimits
 from diffnexa_engine.contracts import Side
 from diffnexa_engine.errors import USER_MESSAGES, DocumentError, ErrorCode
+from diffnexa_engine.policy.api import serialize_policy_comparison
+from diffnexa_engine.policy.classify import classify_changes
 from diffnexa_engine.service.auth import check_credentials, configured_secret
 from diffnexa_engine.web.api import (
     MAX_SNAPSHOT_BYTES,
@@ -151,6 +153,31 @@ def build_app():  # noqa: C901 - a single route with explicit error handling
             return web_error(exc)
         elapsed_ms = int((time.perf_counter() - started) * 1000)
         return JSONResponse(content=serialize_web_comparison(outcome, elapsed_ms))
+
+    @app.post("/v1/policy/compare")
+    async def policy_compare(request: Request) -> Any:
+        """Compare a policy page with a baseline, and say which clauses moved.
+
+        The comparison is the same deterministic one Website Change Detector
+        runs. What is added is the classification layer: which part of the
+        agreement each change sits in. Capturing a policy page needs no endpoint
+        of its own, so /v1/web/snapshot serves that.
+        """
+        started = time.perf_counter()
+        try:
+            payload = await _read_json(request)
+            previous = read_snapshot(payload.get("previous_snapshot"))
+            outcome = compare_against(payload.get("url", ""), previous)
+        except WebRequestError as exc:
+            return web_error(exc)
+
+        classification = classify_changes(
+            outcome.result.changes,
+            current_snapshot=outcome.current,
+            baseline_snapshot=previous,
+        )
+        elapsed_ms = int((time.perf_counter() - started) * 1000)
+        return JSONResponse(content=serialize_policy_comparison(outcome, classification, elapsed_ms))
 
     @app.post("/v1/compare")
     async def compare_endpoint(

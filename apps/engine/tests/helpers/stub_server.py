@@ -118,6 +118,9 @@ class _Handler(BaseHTTPRequestHandler):
             except (BrokenPipeError, ConnectionResetError, OSError):
                 pass
 
+        elif path == "/policy":
+            self._send(200, server.policy_html)
+
         elif path == "/page":
             self._send(200, server.page_html)
 
@@ -195,6 +198,20 @@ class StubServer:
 
     robots_body: bytes = b"User-agent: *\nAllow: /\n"
     robots_status: int = 200
+    policy_html: bytes = (
+        b"<!doctype html><html><head><title>Terms of Service</title>"
+        b'<meta name="description" content="Terms for the service."></head><body><main>'
+        b"<h1>Terms of Service</h1>"
+        b"<h2>Data retention</h2>"
+        b"<p>We retain your personal information for 12 months after your account is closed.</p>"
+        b"<h2>Cancellation and termination</h2>"
+        b"<p>You may cancel your subscription by giving 30 days written notice.</p>"
+        b"<h2>Governing law</h2>"
+        b"<p>This agreement is governed by the laws of England and Wales.</p>"
+        b"<h2>About us</h2>"
+        b"<p>The company was founded in 2011 and employs 400 people.</p>"
+        b"</main></body></html>"
+    )
     page_html: bytes = (
         b"<!doctype html><html><head><title>Service Terms</title>"
         b'<meta name="description" content="Terms for the service."></head><body><main>'

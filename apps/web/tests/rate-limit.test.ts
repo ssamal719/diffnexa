@@ -24,7 +24,13 @@ afterEach(() => {
 
 describe("the limits themselves", () => {
   it("cover every expensive operation", () => {
-    expect(Object.keys(LIMITS).sort()).toEqual(["pdf-compare", "web-capture", "web-compare"]);
+    expect(Object.keys(LIMITS).sort()).toEqual([
+      "pdf-compare",
+      "policy-capture",
+      "policy-compare",
+      "web-capture",
+      "web-compare",
+    ]);
     for (const rules of Object.values(LIMITS)) {
       expect(rules.length).toBeGreaterThan(0);
       for (const rule of rules) {

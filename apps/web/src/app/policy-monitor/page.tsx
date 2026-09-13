@@ -2,22 +2,36 @@ import type { Metadata } from "next";
 
 import { PolicyDesk } from "@/components/policy/PolicyDesk";
 
-// Basic route metadata only. The full SEO pass is a later stage.
+const TITLE = "Policy & Terms Monitor — Find Changes in Privacy Policies and Terms";
+
+const DESCRIPTION =
+  "Capture a public privacy policy, terms page or subprocessor list, then compare it " +
+  "against your saved baseline to see exactly what changed, with the wording behind " +
+  "every change.";
+
 export const metadata: Metadata = {
-  title: "Policy & Terms Monitor",
-  description:
-    "Capture a public policy or terms page, then check it later to see exactly what changed and which part of the document moved.",
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: "/policy-monitor" },
+  openGraph: {
+    type: "website",
+    url: "/policy-monitor",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 export default function PolicyMonitorPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 md:py-10">
+      {/* One H1, and it says what the tool does rather than implying it watches
+          the page on your behalf. */}
       <h1 className="text-[1.75rem] font-semibold tracking-tight md:text-[2rem]">
-        Monitor a policy or terms page
+        See what changed in a policy or terms page
       </h1>
       <p className="mt-2 max-w-[62ch] text-ink-soft">
         Capture a supplier&apos;s terms, a privacy policy or a subprocessor list as it reads today.
-        Check it whenever you like and DiffNexa shows exactly what changed, which part of the
+        Check it whenever you choose and DiffNexa shows exactly what changed, which part of the
         document it sits in, and the wording behind it.
       </p>
 
@@ -60,6 +74,50 @@ export default function PolicyMonitorPage() {
             </div>
           ))}
         </div>
+      </section>
+
+      <section className="mt-10" aria-labelledby="which-tool">
+        <h2 id="which-tool" className="text-[1.15rem] font-semibold">
+          Policy Monitor or Website Change Detector?
+        </h2>
+        <div className="mt-3 grid max-w-[70ch] gap-4 md:grid-cols-2">
+          <div>
+            <h3 className="font-medium">Policy &amp; Terms Monitor</h3>
+            <p className="mt-1 text-[0.95rem] text-ink-soft">
+              For agreements: privacy policies, terms of service, data processing agreements,
+              subprocessor lists, cookie and refund policies. Alongside each change it names the
+              part of the document it sits in, such as data retention, cancellation, fees or
+              governing law.
+            </p>
+          </div>
+          <div>
+            <h3 className="font-medium">Website Change Detector</h3>
+            <p className="mt-1 text-[0.95rem] text-ink-soft">
+              For any public page — pricing, documentation, product pages. The same comparison,
+              without the document-specific grouping.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="mt-10" aria-labelledby="limits">
+        <h2 id="limits" className="text-[1.15rem] font-semibold">
+          What this does not do
+        </h2>
+        <ul className="mt-3 max-w-[70ch] space-y-2 text-[0.95rem] text-ink-soft">
+          <li>
+            It does not watch pages for you. There is no scheduled checking, no alerts and no
+            saved history — you check when you choose to.
+          </li>
+          <li>
+            It does not judge changes. DiffNexa shows what changed and where it sits. Whether that
+            matters for your situation is a judgement for you or your lawyer.
+          </li>
+          <li>
+            It does not read pages behind a login, pages that build their content in the browser,
+            or PDF documents. For a PDF policy, use PDF Compare.
+          </li>
+        </ul>
       </section>
 
       <section className="mt-10" aria-labelledby="questions">

@@ -24,6 +24,7 @@ and the same HTML always produces the same snapshot.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from urllib.parse import parse_qsl, urljoin, urlsplit, urlunsplit
 
@@ -73,6 +74,22 @@ MAX_CONTENT_NODES = 5_000
 MIN_WORDS_FOR_CONTENT = 25
 SHELL_MARKERS = ("__NEXT_DATA__", "data-reactroot", "ng-app", "ng-version", "data-vue", "__NUXT__")
 SHELL_ROOT_IDS = ("root", "app", "__next", "__nuxt", "application")
+
+# Cloudflare rewrites email addresses on a page into a link of the form
+#   /cdn-cgi/l/email-protection#<hex>
+# where the hex is the address encrypted with a key that changes on every
+# render. The link points at the same address and the visible text is unchanged,
+# but the fragment differs on every capture, which reported a link change on a
+# page nobody had edited. The fragment carries nothing a reader can act on, so
+# it is dropped; the path itself is kept, so a link appearing or disappearing is
+# still reported.
+CLOUDFLARE_EMAIL_PATH = re.compile(r"/cdn-cgi/l/email-protection/?$", re.IGNORECASE)
+
+
+def _is_volatile_fragment(parts) -> bool:
+    """True when a URL's fragment is a token that changes on its own."""
+    return bool(parts.fragment and CLOUDFLARE_EMAIL_PATH.search(parts.path))
+
 
 # Query parameters that identify a campaign or a visitor, never the page.
 TRACKING_PARAMETERS = frozenset(
@@ -233,6 +250,13 @@ def strip_tracking(url: str) -> str:
     including their order, because they can change what a page shows.
     """
     parts = urlsplit(url)
+
+    if _is_volatile_fragment(parts):
+        # Same address, different encryption each render.
+        parts = parts._replace(fragment="")
+        if not parts.query:
+            return urlunsplit(parts)
+
     if not parts.query:
         return url
     kept = [

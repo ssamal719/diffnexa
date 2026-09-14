@@ -48,6 +48,7 @@ from diffnexa_engine.contracts.changes import (
     SnapshotRef,
 )
 from diffnexa_engine.contracts.web_traceability import verify_web_traceability
+from diffnexa_engine.web.extract import strip_tracking
 from diffnexa_engine.web.snapshot import ContentNode, NodeRole, RenderNote, Snapshot
 from diffnexa_engine.web.volatility import mark_volatile
 
@@ -491,9 +492,15 @@ def _compare_links(builder: _Builder, old: Snapshot, new: Snapshot) -> None:
                 evidence=(_node_evidence(old, pair.old, Side.OLD),),
             )
         elif pair.old is not None and pair.new is not None:
-            # Tracking parameters were already removed when the page was read,
-            # so two links differing only by a campaign tag are equal here.
-            if (pair.old.href or "") == (pair.new.href or ""):
+            # Tracking parameters and volatile tokens were already removed when
+            # each page was read, so two links differing only by a campaign tag
+            # or a per-render token are equal here.
+            #
+            # They are normalised again rather than compared as stored, because
+            # a baseline captured before a normalisation rule existed still holds
+            # the raw address. Without this, adding a rule would make every old
+            # baseline report one spurious change on its next check.
+            if strip_tracking(pair.old.href or "") == strip_tracking(pair.new.href or ""):
                 continue
             builder.add(
                 kind=ChangeKind.MODIFIED,

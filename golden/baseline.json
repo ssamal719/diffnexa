@@ -559,6 +559,15 @@
         "evidence_completeness": 1.0
       }
     },
+    "web:link-cloudflare-email-token": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
     "web:link-opaque-parameter": {
       "extraction_passed": true,
       "comparison": {

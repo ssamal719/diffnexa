@@ -500,3 +500,59 @@ def test_reading_a_long_page_is_fast_enough_to_serve():
     started = time.perf_counter()
     extract_snapshot(html, url="https://example.com/")
     assert time.perf_counter() - started < 10.0
+
+
+# ---------------------------------------------------------------- volatile link tokens
+
+
+def test_a_cloudflare_email_token_is_dropped():
+    """Cloudflare re-encrypts an email link on every render.
+
+    The address behind /cdn-cgi/l/email-protection# is the same each time; only
+    the encryption differs, so the fragment changed on a page nobody had edited.
+    These are the two URLs from the live report.
+    """
+    first = strip_tracking(
+        "https://odishajobsdesk.in/cdn-cgi/l/email-protection#385156e55778575c514b505952575a4b5c5d4b53165156"
+    )
+    second = strip_tracking(
+        "https://odishajobsdesk.in/cdn-cgi/l/email-protection#41282f272e012e25283229202b2e23322524322a6f282f"
+    )
+
+    assert first == second == "https://odishajobsdesk.in/cdn-cgi/l/email-protection"
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://example.com/guide#installation",
+        "https://example.com/terms#section-4",
+        "https://example.com/docs/cdn-cgi/l/email-protection-notes#a1",
+        "https://example.com/cdn-cgi/l/other#token",
+        "https://example.com/email-protection#token",
+    ],
+)
+def test_ordinary_fragments_are_kept(url):
+    """The rule is narrow: only that one Cloudflare path loses its fragment."""
+    assert strip_tracking(url) == url
+
+
+def test_the_path_itself_is_kept():
+    """So a link appearing or disappearing is still reported."""
+    assert (
+        strip_tracking("https://example.com/cdn-cgi/l/email-protection#abc")
+        == "https://example.com/cdn-cgi/l/email-protection"
+    )
+
+
+def test_tracking_parameters_and_fragments_are_handled_together():
+    assert (
+        strip_tracking("https://example.com/cdn-cgi/l/email-protection?utm_source=x#abc")
+        == "https://example.com/cdn-cgi/l/email-protection"
+    )
+    assert strip_tracking("https://example.com/guide?utm_source=x#top") == ("https://example.com/guide#top")
+
+
+def test_normalising_twice_changes_nothing():
+    once = strip_tracking("https://example.com/cdn-cgi/l/email-protection#abc")
+    assert strip_tracking(once) == once

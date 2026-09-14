@@ -1,0 +1,15 @@
+# Written by hand: the truth about what changed between these two pages.
+pair: link-cloudflare-email-token
+description: Cloudflare re-encrypts the email link on every render, so the address
+  after /cdn-cgi/l/email-protection# differs between two captures of an unedited page.
+  The visible text and the destination are the same, so nothing may be reported.
+url: https://northwind.example/contact
+expected_changes: []
+must_not_report:
+- text: email-protection
+  reason: a per-render token is not a destination change
+- text: '385156'
+  reason: the old token
+- text: 41282f
+  reason: the new token
+max_unexpected_changes: 0

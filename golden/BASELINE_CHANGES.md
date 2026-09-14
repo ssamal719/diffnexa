@@ -21,3 +21,7 @@ W6: adds the webpage golden suite to the shared accuracy ratchet, recording the 
 ## 2026-09-13
 
 P3: adds the policy golden suite to the shared accuracy ratchet. 29 policy pairs covering all 14 clause topics plus negative and structural cases, scored on the same four metrics as the PDF and webpage suites, so recall cannot fall and false positives, noise leakage or untraceable evidence cannot rise on any of the three tools without failing the build.
+
+## 2026-09-14
+
+Adds link-cloudflare-email-token: Cloudflare re-encrypts email links on every render, so the fragment after /cdn-cgi/l/email-protection# differed between two captures of an unedited page and was reported as a link change. Found on a live page. The pair proves the volatile fragment is normalised away while the link itself stays comparable.

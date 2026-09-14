@@ -11,6 +11,7 @@ from diffnexa_engine.contracts.web_traceability import verify_web_traceability
 from diffnexa_engine.golden.web import discover_web_pairs, score_web_pair
 from diffnexa_engine.web.compare import compare_snapshots, compare_snapshots_verbose
 from diffnexa_engine.web.extract import extract_snapshot
+from diffnexa_engine.web.snapshot import NodeRole
 
 WEB_PAIRS = Path(__file__).resolve().parents[3] / "golden" / "web-pairs"
 PAIRS = discover_web_pairs(WEB_PAIRS)
@@ -219,3 +220,89 @@ def test_an_implausible_capture_is_refused():
     with pytest.raises(WebRequestError) as info:
         read_snapshot(real)
     assert info.value.code is WebErrorCode.SNAPSHOT_UNREADABLE
+
+
+# ---------------------------------------------------------------- volatile link tokens
+
+EMAIL_PAGE = """<html><head><title>Contact</title></head><body><main>
+<h1>Contact us</h1>
+<p>Write to <a href="https://example.com/cdn-cgi/l/email-protection#{token}">[email&#160;protected]</a>
+for support.</p>
+<p>The standard plan costs 50,000 per year.</p>
+</main></body></html>"""
+
+
+def test_a_changing_cloudflare_email_token_is_not_a_change():
+    """The live false positive: the page was not edited, only re-rendered."""
+    before = snap(EMAIL_PAGE.format(token="385156e55778575c514b505952575a4b5c5d4b53165156"))
+    after = snap(EMAIL_PAGE.format(token="41282f272e012e25283229202b2e23322524322a6f282f"))
+
+    result = compare_snapshots(before, after)
+    assert result.changes == (), f"reported: {[c.model_dump() for c in result.changes]}"
+
+
+def test_an_unchanged_cloudflare_email_link_is_not_a_change():
+    page = EMAIL_PAGE.format(token="385156e55778575c514b505952575a4b5c5d4b53165156")
+    assert compare_snapshots(snap(page), snap(page)).changes == ()
+
+
+def test_a_real_edit_beside_a_changing_email_token_is_still_reported():
+    """The fix must not hide the change the reader came for."""
+    before = snap(EMAIL_PAGE.format(token="385156e55778575c514b505952575a4b5c5d4b53165156"))
+    after = snap(
+        EMAIL_PAGE.format(token="41282f272e012e25283229202b2e23322524322a6f282f").replace("50,000", "75,000")
+    )
+
+    result = compare_snapshots(before, after)
+    meaningful = [change for change in result.changes if change.noise_reason is None]
+
+    assert len(meaningful) == 1
+    assert (meaningful[0].old_value, meaningful[0].new_value) == ("50,000", "75,000")
+    assert all(change.category is not ChangeCategory.LINK for change in result.changes)
+
+
+def test_a_genuinely_different_destination_is_still_reported():
+    page = '<html><body><main><h1>H</h1><p>See <a href="{href}">the guide</a>.</p></main></body></html>'
+    before = snap(page.format(href="https://example.com/guide"))
+    after = snap(page.format(href="https://example.com/handbook"))
+
+    links = [c for c in compare_snapshots(before, after).changes if c.category is ChangeCategory.LINK]
+    assert len(links) == 1
+    assert links[0].new_value == "https://example.com/handbook"
+
+
+def test_an_email_link_that_disappears_is_still_reported():
+    """Dropping the token must not make the link itself invisible."""
+    before = snap(EMAIL_PAGE.format(token="385156e5577857"))
+    after = snap(
+        "<html><head><title>Contact</title></head><body><main><h1>Contact us</h1>"
+        "<p>Write to us for support.</p>"
+        "<p>The standard plan costs 50,000 per year.</p></main></body></html>"
+    )
+    result = compare_snapshots(before, after)
+    assert any(change.category is ChangeCategory.LINK for change in result.changes)
+
+
+def test_a_baseline_captured_before_the_rule_still_compares_cleanly():
+    """An existing baseline holds the raw address; it must not report a change.
+
+    Simulates a capture made before the normalisation existed by writing the
+    token back into the stored link.
+    """
+    before = snap(EMAIL_PAGE.format(token="385156e55778575c514b505952575a4b5c5d4b53165156"))
+    raw_nodes = tuple(
+        node.model_copy(
+            update={
+                "href": "https://example.com/cdn-cgi/l/email-protection"
+                "#385156e55778575c514b505952575a4b5c5d4b53165156"
+            }
+        )
+        if node.role is NodeRole.LINK
+        else node
+        for node in before.nodes
+    )
+    old_style = before.model_copy(update={"nodes": raw_nodes})
+    after = snap(EMAIL_PAGE.format(token="41282f272e012e25283229202b2e23322524322a6f282f"))
+
+    links = [c for c in compare_snapshots(old_style, after).changes if c.category is ChangeCategory.LINK]
+    assert links == []

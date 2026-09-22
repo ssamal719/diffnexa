@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two versions of a
+# competitor's page, and the one signal each change must receive.
+pair: ordinary-content-changed
+description: A customer count in the About section changes.
+expected_changes:
+- old: 12,000
+  new: 15,000
+  category: number
+  signal: content_sections
+forbidden_signals: [pricing_commercial, messaging_positioning, plans_packaging, product_features, other]

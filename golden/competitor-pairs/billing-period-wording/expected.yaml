@@ -1,0 +1,9 @@
+# Written by hand: what really changed between these two versions of a
+# competitor's page, and the one signal each change must receive.
+pair: billing-period-wording
+description: The Starter plan changes from annual to monthly billing wording, price unchanged.
+expected_changes:
+- old: annually
+  new: monthly
+  signal: pricing_commercial
+forbidden_signals: [plans_packaging, other]

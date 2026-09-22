@@ -1,0 +1,21 @@
+# Written by hand: what really changed between these two versions of a
+# competitor's page, and the one signal each change must receive.
+pair: plan-renamed
+description: The Team plan is renamed Growth plan; its contents are unchanged.
+expected_changes:
+- old: Team
+  new: Growth
+  subtype: heading
+  signal: plans_packaging
+- old: Team
+  new: Growth
+  subtype: list_item
+  signal: plans_packaging
+- old: Team
+  new: Growth
+  signal: calls_to_action
+  note: the plan's button, "Choose Team plan", became "Choose Growth plan"
+max_unexpected_changes: 0
+must_not_report:
+- text: Unlimited projects
+  reason: the renamed plan's contents did not change

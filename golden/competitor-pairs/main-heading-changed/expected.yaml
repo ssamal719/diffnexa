@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two versions of a
+# competitor's page, and the one signal each change must receive.
+pair: main-heading-changed
+description: The page's main heading is reworded.
+expected_changes:
+- old: every
+  new: growing
+  subtype: heading
+  signal: messaging_positioning
+forbidden_signals: [content_sections, other]

@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two versions of a
+# competitor's page, and the one signal each change must receive.
+pair: feature-removed
+description: Recurring tasks is no longer listed as a feature.
+expected_changes:
+- old: Recurring tasks
+  kind: removed
+  match: exact
+  signal: product_features
+forbidden_signals: [plans_packaging, pricing_commercial, other]

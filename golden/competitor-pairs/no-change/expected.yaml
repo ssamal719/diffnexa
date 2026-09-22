@@ -1,0 +1,8 @@
+# Written by hand: what really changed between these two versions of a
+# competitor's page, and the one signal each change must receive.
+pair: no-change
+description: Nothing a reader would see changed; only tracking parameters were added to a link.
+expected_changes: []
+must_not_report:
+- text: utm_source
+  reason: tracking parameters are not a destination change

@@ -26,6 +26,8 @@ from typing import Any
 from diffnexa_engine import ENGINE_VERSION
 from diffnexa_engine.adapters.pdf.extract import extract_document
 from diffnexa_engine.compare import compare_documents_verbose
+from diffnexa_engine.competitor.api import serialize_competitor_comparison
+from diffnexa_engine.competitor.classify import classify_changes as classify_competitor_changes
 from diffnexa_engine.config import EngineLimits
 from diffnexa_engine.contracts import Side
 from diffnexa_engine.errors import USER_MESSAGES, DocumentError, ErrorCode
@@ -178,6 +180,33 @@ def build_app():  # noqa: C901 - a single route with explicit error handling
         )
         elapsed_ms = int((time.perf_counter() - started) * 1000)
         return JSONResponse(content=serialize_policy_comparison(outcome, classification, elapsed_ms))
+
+    @app.post("/v1/competitor/compare")
+    async def competitor_compare(request: Request) -> Any:
+        """Compare a competitor's page with a baseline, and say what kind of thing moved.
+
+        The comparison is the same deterministic one Website Change Detector
+        runs, with the same address rules, fetch limits and evidence checks. What
+        is added is one signal per change: pricing, plans, features, a call to
+        action, and so on. Capturing the page needs no endpoint of its own, so
+        /v1/web/snapshot serves that. The competitor's name and the page type
+        are the reader's labels and are never sent here.
+        """
+        started = time.perf_counter()
+        try:
+            payload = await _read_json(request)
+            previous = read_snapshot(payload.get("previous_snapshot"))
+            outcome = compare_against(payload.get("url", ""), previous)
+        except WebRequestError as exc:
+            return web_error(exc)
+
+        classification = classify_competitor_changes(
+            outcome.result.changes,
+            current_snapshot=outcome.current,
+            baseline_snapshot=previous,
+        )
+        elapsed_ms = int((time.perf_counter() - started) * 1000)
+        return JSONResponse(content=serialize_competitor_comparison(outcome, classification, elapsed_ms))
 
     @app.post("/v1/compare")
     async def compare_endpoint(

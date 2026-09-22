@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two versions of a
+# competitor's page, and the one signal each change must receive.
+pair: cta-words-in-prose
+description: Call-to-action words appear in ordinary FAQ prose; that is not a call to action.
+expected_changes:
+- old: You can upgrade or downgrade
+  new: Sign up for a new plan
+  signal: plans_packaging
+  note: it sits under "Can I change plans later?", which names plans
+forbidden_signals: [calls_to_action, other]

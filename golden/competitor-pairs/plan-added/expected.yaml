@@ -1,0 +1,30 @@
+# Written by hand: what really changed between these two versions of a
+# competitor's page, and the one signal each change must receive.
+pair: plan-added
+description: A fourth plan, Enterprise, is added with its own list and button.
+expected_changes:
+- new: Enterprise
+  category: text
+  kind: added
+  subtype: heading
+  match: exact
+  signal: plans_packaging
+- new: Custom pricing for large organisations
+  kind: added
+  signal: pricing_commercial
+  note: the plan's price line names pricing, so it is a pricing change
+- new: Everything in Business
+  kind: added
+  signal: plans_packaging
+- new: Dedicated success manager
+  kind: added
+  signal: plans_packaging
+- new: https://competitor.example.com/signup?plan=enterprise
+  category: link
+  kind: added
+  signal: calls_to_action
+- new: Choose Enterprise
+  kind: added
+  signal: calls_to_action
+  note: the button sits in its own paragraph, which is just the link
+forbidden_signals: [messaging_positioning, other]

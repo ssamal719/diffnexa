@@ -1,0 +1,44 @@
+# Written by hand: what really changed between these two versions of a
+# competitor's page, and the one signal each change must receive.
+pair: mixed-release
+description: A release touching price, packaging, features, message, button and title together.
+expected_changes:
+- old: $15
+  new: $16
+  signal: pricing_commercial
+- new: Automations
+  section: Team
+  kind: added
+  signal: plans_packaging
+- new: Automations
+  section: Features
+  kind: added
+  signal: product_features
+- old: that keeps every team moving
+  new: with automations built in
+  subtype: heading
+  signal: messaging_positioning
+- old: Start
+  new: Try Northwind
+  signal: calls_to_action
+- old: trial
+  kind: removed
+  signal: calls_to_action
+- old: https://competitor.example.com/signup
+  category: link
+  kind: removed
+  match: exact
+  signal: calls_to_action
+  note: the button's words changed enough that its link is reported as replaced as well
+- new: https://competitor.example.com/signup
+  category: link
+  kind: added
+  match: exact
+  signal: calls_to_action
+- new: with Automations
+  category: metadata
+  signal: seo_metadata
+- old: 12,000
+  new: 13,000
+  signal: content_sections
+forbidden_signals: [other]

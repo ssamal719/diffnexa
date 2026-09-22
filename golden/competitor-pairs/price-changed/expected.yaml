@@ -1,0 +1,11 @@
+# Written by hand: what really changed between these two versions of a
+# competitor's page, and the one signal each change must receive.
+pair: price-changed
+description: The Team plan's per-user price rises from $15 to $18.
+expected_changes:
+- old: $15
+  new: $18
+  category: number
+  delta: +3 (+20%)
+  signal: pricing_commercial
+forbidden_signals: [plans_packaging, product_features, messaging_positioning, calls_to_action, other]

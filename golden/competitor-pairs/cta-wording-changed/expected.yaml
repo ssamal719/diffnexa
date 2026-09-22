@@ -1,0 +1,13 @@
+# Written by hand: what really changed between these two versions of a
+# competitor's page, and the one signal each change must receive.
+pair: cta-wording-changed
+description: The main button's wording changes; its destination does not.
+expected_changes:
+- old: Start
+  new: Get started
+  signal: calls_to_action
+  note: the button's link is unchanged, so the change is reported on the row of buttons it sits in
+- old: trial
+  kind: removed
+  signal: calls_to_action
+forbidden_signals: [links_destinations, other]

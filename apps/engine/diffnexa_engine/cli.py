@@ -84,6 +84,7 @@ def cmd_golden_generate(args: argparse.Namespace) -> int:
 def cmd_golden_run(args: argparse.Namespace) -> int:
     from diffnexa_engine.compare import compare_documents
     from diffnexa_engine.golden.baseline import find_regressions, load_baseline, write_baseline
+    from diffnexa_engine.golden.competitor import discover_competitor_pairs, score_competitor_pair
     from diffnexa_engine.golden.loader import discover_pairs
     from diffnexa_engine.golden.policy import discover_policy_pairs, score_policy_pair
     from diffnexa_engine.golden.runner import (
@@ -146,6 +147,25 @@ def cmd_golden_run(args: argparse.Namespace) -> int:
                 name=f"policy:{policy_pair.name}",
                 source="policy",
                 description=policy_pair.spec.description,
+                extraction_failures=[],
+                comparison_status="scored",
+                score=score,
+            )
+        )
+
+    # Competitor pairs score the same four metrics, plus their signal checks.
+    try:
+        competitor_pairs = discover_competitor_pairs(root / "golden" / "competitor-pairs")
+    except Exception as exc:
+        print(f"Competitor golden spec error: {exc}")
+        return 1
+    for competitor_pair in competitor_pairs:
+        score, _before, _after, _classification = score_competitor_pair(competitor_pair)
+        suite.pairs.append(
+            PairOutcome(
+                name=f"competitor:{competitor_pair.name}",
+                source="competitor",
+                description=competitor_pair.spec.description,
                 extraction_failures=[],
                 comparison_status="scored",
                 score=score,

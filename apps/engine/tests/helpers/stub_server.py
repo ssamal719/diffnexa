@@ -121,6 +121,9 @@ class _Handler(BaseHTTPRequestHandler):
         elif path == "/policy":
             self._send(200, server.policy_html)
 
+        elif path == "/competitor":
+            self._send(200, server.competitor_html)
+
         elif path == "/page":
             self._send(200, server.page_html)
 
@@ -210,6 +213,20 @@ class StubServer:
         b"<p>This agreement is governed by the laws of England and Wales.</p>"
         b"<h2>About us</h2>"
         b"<p>The company was founded in 2011 and employs 400 people.</p>"
+        b"</main></body></html>"
+    )
+    competitor_html: bytes = (
+        b"<!doctype html><html><head><title>Acme Pricing</title>"
+        b'<meta name="description" content="Plans for every team."></head><body><main>'
+        b"<h1>Project management for teams</h1>"
+        b"<p>Plan, track and ship work in one place.</p>"
+        b'<a class="button" href="https://acme.example.com/signup">Start free trial</a>'
+        b"<h2>Plans</h2>"
+        b"<h3>Starter</h3><p>$9 per month</p><ul><li>5 projects</li><li>Email support</li></ul>"
+        b"<h3>Pro</h3><p>$29 per month</p><ul><li>Unlimited projects</li><li>Priority support</li></ul>"
+        b"<h2>Features</h2><ul><li>Kanban boards</li><li>Gantt charts</li></ul>"
+        b"<h2>About us</h2><p>We were founded in 2015 by two engineers in Berlin.</p>"
+        b'<p>Read our <a href="https://acme.example.com/blog">blog</a> for updates.</p>'
         b"</main></body></html>"
     )
     page_html: bytes = (

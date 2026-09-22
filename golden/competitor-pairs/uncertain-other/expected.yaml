@@ -1,0 +1,9 @@
+# Written by hand: what really changed between these two versions of a
+# competitor's page, and the one signal each change must receive.
+pair: uncertain-other
+description: A page with no headings, prices, plans or links changes a sentence; no category fits, so it is Other.
+expected_changes:
+- old: Leeds
+  new: York
+  signal: other
+forbidden_signals: [content_sections, messaging_positioning, pricing_commercial, product_features, plans_packaging]

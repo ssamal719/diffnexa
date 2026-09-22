@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two versions of a
+# competitor's page, and the one signal each change must receive.
+pair: comparison-table-cell
+description: The number of projects in the Starter column of the comparison table rises.
+expected_changes:
+- old: '3'
+  new: '5'
+  subtype: table_cell
+  signal: plans_packaging
+forbidden_signals: [pricing_commercial, other]

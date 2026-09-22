@@ -1,0 +1,32 @@
+# Written by hand: what really changed between these two versions of a
+# competitor's page, and the one signal each change must receive.
+pair: plan-removed
+description: The Business plan is withdrawn, with its price, list and button.
+expected_changes:
+- old: Business
+  category: text
+  kind: removed
+  subtype: heading
+  match: exact
+  signal: plans_packaging
+- old: $29 per user per month
+  kind: removed
+  signal: pricing_commercial
+- old: Everything in Team
+  kind: removed
+  signal: plans_packaging
+- old: Audit log
+  kind: removed
+  section: Business
+  signal: plans_packaging
+- old: Single sign-on
+  kind: removed
+  signal: plans_packaging
+- old: https://competitor.example.com/signup?plan=business
+  category: link
+  kind: removed
+  signal: calls_to_action
+- old: Choose Business
+  kind: removed
+  signal: calls_to_action
+forbidden_signals: [messaging_positioning, other, product_features]

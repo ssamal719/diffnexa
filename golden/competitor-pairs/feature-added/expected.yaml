@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two versions of a
+# competitor's page, and the one signal each change must receive.
+pair: feature-added
+description: A new feature, Automations, is listed.
+expected_changes:
+- new: Automations
+  kind: added
+  match: exact
+  signal: product_features
+forbidden_signals: [plans_packaging, pricing_commercial, other]

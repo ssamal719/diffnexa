@@ -25,3 +25,7 @@ P3: adds the policy golden suite to the shared accuracy ratchet. 29 policy pairs
 ## 2026-09-14
 
 Adds link-cloudflare-email-token: Cloudflare re-encrypts email links on every render, so the fragment after /cdn-cgi/l/email-protection# differed between two captures of an unedited page and was reported as a link change. Found on a live page. The pair proves the volatile fragment is normalised away while the link itself stays comparable.
+
+## 2026-09-22
+
+Tool 4 Competitor Monitor: add 21 competitor golden pairs (pricing, plans, features, calls to action, messaging, metadata, links, ordinary content, no-change, uncertain and mixed cases). Every pair scores recall 100%, 0 false positives, 0 noise leakage, 100% evidence; no existing pair changed.

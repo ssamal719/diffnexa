@@ -1,6 +1,195 @@
 {
   "version": 1,
   "pairs": {
+    "competitor:billing-period-wording": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "competitor:cloudflare-email-token": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "competitor:comparison-table-cell": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "competitor:cta-destination-changed": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "competitor:cta-wording-changed": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "competitor:cta-words-in-prose": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "competitor:discount-in-faq": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "competitor:feature-added": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "competitor:feature-removed": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "competitor:intro-changed": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "competitor:main-heading-changed": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "competitor:metadata-changed": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "competitor:mixed-release": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "competitor:no-change": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "competitor:ordinary-content-changed": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "competitor:ordinary-link-changed": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "competitor:plan-added": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "competitor:plan-removed": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "competitor:plan-renamed": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "competitor:price-changed": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "competitor:uncertain-other": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
     "deadline-date-change": {
       "extraction_passed": true,
       "comparison": {

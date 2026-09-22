@@ -1,0 +1,9 @@
+# Written by hand: what really changed between these two versions of a
+# competitor's page, and the one signal each change must receive.
+pair: intro-changed
+description: The opening sentence under the main heading is rewritten.
+expected_changes:
+- old: in one shared workspace
+  new: with AI summaries built in
+  signal: messaging_positioning
+forbidden_signals: [content_sections, other]

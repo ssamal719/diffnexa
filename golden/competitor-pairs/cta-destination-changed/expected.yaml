@@ -1,0 +1,12 @@
+# Written by hand: what really changed between these two versions of a
+# competitor's page, and the one signal each change must receive.
+pair: cta-destination-changed
+description: The main button now leads to a different sign-up page; its words are unchanged.
+expected_changes:
+- old: https://competitor.example.com/signup
+  new: https://competitor.example.com/signup/team
+  category: link
+  kind: modified
+  match: exact
+  signal: calls_to_action
+forbidden_signals: [links_destinations, other]

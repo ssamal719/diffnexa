@@ -1,0 +1,9 @@
+# Written by hand: what really changed between these two versions of a
+# competitor's page, and the one signal each change must receive.
+pair: discount-in-faq
+description: The nonprofit discount in the FAQ changes from 30% to 50%.
+expected_changes:
+- old: 30%
+  new: 50%
+  signal: pricing_commercial
+forbidden_signals: [content_sections, other]

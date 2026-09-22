@@ -1,0 +1,13 @@
+# Written by hand: what really changed between these two versions of a
+# competitor's page, and the one signal each change must receive.
+pair: metadata-changed
+description: The page title and meta description change; the visible page does not.
+expected_changes:
+- old: Pricing — Northwind
+  new: Pricing and Plans — Northwind
+  category: metadata
+  signal: seo_metadata
+- new: Start free for 30 days
+  category: metadata
+  signal: seo_metadata
+forbidden_signals: [pricing_commercial, other]

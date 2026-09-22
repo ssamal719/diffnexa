@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@/components/site/Analytics";
 import { SiteHeader } from "@/components/site/SiteHeader";
 export { TOOLS } from "@/lib/tools";
 
@@ -49,6 +50,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </p>
           </div>
         </footer>
+
+        {/* The one place analytics is added, so every page has it exactly once. */}
+        <Analytics />
       </body>
     </html>
   );

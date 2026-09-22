@@ -44,18 +44,19 @@ describe("the homepage", () => {
     }
   });
 
-  it("uses ordinary crawlable links to all three tools", () => {
+  it("uses ordinary crawlable links to every tool", () => {
     render(<HomePage />);
     const hrefs = screen.getAllByRole("link").map((link) => link.getAttribute("href"));
     expect(hrefs).toContain("/pdf-compare");
     expect(hrefs).toContain("/website-compare");
     expect(hrefs).toContain("/policy-monitor");
+    expect(hrefs).toContain("/competitor-monitor");
   });
 
   it("shows a card for every tool, each linking to its own page", () => {
     render(<HomePage />);
     const cards = screen.getAllByRole("article");
-    expect(cards).toHaveLength(3);
+    expect(cards).toHaveLength(4);
 
     for (const tool of TOOLS) {
       const card = cards.find((element) => element.textContent?.includes(tool.name));
@@ -72,6 +73,16 @@ describe("the homepage", () => {
       .find((element) => element.textContent?.includes("Policy & Terms Monitor"))!;
     expect(card.textContent).toContain("baseline");
     expect(card.textContent).toContain("which part of the document changed");
+  });
+
+  it("describes Competitor Monitor in the agreed words", () => {
+    render(<HomePage />);
+    const card = screen
+      .getAllByRole("article")
+      .find((element) => element.textContent?.includes("Competitor Monitor"))!;
+    expect(card.textContent).toContain(
+      "Track changes on competitor webpages and see exactly what changed.",
+    );
   });
 
   it("claims nothing the tools cannot do", () => {
@@ -213,5 +224,57 @@ describe("site navigation", () => {
     expect(rootMetadata.description).toBe(
       "Compare PDF documents and public web pages to see exactly what changed, with clear evidence you can verify.",
     );
+  });
+});
+
+describe("the competitor monitor page", () => {
+  it("is reachable from the header", () => {
+    const { container } = render(<SiteHeader />);
+    const link = Array.from(container.querySelectorAll("a")).find(
+      (anchor) => anchor.getAttribute("href") === "/competitor-monitor",
+    );
+    expect(link?.textContent).toBe("Competitor Monitor");
+  });
+
+  it("has exactly one H1, saying what the tool does", async () => {
+    const { default: CompetitorMonitorPage } = await import("@/app/competitor-monitor/page");
+    render(<CompetitorMonitorPage />);
+    const h1s = screen.getAllByRole("heading", { level: 1 });
+    expect(h1s).toHaveLength(1);
+    expect(h1s[0].textContent).toBe("See what changed on a competitor's webpage");
+  });
+
+  it("states the V1 limits plainly", async () => {
+    const { default: CompetitorMonitorPage } = await import("@/app/competitor-monitor/page");
+    render(<CompetitorMonitorPage />);
+    const text = document.body.textContent ?? "";
+    expect(text).toContain("It does not watch pages for you");
+    expect(text).toContain("no scheduled checking, no alerts and no saved history");
+    expect(text).toContain("It reads one public page at a time");
+    expect(text).toContain("behind a login");
+    expect(text).toContain("build their content in the browser");
+    expect(text).toContain("does not compare screenshots");
+  });
+
+  it("claims nothing it cannot do and judges nothing", async () => {
+    const { default: CompetitorMonitorPage } = await import("@/app/competitor-monitor/page");
+    render(<CompetitorMonitorPage />);
+    const text = (document.body.textContent ?? "").toLowerCase();
+    for (const word of [
+      "ai-powered", "we monitor", "we alert", "real-time", "threat", "risk", "opportunit",
+      "strategic", "winning", "losing", "aggressive", "major competitor move", "important change",
+    ]) {
+      expect(text, word).not.toContain(word);
+    }
+  });
+
+  it("keeps a sensible heading order", async () => {
+    const { default: CompetitorMonitorPage } = await import("@/app/competitor-monitor/page");
+    render(<CompetitorMonitorPage />);
+    const levels = screen.getAllByRole("heading").map((node) => Number(node.tagName.slice(1)));
+    expect(levels[0]).toBe(1);
+    for (let i = 1; i < levels.length; i += 1) {
+      expect(levels[i] - levels[i - 1], `jump at heading ${i}`).toBeLessThanOrEqual(1);
+    }
   });
 });

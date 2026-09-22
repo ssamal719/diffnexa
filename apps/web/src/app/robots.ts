@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/site";
 
 /**
- * The three public pages are open; everything behind them is not a page.
+ * The public pages are open; everything behind them is not a page.
  *
  * /api holds server routes and /pdf-worker serves a script, so neither belongs
  * in search results. Nothing here blocks the pages people should find.

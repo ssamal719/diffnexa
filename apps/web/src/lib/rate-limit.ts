@@ -61,6 +61,16 @@ export const LIMITS: Record<string, RateLimit[]> = {
     { limit: 10, windowMs: 60_000 },
     { limit: 100, windowMs: 60 * 60_000 },
   ],
+  // Competitor Monitor does the same work again — fetch a page and compare it —
+  // so it carries the same limits, in buckets of its own.
+  "competitor-capture": [
+    { limit: 10, windowMs: 60_000 },
+    { limit: 100, windowMs: 60 * 60_000 },
+  ],
+  "competitor-compare": [
+    { limit: 10, windowMs: 60_000 },
+    { limit: 100, windowMs: 60 * 60_000 },
+  ],
 };
 
 type Hit = { at: number };

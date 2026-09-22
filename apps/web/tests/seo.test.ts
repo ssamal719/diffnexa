@@ -10,6 +10,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { metadata as rootMetadata, TOOLS } from "@/app/layout";
 import { metadata as homeMetadata } from "@/app/page";
+import { metadata as competitorMetadata } from "@/app/competitor-monitor/page";
 import { metadata as pdfMetadata } from "@/app/pdf-compare/page";
 import { metadata as policyMetadata } from "@/app/policy-monitor/page";
 import { metadata as webMetadata } from "@/app/website-compare/page";
@@ -21,6 +22,7 @@ const PAGES = [
   { name: "pdf-compare", metadata: pdfMetadata, path: "/pdf-compare" },
   { name: "website-compare", metadata: webMetadata, path: "/website-compare" },
   { name: "policy-monitor", metadata: policyMetadata, path: "/policy-monitor" },
+  { name: "competitor-monitor", metadata: competitorMetadata, path: "/competitor-monitor" },
 ];
 
 function titleOf(metadata: (typeof PAGES)[number]["metadata"]): string {
@@ -30,19 +32,24 @@ function titleOf(metadata: (typeof PAGES)[number]["metadata"]): string {
   return "";
 }
 
-describe("the two tools", () => {
+describe("the tools", () => {
   it("are listed once, so the header and homepage cannot disagree", () => {
     expect(TOOLS.map((tool) => tool.href)).toEqual([
       "/pdf-compare",
       "/website-compare",
       "/policy-monitor",
+      "/competitor-monitor",
     ]);
     expect(TOOLS.map((tool) => tool.name)).toEqual([
       "PDF Compare",
       "Website Change Detector",
       "Policy & Terms Monitor",
+      "Competitor Monitor",
     ]);
     for (const tool of TOOLS) expect(tool.summary.length).toBeGreaterThan(30);
+    expect(TOOLS.find((tool) => tool.href === "/competitor-monitor")?.summary).toBe(
+      "Track changes on competitor webpages and see exactly what changed.",
+    );
   });
 
   it("have one entry per public tool page", () => {
@@ -176,15 +183,55 @@ describe("the policy monitor page", () => {
   });
 });
 
+describe("the competitor monitor page", () => {
+  it("has exactly the agreed title and description", () => {
+    expect(titleOf(competitorMetadata)).toBe(
+      "Competitor Monitor — Track What Changes on Competitor Websites",
+    );
+    expect(competitorMetadata.description).toBe(
+      "Compare a competitor’s public webpage with your saved baseline and see exactly what changed, with evidence for every detected change.",
+    );
+  });
+
+  it("is canonical at its own address, with matching Open Graph details", () => {
+    expect(competitorMetadata.alternates?.canonical).toBe("/competitor-monitor");
+    const openGraph = competitorMetadata.openGraph as Record<string, unknown>;
+    expect(openGraph.url).toBe("/competitor-monitor");
+    expect(openGraph.title).toBe(titleOf(competitorMetadata));
+    expect(openGraph.description).toBe(competitorMetadata.description);
+  });
+
+  it("does not have the site name appended to a title that already names the product", () => {
+    expect(competitorMetadata.title).toEqual({ absolute: titleOf(competitorMetadata) });
+  });
+
+  it("claims no capability the product does not have", () => {
+    const wording = `${titleOf(competitorMetadata)} ${competitorMetadata.description}`.toLowerCase();
+    for (const claim of [
+      "ai", "automatic", "automatically", "automated", "alerts?", "scheduled?", "continuous",
+      "real-time", "crawls?", "history", "screenshots?", "threats?", "risks?", "opportunit(y|ies)",
+    ]) {
+      expect(wording, `claims ${claim}`).not.toMatch(new RegExp(`\\b${claim}\\b`));
+    }
+  });
+});
+
 describe("the sitemap", () => {
   it("lists exactly the public pages", () => {
     const paths = sitemap().map((entry) => new URL(entry.url).pathname);
     expect(paths.sort()).toEqual([
       "/",
+      "/competitor-monitor",
       "/pdf-compare",
       "/policy-monitor",
       "/website-compare",
-    ]);
+    ].sort());
+  });
+
+  it("includes the competitor monitor route", () => {
+    const urls = sitemap().map((entry) => entry.url);
+    expect(urls).toContain("http://localhost:3000/competitor-monitor");
+    expect(urls.filter((url) => url.endsWith("/competitor-monitor"))).toHaveLength(1);
   });
 
   it("includes the policy monitor route", () => {

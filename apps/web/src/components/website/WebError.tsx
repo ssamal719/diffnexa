@@ -73,8 +73,23 @@ const FALLBACK = {
   retry: true,
 };
 
-export function WebError({ failure, onRetry }: { failure: WebFailure; onRetry?: () => void }) {
-  const explanation = EXPLANATIONS[failure.code] ?? FALLBACK;
+type Explanation = { title: string; whatNext: string; retry: boolean };
+
+export function WebError({
+  failure,
+  onRetry,
+  explanations,
+}: {
+  failure: WebFailure;
+  onRetry?: () => void;
+  /**
+   * Wording a tool needs for its own situation, such as the name of its
+   * baseline file. Codes not listed keep the shared explanation, so Website
+   * Change Detector and Policy Monitor, which pass nothing, are unchanged.
+   */
+  explanations?: Partial<Record<string, Explanation>>;
+}) {
+  const explanation = explanations?.[failure.code] ?? EXPLANATIONS[failure.code] ?? FALLBACK;
 
   return (
     <section

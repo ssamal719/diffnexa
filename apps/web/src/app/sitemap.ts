@@ -15,5 +15,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/pdf-compare`, lastModified: updated, changeFrequency: "monthly", priority: 0.8 },
     { url: `${SITE_URL}/website-compare`, lastModified: updated, changeFrequency: "monthly", priority: 0.8 },
     { url: `${SITE_URL}/policy-monitor`, lastModified: updated, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${SITE_URL}/competitor-monitor`, lastModified: updated, changeFrequency: "monthly", priority: 0.8 },
   ];
 }

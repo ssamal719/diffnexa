@@ -25,6 +25,8 @@ afterEach(() => {
 describe("the limits themselves", () => {
   it("cover every expensive operation", () => {
     expect(Object.keys(LIMITS).sort()).toEqual([
+      "competitor-capture",
+      "competitor-compare",
       "pdf-compare",
       "policy-capture",
       "policy-compare",

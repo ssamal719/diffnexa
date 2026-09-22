@@ -23,4 +23,9 @@ export const TOOLS = [
     summary:
       "Compare a public policy or terms page against a baseline you saved, and see which part of the document changed.",
   },
+  {
+    href: "/competitor-monitor",
+    name: "Competitor Monitor",
+    summary: "Track changes on competitor webpages and see exactly what changed.",
+  },
 ] as const;

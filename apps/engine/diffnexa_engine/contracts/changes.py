@@ -3,8 +3,10 @@
 Rules enforced here (a change that breaks them cannot even be constructed):
 
 1. Every change carries at least one piece of evidence.
-2. Evidence points to a place in a source PDF: a page plus a location (word IDs
-   and/or a bounding box). Only metadata changes may use document-level evidence.
+2. Evidence points to a place in a source: a page plus a location (word IDs
+   and/or a bounding box) in a PDF, a content node in a webpage or Word
+   document, or a sheet and cell in a workbook. Only metadata changes may use
+   document-level evidence.
 3. Added changes need evidence from the new PDF, removed changes from the old PDF,
    modified and moved changes from both.
 4. Modified changes state both the old and the new value.
@@ -21,9 +23,16 @@ is the box inside the page, does the excerpt match those words) is checked by
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    SerializerFunctionWrapHandler,
+    model_serializer,
+    model_validator,
+)
 
 from diffnexa_engine.model.document import BBox
 
@@ -58,6 +67,7 @@ class ChangeCategory(StrEnum):
     METADATA = "metadata"
     FORMATTING = "formatting"
     LAYOUT = "layout"
+    FORMULA = "formula"
 
 
 class ChangeType(StrEnum):
@@ -83,6 +93,7 @@ class ChangeType(StrEnum):
     METADATA_CHANGED = "METADATA_CHANGED"
     FORMATTING_CHANGED = "FORMATTING_CHANGED"
     LAYOUT_CHANGED = "LAYOUT_CHANGED"
+    FORMULA_CHANGED = "FORMULA_CHANGED"
 
 
 _KIND_SUFFIX = {
@@ -104,6 +115,7 @@ _ALWAYS_CHANGED = {
     ChangeCategory.METADATA: ChangeType.METADATA_CHANGED,
     ChangeCategory.FORMATTING: ChangeType.FORMATTING_CHANGED,
     ChangeCategory.LAYOUT: ChangeType.LAYOUT_CHANGED,
+    ChangeCategory.FORMULA: ChangeType.FORMULA_CHANGED,
 }
 
 
@@ -125,7 +137,7 @@ class Importance(StrEnum):
 class Evidence(_Frozen):
     """Where a change came from, in terms the source format can actually answer.
 
-    Three scopes, and a piece of evidence uses exactly one of them:
+    Four scopes, and a piece of evidence uses exactly one of them:
 
     * ``page`` — a place on a page of a document: a page number, plus the words
       or the area on it. This is what PDFs can prove.
@@ -134,13 +146,16 @@ class Evidence(_Frozen):
     * ``node`` — a place in a captured webpage: the snapshot it came from, the
       content node, and the words cited within that node. A webpage has no pages
       and no coordinates, so inventing them would be inventing evidence.
+    * ``cell`` — a place in a workbook: the workbook it came from, the sheet, and
+      the cell ("Pricing", "F22"). With no cell, it is the sheet itself (a sheet
+      that was added, removed or renamed).
 
     The fields of one scope are forbidden on the others, checked below, so page
     evidence can never quietly become node evidence or the reverse.
     """
 
     side: Side
-    scope: Literal["page", "document", "node"] = "page"
+    scope: Literal["page", "document", "node", "cell"] = "page"
 
     # page scope
     page: int | None = Field(default=None, ge=1)
@@ -158,7 +173,21 @@ class Evidence(_Frozen):
     token_ids: tuple[str, ...] = ()
     text_range: tuple[int, int] | None = None
 
+    # cell scope: a place in a workbook (the workbook is named by snapshot_sha256)
+    sheet: str | None = Field(default=None, min_length=1, max_length=100)
+    cell_ref: str | None = Field(default=None, pattern=r"^[A-Z]{1,3}[1-9][0-9]{0,6}$")
+
     excerpt: str | None = Field(default=None, max_length=1000)
+
+    @model_serializer(mode="wrap")
+    def _cell_fields_only_on_cell_evidence(self, handler: SerializerFunctionWrapHandler) -> dict[str, Any]:
+        # The workbook fields are written only where they mean something, so the
+        # output of every other tool stays exactly as it was before workbooks.
+        data: dict[str, Any] = handler(self)
+        if self.scope != "cell":
+            data.pop("sheet", None)
+            data.pop("cell_ref", None)
+        return data
 
     @model_validator(mode="after")
     def _has_location(self) -> Evidence:
@@ -174,6 +203,10 @@ class Evidence(_Frozen):
             or bool(self.token_ids)
             or self.text_range is not None
         )
+
+        cell_fields = self.sheet is not None or self.cell_ref is not None
+        if self.scope != "cell" and cell_fields:
+            raise ValueError("only cell-scope evidence may name a sheet or cell")
 
         if self.scope == "page":
             if node_fields:
@@ -203,6 +236,23 @@ class Evidence(_Frozen):
                 raise ValueError("document-scope evidence must not point inside a node")
             if not self.field:
                 raise ValueError("document-scope evidence must name the field it refers to")
+
+        elif self.scope == "cell":
+            located_in_a_node = (
+                self.node_id is not None
+                or self.node_path is not None
+                or bool(self.section_path)
+                or bool(self.token_ids)
+                or self.text_range is not None
+            )
+            if page_fields or located_in_a_node:
+                raise ValueError("cell-scope evidence must not carry page or webpage fields")
+            if self.field is not None:
+                raise ValueError("'field' is only allowed on document-scope evidence")
+            if not self.snapshot_sha256:
+                raise ValueError("cell-scope evidence must name the workbook it came from")
+            if not self.sheet:
+                raise ValueError("cell-scope evidence must name a sheet")
 
         else:  # node
             if page_fields:
@@ -263,6 +313,8 @@ class Change(_Frozen):
             # A single change is evidenced from one source. Mixing a webpage node
             # with a document page would mean neither checker could verify it all.
             raise ValueError("a change cannot mix webpage evidence with document evidence")
+        if "cell" in scopes and scopes - {"cell"}:
+            raise ValueError("a change cannot mix workbook evidence with other evidence")
         return self
 
     @property
@@ -323,7 +375,21 @@ class DocxRef(_Frozen):
     node_count: int = Field(ge=0)
 
 
-SourceRef = Annotated[DocumentRef | SnapshotRef | DocxRef, Field(discriminator="kind")]
+class XlsxRef(_Frozen):
+    """One side of a comparison, when that side is an Excel (.xlsx) workbook.
+
+    The fingerprint is of the workbook's content — sheets, cells, values and
+    formulas — not of the file's bytes, and every piece of evidence from that
+    workbook cites it.
+    """
+
+    kind: Literal["xlsx"] = "xlsx"
+    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    sheet_count: int = Field(ge=0)
+    cell_count: int = Field(ge=0)
+
+
+SourceRef = Annotated[DocumentRef | SnapshotRef | DocxRef | XlsxRef, Field(discriminator="kind")]
 
 
 class ComparisonResult(_Frozen):
@@ -351,7 +417,7 @@ class ComparisonResult(_Frozen):
                     if not isinstance(source, DocumentRef):
                         raise ValueError(
                             f"change {change.id} cites a page of the {ev.side.value} side, "
-                            "which is a webpage or Word document and has none"
+                            "which is a webpage, Word document or workbook and has none"
                         )
                     if ev.page > source.page_count:
                         raise ValueError(
@@ -364,6 +430,11 @@ class ComparisonResult(_Frozen):
                     raise ValueError(
                         f"change {change.id} cites a content node on the {ev.side.value} side, "
                         "which is a paginated document"
+                    )
+                if ev.scope == "cell" and not isinstance(source, XlsxRef):
+                    raise ValueError(
+                        f"change {change.id} cites a workbook cell on the {ev.side.value} side, "
+                        "which is not a workbook"
                     )
 
         known = set(ids)

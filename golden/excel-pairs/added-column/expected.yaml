@@ -1,0 +1,6 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: added-column
+description: 'A Department column is inserted as column C of Employees; the columns after it move right and are not changes.'
+expected_changes:
+- {group: 'structure', kind: 'added', subtype: 'column', sheet: 'Employees', ref: 'C1:C6', new: 'Department · Engineering · Analytics · Design · Support · Finance'}

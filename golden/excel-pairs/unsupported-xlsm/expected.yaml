@@ -1,0 +1,5 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: unsupported-xlsm
+description: 'The revised file is a macro-enabled workbook with a VBA project. It must be refused; no macro is run.'
+expected_error: {side: revised, code: excel_macro_enabled}

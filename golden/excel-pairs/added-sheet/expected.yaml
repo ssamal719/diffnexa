@@ -1,0 +1,6 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: added-sheet
+description: 'A Regions sheet is added.'
+expected_changes:
+- {group: 'structure', kind: 'added', subtype: 'sheet', sheet: 'Regions', new: 'Regions'}

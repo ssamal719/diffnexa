@@ -1,0 +1,8 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: formula-result
+description: 'Team seats go from 10 to 12. The Team total and Summary revenue change because their unchanged formulas refer to it.'
+expected_changes:
+- {group: 'values', kind: 'modified', category: 'number', subtype: 'cell', sheet: 'Pricing', ref: 'C4', old: '10', new: '12', delta: '+2 (+20%)'}
+- {group: 'values', kind: 'modified', category: 'number', subtype: 'calculated', sheet: 'Pricing', ref: 'E4', old: '$4,241.50', new: '$5,089.80'}
+- {group: 'values', kind: 'modified', category: 'number', subtype: 'calculated', sheet: 'Summary', ref: 'B3', old: '$31,127.80', new: '$31,976.10'}

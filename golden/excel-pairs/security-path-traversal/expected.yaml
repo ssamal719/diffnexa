@@ -1,0 +1,5 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: security-path-traversal
+description: 'The original archive holds a member named to escape its folder. It must be refused and nothing extracted.'
+expected_error: {side: original, code: excel_unreadable}

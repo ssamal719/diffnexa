@@ -1,0 +1,16 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: multiple-changes
+description: 'A revised company workbook: Pro price up, a Growth plan inserted (Summary formulas widen), a renewal date moved, an employee renamed and another removed, a plan link changed, and a Regions sheet added.'
+expected_changes:
+- {group: 'values', kind: 'modified', category: 'number', subtype: 'cell', sheet: 'Pricing', ref: 'B3', old: '$299.00', new: '$349.00'}
+- {group: 'values', kind: 'modified', category: 'number', subtype: 'calculated', sheet: 'Pricing', ref: 'E3', old: '$807.30', new: '$942.30'}
+- {group: 'structure', kind: 'added', subtype: 'row', sheet: 'Pricing', ref: 'A4:F4'}
+- {group: 'values', kind: 'modified', category: 'date', sheet: 'Pricing', ref: 'F5', original_ref: 'F4', revised_ref: 'F5', old: '15 Oct 2026', new: '1 Nov 2026', delta: '17 days later'}
+- {group: 'formulas', kind: 'modified', category: 'formula', sheet: 'Summary', ref: 'B3', old: '=SUM(Pricing!E2:E5)', new: '=SUM(Pricing!E2:E6)'}
+- {group: 'formulas', kind: 'modified', category: 'formula', sheet: 'Summary', ref: 'B4', old: '=COUNTA(Pricing!A2:A5)', new: '=COUNTA(Pricing!A2:A6)'}
+- {group: 'formulas', kind: 'modified', category: 'formula', sheet: 'Summary', ref: 'B5', old: '=AVERAGE(Pricing!B2:B5)', new: '=AVERAGE(Pricing!B2:B6)'}
+- {group: 'links', kind: 'modified', category: 'link', sheet: 'Pricing', ref: 'A2', new: 'https://example.com/plans/basic'}
+- {group: 'values', kind: 'modified', category: 'text', sheet: 'Employees', ref: 'A2', old: 'John Carter', new: 'Jonathan Carter'}
+- {group: 'structure', kind: 'removed', subtype: 'row', sheet: 'Employees', ref: 'A5:E5', original_ref: 'A5:E5', old: 'Omar Haddad · Support Manager · 2020-11-02 · ₹1,600,000 · Hyderabad'}
+- {group: 'structure', kind: 'added', subtype: 'sheet', sheet: 'Regions'}

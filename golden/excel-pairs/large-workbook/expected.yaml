@@ -1,0 +1,8 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: large-workbook
+description: 'A 3,000-row inventory: one unit price, one stock count, and one inserted product row far down the sheet.'
+expected_changes:
+- {group: 'values', kind: 'modified', category: 'number', sheet: 'Products', ref: 'D1501', old: '€65.00', new: '€99.99', delta: '+34.99 (+53.83%)'}
+- {group: 'values', kind: 'modified', category: 'number', sheet: 'Products', ref: 'E2201', old: '100', new: '0', delta: '-100 (-100%)'}
+- {group: 'structure', kind: 'added', subtype: 'row', sheet: 'Products', ref: 'A2802:H2802', new: 'SKU-02800A · Item 2800A · Tools · €12.50 · 40 · 25 · WH-2 · 30 Sep 2026'}

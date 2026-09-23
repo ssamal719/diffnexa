@@ -1,0 +1,6 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: text-change
+description: 'An employee name changes from John Carter to Jonathan Carter.'
+expected_changes:
+- {group: 'values', kind: 'modified', category: 'text', subtype: 'cell', sheet: 'Employees', ref: 'A2', old: 'John Carter', new: 'Jonathan Carter'}

@@ -1,0 +1,7 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: formula-change
+description: 'The Enterprise total formula gains a 5% reduction. One formula change (with its result), and the Summary revenue recalculates.'
+expected_changes:
+- {group: 'formulas', kind: 'modified', category: 'formula', subtype: 'formula', sheet: 'Pricing', ref: 'E5', old: '=B5*C5*(1-D5)', new: '=B5*C5*(1-D5)*0.95'}
+- {group: 'values', kind: 'modified', category: 'number', subtype: 'calculated', sheet: 'Summary', ref: 'B3', old: '$31,127.80', new: '$29,828.80'}

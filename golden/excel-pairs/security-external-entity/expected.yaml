@@ -1,0 +1,5 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: security-external-entity
+description: 'The revised sheet declares an external entity pointing at a local file. It must be refused; the entity is never resolved.'
+expected_error: {side: revised, code: excel_unreadable}

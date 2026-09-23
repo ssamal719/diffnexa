@@ -13,6 +13,7 @@ from diffnexa_engine.contracts.changes import (
     Side,
     SnapshotRef,
     SourceRef,
+    XlsxRef,
     derive_change_type,
 )
 from diffnexa_engine.contracts.comparator import Comparator
@@ -35,6 +36,7 @@ __all__ = [
     "SnapshotRef",
     "SourceRef",
     "TraceIssue",
+    "XlsxRef",
     "derive_change_type",
     "normalize_text",
     "verify_traceability",

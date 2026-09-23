@@ -1,0 +1,6 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: removed-row
+description: "Mei Lin's row is removed from Employees."
+expected_changes:
+- {group: 'structure', kind: 'removed', subtype: 'row', sheet: 'Employees', ref: 'A4:D4', old: 'Mei Lin · Designer · 2022-01-10 · ₹1,300,000'}

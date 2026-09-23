@@ -1,0 +1,8 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: dates
+description: 'Three dates in three sheets and three formats change.'
+expected_changes:
+- {group: 'values', kind: 'modified', category: 'date', sheet: 'Summary', ref: 'B6', old: '30 September 2026', new: '31 October 2026', delta: '31 days later'}
+- {group: 'values', kind: 'modified', category: 'date', sheet: 'Employees', ref: 'C3', old: '2023-07-17', new: '2023-08-01', delta: '15 days later'}
+- {group: 'values', kind: 'modified', category: 'date', sheet: 'Settings', ref: 'B4', old: '1 April 2026', new: '1 July 2026', delta: '91 days later'}

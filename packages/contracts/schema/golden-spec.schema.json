@@ -12,7 +12,8 @@
         "link",
         "metadata",
         "formatting",
-        "layout"
+        "layout",
+        "formula"
       ],
       "title": "ChangeCategory",
       "type": "string"

@@ -32,5 +32,17 @@
     "docx_too_complex": "That document has more content than DOCX Compare can compare at once. Try comparing a shorter document.",
     "docx_tracked_changes": "This document contains tracked changes that haven't been accepted or rejected. Accept or reject them in Word, save, then compare again.",
     "docx_empty_file": "That file is empty. Choose the Word document you want to compare."
+  },
+  "excel_messages": {
+    "excel_not_xlsx": "That file isn't an Excel .xlsx workbook. Excel Compare reads .xlsx files only.",
+    "excel_legacy_xls": "That looks like an older Excel .xls file. Open it in Excel, save it as .xlsx, then compare again.",
+    "excel_macro_enabled": "That is a macro-enabled Excel file (.xlsm). For safety, Excel Compare reads plain .xlsx files only. Save it as a .xlsx without macros, then compare again.",
+    "excel_unsupported": "That Excel file is saved in a format Excel Compare can't read yet, such as a binary .xlsb workbook or a template. Save it as an ordinary .xlsx workbook, then compare again.",
+    "excel_encrypted": "This workbook is password protected. Remove the password in Excel, then compare again.",
+    "excel_unreadable": "That file couldn't be read as an Excel workbook. It may be damaged, or not a real .xlsx file.",
+    "excel_too_large": "That workbook is too large to compare. Try a smaller workbook, or one without large images.",
+    "excel_too_complex": "That workbook has more cells or sheets than Excel Compare can show at once. Try comparing a smaller workbook, or only the sheets you need.",
+    "excel_no_sheets": "That workbook has no worksheets to compare.",
+    "excel_empty_file": "That file is empty. Choose the Excel workbook you want to compare."
   }
 }

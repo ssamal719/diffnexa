@@ -1,0 +1,9 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: number-change
+description: 'The Pro plan price goes from $299 to $349. Its Total and the Summary revenue and average recalculate from unchanged formulas.'
+expected_changes:
+- {group: 'values', kind: 'modified', category: 'number', subtype: 'cell', sheet: 'Pricing', ref: 'B3', old: '$299.00', new: '$349.00', delta: '+50 (+16.72%)'}
+- {group: 'values', kind: 'modified', category: 'number', subtype: 'calculated', sheet: 'Pricing', ref: 'E3', old: '$807.30', new: '$942.30', delta: '+135 (+16.72%)'}
+- {group: 'values', kind: 'modified', category: 'number', subtype: 'calculated', sheet: 'Summary', ref: 'B3', old: '$31,127.80', new: '$31,262.80'}
+- {group: 'values', kind: 'modified', category: 'number', subtype: 'calculated', sheet: 'Summary', ref: 'B5', old: '$549.00', new: '$561.50'}

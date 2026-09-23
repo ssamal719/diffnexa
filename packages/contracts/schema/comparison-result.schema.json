@@ -267,7 +267,8 @@
         "link",
         "metadata",
         "formatting",
-        "layout"
+        "layout",
+        "formula"
       ],
       "title": "ChangeCategory",
       "type": "string"
@@ -340,7 +341,7 @@
     },
     "Evidence": {
       "additionalProperties": false,
-      "description": "Where a change came from, in terms the source format can actually answer.\n\nThree scopes, and a piece of evidence uses exactly one of them:\n\n* ``page`` \u2014 a place on a page of a document: a page number, plus the words\n  or the area on it. This is what PDFs can prove.\n* ``document`` \u2014 a property of the file as a whole, such as its title. Only\n  metadata changes may use it.\n* ``node`` \u2014 a place in a captured webpage: the snapshot it came from, the\n  content node, and the words cited within that node. A webpage has no pages\n  and no coordinates, so inventing them would be inventing evidence.\n\nThe fields of one scope are forbidden on the others, checked below, so page\nevidence can never quietly become node evidence or the reverse.",
+      "description": "Where a change came from, in terms the source format can actually answer.\n\nFour scopes, and a piece of evidence uses exactly one of them:\n\n* ``page`` \u2014 a place on a page of a document: a page number, plus the words\n  or the area on it. This is what PDFs can prove.\n* ``document`` \u2014 a property of the file as a whole, such as its title. Only\n  metadata changes may use it.\n* ``node`` \u2014 a place in a captured webpage: the snapshot it came from, the\n  content node, and the words cited within that node. A webpage has no pages\n  and no coordinates, so inventing them would be inventing evidence.\n* ``cell`` \u2014 a place in a workbook: the workbook it came from, the sheet, and\n  the cell (\"Pricing\", \"F22\"). With no cell, it is the sheet itself (a sheet\n  that was added, removed or renamed).\n\nThe fields of one scope are forbidden on the others, checked below, so page\nevidence can never quietly become node evidence or the reverse.",
       "properties": {
         "bbox": {
           "anyOf": [
@@ -352,6 +353,19 @@
             }
           ],
           "default": null
+        },
+        "cell_ref": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{1,3}[1-9][0-9]{0,6}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cell Ref"
         },
         "excerpt": {
           "anyOf": [
@@ -423,7 +437,8 @@
           "enum": [
             "page",
             "document",
-            "node"
+            "node",
+            "cell"
           ],
           "title": "Scope",
           "type": "string"
@@ -435,6 +450,20 @@
           },
           "title": "Section Path",
           "type": "array"
+        },
+        "sheet": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sheet"
         },
         "side": {
           "$ref": "#/$defs/Side"
@@ -550,6 +579,40 @@
       ],
       "title": "SnapshotRef",
       "type": "object"
+    },
+    "XlsxRef": {
+      "additionalProperties": false,
+      "description": "One side of a comparison, when that side is an Excel (.xlsx) workbook.\n\nThe fingerprint is of the workbook's content \u2014 sheets, cells, values and\nformulas \u2014 not of the file's bytes, and every piece of evidence from that\nworkbook cites it.",
+      "properties": {
+        "cell_count": {
+          "minimum": 0,
+          "title": "Cell Count",
+          "type": "integer"
+        },
+        "kind": {
+          "const": "xlsx",
+          "default": "xlsx",
+          "title": "Kind",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "sheet_count": {
+          "minimum": 0,
+          "title": "Sheet Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sha256",
+        "sheet_count",
+        "cell_count"
+      ],
+      "title": "XlsxRef",
+      "type": "object"
     }
   },
   "additionalProperties": false,
@@ -579,7 +642,8 @@
         "mapping": {
           "document": "#/$defs/DocumentRef",
           "docx": "#/$defs/DocxRef",
-          "snapshot": "#/$defs/SnapshotRef"
+          "snapshot": "#/$defs/SnapshotRef",
+          "xlsx": "#/$defs/XlsxRef"
         },
         "propertyName": "kind"
       },
@@ -592,6 +656,9 @@
         },
         {
           "$ref": "#/$defs/DocxRef"
+        },
+        {
+          "$ref": "#/$defs/XlsxRef"
         }
       ],
       "title": "New Document"
@@ -601,7 +668,8 @@
         "mapping": {
           "document": "#/$defs/DocumentRef",
           "docx": "#/$defs/DocxRef",
-          "snapshot": "#/$defs/SnapshotRef"
+          "snapshot": "#/$defs/SnapshotRef",
+          "xlsx": "#/$defs/XlsxRef"
         },
         "propertyName": "kind"
       },
@@ -614,6 +682,9 @@
         },
         {
           "$ref": "#/$defs/DocxRef"
+        },
+        {
+          "$ref": "#/$defs/XlsxRef"
         }
       ],
       "title": "Old Document"

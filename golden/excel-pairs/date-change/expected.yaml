@@ -1,0 +1,6 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: date-change
+description: 'The Team plan renewal moves from 15 October to 1 November 2026.'
+expected_changes:
+- {group: 'values', kind: 'modified', category: 'date', subtype: 'cell', sheet: 'Pricing', ref: 'F4', old: '15 Oct 2026', new: '1 Nov 2026', delta: '17 days later'}

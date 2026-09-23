@@ -1,0 +1,9 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: added-row
+description: 'A Growth plan row is inserted as Pricing row 4. Excel widens the three Summary formulas to include it; the rows below move down and are not changes.'
+expected_changes:
+- {group: 'structure', kind: 'added', subtype: 'row', sheet: 'Pricing', ref: 'A4:F4', new: 'Growth · $199.00 · 5 · 5% · $945.25 · 30 Sep 2026'}
+- {group: 'formulas', kind: 'modified', category: 'formula', sheet: 'Summary', ref: 'B3', old: '=SUM(Pricing!E2:E5)', new: '=SUM(Pricing!E2:E6)'}
+- {group: 'formulas', kind: 'modified', category: 'formula', sheet: 'Summary', ref: 'B4', old: '=COUNTA(Pricing!A2:A5)', new: '=COUNTA(Pricing!A2:A6)'}
+- {group: 'formulas', kind: 'modified', category: 'formula', sheet: 'Summary', ref: 'B5', old: '=AVERAGE(Pricing!B2:B5)', new: '=AVERAGE(Pricing!B2:B6)'}

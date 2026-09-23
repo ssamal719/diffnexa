@@ -1,0 +1,2049 @@
+{
+ "engineVersion": "0.1.0",
+ "processingMs": 42,
+ "workbooks": {
+  "original": {
+   "sha256": "78b29a5aeba3db8ed7a959a939a662add2eebfcd23ec8311c20a1a8206e20666",
+   "sheetCount": 4,
+   "cellCount": 78,
+   "date1904": false,
+   "warnings": []
+  },
+  "revised": {
+   "sha256": "389037db23e35bd700f42984b8586dcb7c2303a5155fbd4266c241e21120ac3a",
+   "sheetCount": 5,
+   "cellCount": 85,
+   "date1904": false,
+   "warnings": []
+  }
+ },
+ "counts": {
+  "total": 11
+ },
+ "groups": [
+  {
+   "id": "values",
+   "label": "Values",
+   "changeCount": 4,
+   "changeIds": [
+    "c4",
+    "c5",
+    "c7",
+    "c8"
+   ]
+  },
+  {
+   "id": "formulas",
+   "label": "Formulas",
+   "changeCount": 3,
+   "changeIds": [
+    "c0",
+    "c1",
+    "c2"
+   ]
+  },
+  {
+   "id": "structure",
+   "label": "Structure",
+   "changeCount": 3,
+   "changeIds": [
+    "c6",
+    "c9",
+    "c10"
+   ]
+  },
+  {
+   "id": "links",
+   "label": "Links",
+   "changeCount": 1,
+   "changeIds": [
+    "c3"
+   ]
+  }
+ ],
+ "changes": [
+  {
+   "id": "c0",
+   "number": 1,
+   "seq": 0,
+   "type": "FORMULA_CHANGED",
+   "kind": "modified",
+   "category": "formula",
+   "subtype": "formula",
+   "group": "formulas",
+   "sheet": "Summary",
+   "ref": "B3",
+   "label": "Summary · B3",
+   "oldValue": "=SUM(Pricing!E2:E5)",
+   "newValue": "=SUM(Pricing!E2:E6)",
+   "delta": null,
+   "confidence": 1.0,
+   "original": {
+    "sheet": "Summary",
+    "ref": "B3",
+    "exact": true,
+    "note": null,
+    "cell": {
+     "value": "31127.8",
+     "display": "$31,127.80",
+     "kind": "number",
+     "formula": "=SUM(Pricing!E2:E5)",
+     "link": null
+    },
+    "cells": [
+     "B3"
+    ]
+   },
+   "revised": {
+    "sheet": "Summary",
+    "ref": "B3",
+    "exact": true,
+    "note": null,
+    "cell": {
+     "value": "32208.05",
+     "display": "$32,208.05",
+     "kind": "number",
+     "formula": "=SUM(Pricing!E2:E6)",
+     "link": null
+    },
+    "cells": [
+     "B3"
+    ]
+   },
+   "evidence": [
+    {
+     "side": "old",
+     "sheet": "Summary",
+     "cell": "B3",
+     "excerpt": "$31,127.80"
+    },
+    {
+     "side": "new",
+     "sheet": "Summary",
+     "cell": "B3",
+     "excerpt": "$32,208.05"
+    }
+   ]
+  },
+  {
+   "id": "c1",
+   "number": 2,
+   "seq": 1,
+   "type": "FORMULA_CHANGED",
+   "kind": "modified",
+   "category": "formula",
+   "subtype": "formula",
+   "group": "formulas",
+   "sheet": "Summary",
+   "ref": "B4",
+   "label": "Summary · B4",
+   "oldValue": "=COUNTA(Pricing!A2:A5)",
+   "newValue": "=COUNTA(Pricing!A2:A6)",
+   "delta": null,
+   "confidence": 1.0,
+   "original": {
+    "sheet": "Summary",
+    "ref": "B4",
+    "exact": true,
+    "note": null,
+    "cell": {
+     "value": "4",
+     "display": "4",
+     "kind": "number",
+     "formula": "=COUNTA(Pricing!A2:A5)",
+     "link": null
+    },
+    "cells": [
+     "B4"
+    ]
+   },
+   "revised": {
+    "sheet": "Summary",
+    "ref": "B4",
+    "exact": true,
+    "note": null,
+    "cell": {
+     "value": "5",
+     "display": "5",
+     "kind": "number",
+     "formula": "=COUNTA(Pricing!A2:A6)",
+     "link": null
+    },
+    "cells": [
+     "B4"
+    ]
+   },
+   "evidence": [
+    {
+     "side": "old",
+     "sheet": "Summary",
+     "cell": "B4",
+     "excerpt": "4"
+    },
+    {
+     "side": "new",
+     "sheet": "Summary",
+     "cell": "B4",
+     "excerpt": "5"
+    }
+   ]
+  },
+  {
+   "id": "c2",
+   "number": 3,
+   "seq": 2,
+   "type": "FORMULA_CHANGED",
+   "kind": "modified",
+   "category": "formula",
+   "subtype": "formula",
+   "group": "formulas",
+   "sheet": "Summary",
+   "ref": "B5",
+   "label": "Summary · B5",
+   "oldValue": "=AVERAGE(Pricing!B2:B5)",
+   "newValue": "=AVERAGE(Pricing!B2:B6)",
+   "delta": null,
+   "confidence": 1.0,
+   "original": {
+    "sheet": "Summary",
+    "ref": "B5",
+    "exact": true,
+    "note": null,
+    "cell": {
+     "value": "549",
+     "display": "$549.00",
+     "kind": "number",
+     "formula": "=AVERAGE(Pricing!B2:B5)",
+     "link": null
+    },
+    "cells": [
+     "B5"
+    ]
+   },
+   "revised": {
+    "sheet": "Summary",
+    "ref": "B5",
+    "exact": true,
+    "note": null,
+    "cell": {
+     "value": "489",
+     "display": "$489.00",
+     "kind": "number",
+     "formula": "=AVERAGE(Pricing!B2:B6)",
+     "link": null
+    },
+    "cells": [
+     "B5"
+    ]
+   },
+   "evidence": [
+    {
+     "side": "old",
+     "sheet": "Summary",
+     "cell": "B5",
+     "excerpt": "$549.00"
+    },
+    {
+     "side": "new",
+     "sheet": "Summary",
+     "cell": "B5",
+     "excerpt": "$489.00"
+    }
+   ]
+  },
+  {
+   "id": "c3",
+   "number": 4,
+   "seq": 3,
+   "type": "LINK_CHANGED",
+   "kind": "modified",
+   "category": "link",
+   "subtype": "hyperlink",
+   "group": "links",
+   "sheet": "Pricing",
+   "ref": "A2",
+   "label": "Pricing · A2",
+   "oldValue": "https://example.com/plans/starter",
+   "newValue": "https://example.com/plans/basic",
+   "delta": null,
+   "confidence": 1.0,
+   "original": {
+    "sheet": "Pricing",
+    "ref": "A2",
+    "exact": true,
+    "note": null,
+    "cell": {
+     "value": "Starter",
+     "display": "Starter",
+     "kind": "text",
+     "formula": null,
+     "link": "https://example.com/plans/starter"
+    },
+    "cells": [
+     "A2"
+    ]
+   },
+   "revised": {
+    "sheet": "Pricing",
+    "ref": "A2",
+    "exact": true,
+    "note": null,
+    "cell": {
+     "value": "Starter",
+     "display": "Starter",
+     "kind": "text",
+     "formula": null,
+     "link": "https://example.com/plans/basic"
+    },
+    "cells": [
+     "A2"
+    ]
+   },
+   "evidence": [
+    {
+     "side": "old",
+     "sheet": "Pricing",
+     "cell": "A2",
+     "excerpt": "Starter"
+    },
+    {
+     "side": "new",
+     "sheet": "Pricing",
+     "cell": "A2",
+     "excerpt": "Starter"
+    }
+   ]
+  },
+  {
+   "id": "c4",
+   "number": 5,
+   "seq": 4,
+   "type": "NUMBER_CHANGED",
+   "kind": "modified",
+   "category": "number",
+   "subtype": "cell",
+   "group": "values",
+   "sheet": "Pricing",
+   "ref": "B3",
+   "label": "Pricing · B3",
+   "oldValue": "$299.00",
+   "newValue": "$349.00",
+   "delta": "+50 (+16.72%)",
+   "confidence": 1.0,
+   "original": {
+    "sheet": "Pricing",
+    "ref": "B3",
+    "exact": true,
+    "note": null,
+    "cell": {
+     "value": "299",
+     "display": "$299.00",
+     "kind": "number",
+     "formula": null,
+     "link": null
+    },
+    "cells": [
+     "B3"
+    ]
+   },
+   "revised": {
+    "sheet": "Pricing",
+    "ref": "B3",
+    "exact": true,
+    "note": null,
+    "cell": {
+     "value": "349",
+     "display": "$349.00",
+     "kind": "number",
+     "formula": null,
+     "link": null
+    },
+    "cells": [
+     "B3"
+    ]
+   },
+   "evidence": [
+    {
+     "side": "old",
+     "sheet": "Pricing",
+     "cell": "B3",
+     "excerpt": "$299.00"
+    },
+    {
+     "side": "new",
+     "sheet": "Pricing",
+     "cell": "B3",
+     "excerpt": "$349.00"
+    }
+   ]
+  },
+  {
+   "id": "c5",
+   "number": 6,
+   "seq": 5,
+   "type": "NUMBER_CHANGED",
+   "kind": "modified",
+   "category": "number",
+   "subtype": "calculated",
+   "group": "values",
+   "sheet": "Pricing",
+   "ref": "E3",
+   "label": "Pricing · E3",
+   "oldValue": "$807.30",
+   "newValue": "$942.30",
+   "delta": "+135 (+16.72%)",
+   "confidence": 1.0,
+   "original": {
+    "sheet": "Pricing",
+    "ref": "E3",
+    "exact": true,
+    "note": null,
+    "cell": {
+     "value": "807.3",
+     "display": "$807.30",
+     "kind": "number",
+     "formula": "=B3*C3*(1-D3)",
+     "link": null
+    },
+    "cells": [
+     "E3"
+    ]
+   },
+   "revised": {
+    "sheet": "Pricing",
+    "ref": "E3",
+    "exact": true,
+    "note": null,
+    "cell": {
+     "value": "942.3",
+     "display": "$942.30",
+     "kind": "number",
+     "formula": "=B3*C3*(1-D3)",
+     "link": null
+    },
+    "cells": [
+     "E3"
+    ]
+   },
+   "evidence": [
+    {
+     "side": "old",
+     "sheet": "Pricing",
+     "cell": "E3",
+     "excerpt": "$807.30"
+    },
+    {
+     "side": "new",
+     "sheet": "Pricing",
+     "cell": "E3",
+     "excerpt": "$942.30"
+    }
+   ]
+  },
+  {
+   "id": "c6",
+   "number": 7,
+   "seq": 6,
+   "type": "LAYOUT_CHANGED",
+   "kind": "added",
+   "category": "layout",
+   "subtype": "row",
+   "group": "structure",
+   "sheet": "Pricing",
+   "ref": "A4:F4",
+   "label": "Pricing · row 4",
+   "oldValue": null,
+   "newValue": "Growth · $199.00 · 5 · 5% · $945.25 · 30 Sep 2026",
+   "delta": null,
+   "confidence": 1.0,
+   "original": {
+    "sheet": "Pricing",
+    "ref": "A4",
+    "exact": false,
+    "note": "Row 4 is new in the revised sheet. The original is shown where it would be.",
+    "cell": null,
+    "cells": []
+   },
+   "revised": {
+    "sheet": "Pricing",
+    "ref": "A4:F4",
+    "exact": true,
+    "note": null,
+    "cell": null,
+    "cells": [
+     "A4",
+     "B4",
+     "C4",
+     "D4",
+     "E4",
+     "F4"
+    ]
+   },
+   "evidence": [
+    {
+     "side": "new",
+     "sheet": "Pricing",
+     "cell": "A4",
+     "excerpt": "Growth"
+    },
+    {
+     "side": "new",
+     "sheet": "Pricing",
+     "cell": "B4",
+     "excerpt": "$199.00"
+    },
+    {
+     "side": "new",
+     "sheet": "Pricing",
+     "cell": "C4",
+     "excerpt": "5"
+    },
+    {
+     "side": "new",
+     "sheet": "Pricing",
+     "cell": "D4",
+     "excerpt": "5%"
+    },
+    {
+     "side": "new",
+     "sheet": "Pricing",
+     "cell": "E4",
+     "excerpt": "$945.25"
+    }
+   ]
+  },
+  {
+   "id": "c7",
+   "number": 8,
+   "seq": 7,
+   "type": "DATE_CHANGED",
+   "kind": "modified",
+   "category": "date",
+   "subtype": "cell",
+   "group": "values",
+   "sheet": "Pricing",
+   "ref": "F5",
+   "label": "Pricing · F5",
+   "oldValue": "15 Oct 2026",
+   "newValue": "1 Nov 2026",
+   "delta": "17 days later",
+   "confidence": 1.0,
+   "original": {
+    "sheet": "Pricing",
+    "ref": "F4",
+    "exact": true,
+    "note": null,
+    "cell": {
+     "value": "46310",
+     "display": "15 Oct 2026",
+     "kind": "date",
+     "formula": null,
+     "link": null
+    },
+    "cells": [
+     "F4"
+    ]
+   },
+   "revised": {
+    "sheet": "Pricing",
+    "ref": "F5",
+    "exact": true,
+    "note": null,
+    "cell": {
+     "value": "46327",
+     "display": "1 Nov 2026",
+     "kind": "date",
+     "formula": null,
+     "link": null
+    },
+    "cells": [
+     "F5"
+    ]
+   },
+   "evidence": [
+    {
+     "side": "old",
+     "sheet": "Pricing",
+     "cell": "F4",
+     "excerpt": "15 Oct 2026"
+    },
+    {
+     "side": "new",
+     "sheet": "Pricing",
+     "cell": "F5",
+     "excerpt": "1 Nov 2026"
+    }
+   ]
+  },
+  {
+   "id": "c8",
+   "number": 9,
+   "seq": 8,
+   "type": "TEXT_MODIFIED",
+   "kind": "modified",
+   "category": "text",
+   "subtype": "cell",
+   "group": "values",
+   "sheet": "Employees",
+   "ref": "A2",
+   "label": "Employees · A2",
+   "oldValue": "John Carter",
+   "newValue": "Jonathan Carter",
+   "delta": null,
+   "confidence": 1.0,
+   "original": {
+    "sheet": "Employees",
+    "ref": "A2",
+    "exact": true,
+    "note": null,
+    "cell": {
+     "value": "John Carter",
+     "display": "John Carter",
+     "kind": "text",
+     "formula": null,
+     "link": null
+    },
+    "cells": [
+     "A2"
+    ]
+   },
+   "revised": {
+    "sheet": "Employees",
+    "ref": "A2",
+    "exact": true,
+    "note": null,
+    "cell": {
+     "value": "Jonathan Carter",
+     "display": "Jonathan Carter",
+     "kind": "text",
+     "formula": null,
+     "link": null
+    },
+    "cells": [
+     "A2"
+    ]
+   },
+   "evidence": [
+    {
+     "side": "old",
+     "sheet": "Employees",
+     "cell": "A2",
+     "excerpt": "John Carter"
+    },
+    {
+     "side": "new",
+     "sheet": "Employees",
+     "cell": "A2",
+     "excerpt": "Jonathan Carter"
+    }
+   ]
+  },
+  {
+   "id": "c9",
+   "number": 10,
+   "seq": 9,
+   "type": "LAYOUT_CHANGED",
+   "kind": "removed",
+   "category": "layout",
+   "subtype": "row",
+   "group": "structure",
+   "sheet": "Employees",
+   "ref": "A5:E5",
+   "label": "Employees · row 5",
+   "oldValue": "Omar Haddad · Support Manager · 2020-11-02 · ₹1,600,000 · Hyderabad",
+   "newValue": null,
+   "delta": null,
+   "confidence": 1.0,
+   "original": {
+    "sheet": "Employees",
+    "ref": "A5:E5",
+    "exact": true,
+    "note": null,
+    "cell": null,
+    "cells": [
+     "A5",
+     "B5",
+     "C5",
+     "D5",
+     "E5"
+    ]
+   },
+   "revised": {
+    "sheet": "Employees",
+    "ref": "A5",
+    "exact": false,
+    "note": "Row 5 of the original is not in the revised sheet. Shown where it would be.",
+    "cell": null,
+    "cells": []
+   },
+   "evidence": [
+    {
+     "side": "old",
+     "sheet": "Employees",
+     "cell": "A5",
+     "excerpt": "Omar Haddad"
+    },
+    {
+     "side": "old",
+     "sheet": "Employees",
+     "cell": "B5",
+     "excerpt": "Support Manager"
+    },
+    {
+     "side": "old",
+     "sheet": "Employees",
+     "cell": "C5",
+     "excerpt": "2020-11-02"
+    },
+    {
+     "side": "old",
+     "sheet": "Employees",
+     "cell": "D5",
+     "excerpt": "₹1,600,000"
+    },
+    {
+     "side": "old",
+     "sheet": "Employees",
+     "cell": "E5",
+     "excerpt": "Hyderabad"
+    }
+   ]
+  },
+  {
+   "id": "c10",
+   "number": 11,
+   "seq": 10,
+   "type": "LAYOUT_CHANGED",
+   "kind": "added",
+   "category": "layout",
+   "subtype": "sheet",
+   "group": "structure",
+   "sheet": "Regions",
+   "ref": null,
+   "label": "Regions",
+   "oldValue": null,
+   "newValue": "Regions",
+   "delta": null,
+   "confidence": 1.0,
+   "original": null,
+   "revised": {
+    "sheet": "Regions",
+    "ref": null,
+    "exact": true,
+    "note": null,
+    "cell": null,
+    "cells": [
+     "A1",
+     "B1",
+     "A2",
+     "B2",
+     "A3",
+     "B3"
+    ]
+   },
+   "evidence": [
+    {
+     "side": "new",
+     "sheet": "Regions",
+     "cell": null,
+     "excerpt": "Regions"
+    }
+   ]
+  }
+ ],
+ "sheets": [
+  {
+   "original": "Summary",
+   "revised": "Summary",
+   "status": "same",
+   "rows": [
+    [
+     1,
+     1
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     5
+    ],
+    [
+     6,
+     6
+    ]
+   ],
+   "columns": [
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     2
+    ]
+   ]
+  },
+  {
+   "original": "Pricing",
+   "revised": "Pricing",
+   "status": "same",
+   "rows": [
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     5,
+     6
+    ]
+   ],
+   "columns": [
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     5
+    ],
+    [
+     6,
+     6
+    ]
+   ]
+  },
+  {
+   "original": "Employees",
+   "revised": "Employees",
+   "status": "same",
+   "rows": [
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     6,
+     5
+    ]
+   ],
+   "columns": [
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     5
+    ]
+   ]
+  },
+  {
+   "original": "Settings",
+   "revised": "Settings",
+   "status": "same",
+   "rows": [
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     5
+    ]
+   ],
+   "columns": [
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     2
+    ]
+   ]
+  },
+  {
+   "original": null,
+   "revised": "Regions",
+   "status": "added",
+   "rows": [],
+   "columns": []
+  }
+ ],
+ "grids": {
+  "original": [
+   {
+    "name": "Summary",
+    "index": 0,
+    "kind": "worksheet",
+    "state": "visible",
+    "rows": 6,
+    "cols": 2,
+    "merges": [],
+    "cells": [
+     [
+      1,
+      1,
+      "Company Plan Summary",
+      "s"
+     ],
+     [
+      3,
+      1,
+      "Total monthly revenue",
+      "s"
+     ],
+     [
+      3,
+      2,
+      "$31,127.80",
+      "n",
+      "=SUM(Pricing!E2:E5)"
+     ],
+     [
+      4,
+      1,
+      "Plans offered",
+      "s"
+     ],
+     [
+      4,
+      2,
+      "4",
+      "n",
+      "=COUNTA(Pricing!A2:A5)"
+     ],
+     [
+      5,
+      1,
+      "Average price",
+      "s"
+     ],
+     [
+      5,
+      2,
+      "$549.00",
+      "n",
+      "=AVERAGE(Pricing!B2:B5)"
+     ],
+     [
+      6,
+      1,
+      "Report date",
+      "s"
+     ],
+     [
+      6,
+      2,
+      "30 September 2026",
+      "d"
+     ]
+    ]
+   },
+   {
+    "name": "Pricing",
+    "index": 1,
+    "kind": "worksheet",
+    "state": "visible",
+    "rows": 5,
+    "cols": 6,
+    "merges": [],
+    "cells": [
+     [
+      1,
+      1,
+      "Plan",
+      "s"
+     ],
+     [
+      1,
+      2,
+      "Price",
+      "s"
+     ],
+     [
+      1,
+      3,
+      "Seats",
+      "s"
+     ],
+     [
+      1,
+      4,
+      "Discount",
+      "s"
+     ],
+     [
+      1,
+      5,
+      "Total",
+      "s"
+     ],
+     [
+      1,
+      6,
+      "Renewal",
+      "s"
+     ],
+     [
+      2,
+      1,
+      "Starter",
+      "s",
+      null,
+      "https://example.com/plans/starter"
+     ],
+     [
+      2,
+      2,
+      "$99.00",
+      "n"
+     ],
+     [
+      2,
+      3,
+      "1",
+      "n"
+     ],
+     [
+      2,
+      4,
+      "0%",
+      "n"
+     ],
+     [
+      2,
+      5,
+      "$99.00",
+      "n",
+      "=B2*C2*(1-D2)"
+     ],
+     [
+      2,
+      6,
+      "30 Sep 2026",
+      "d"
+     ],
+     [
+      3,
+      1,
+      "Pro",
+      "s"
+     ],
+     [
+      3,
+      2,
+      "$299.00",
+      "n"
+     ],
+     [
+      3,
+      3,
+      "3",
+      "n"
+     ],
+     [
+      3,
+      4,
+      "10%",
+      "n"
+     ],
+     [
+      3,
+      5,
+      "$807.30",
+      "n",
+      "=B3*C3*(1-D3)"
+     ],
+     [
+      3,
+      6,
+      "30 Sep 2026",
+      "d"
+     ],
+     [
+      4,
+      1,
+      "Team",
+      "s"
+     ],
+     [
+      4,
+      2,
+      "$499.00",
+      "n"
+     ],
+     [
+      4,
+      3,
+      "10",
+      "n"
+     ],
+     [
+      4,
+      4,
+      "15%",
+      "n"
+     ],
+     [
+      4,
+      5,
+      "$4,241.50",
+      "n",
+      "=B4*C4*(1-D4)"
+     ],
+     [
+      4,
+      6,
+      "15 Oct 2026",
+      "d"
+     ],
+     [
+      5,
+      1,
+      "Enterprise",
+      "s"
+     ],
+     [
+      5,
+      2,
+      "$1,299.00",
+      "n"
+     ],
+     [
+      5,
+      3,
+      "25",
+      "n"
+     ],
+     [
+      5,
+      4,
+      "20%",
+      "n"
+     ],
+     [
+      5,
+      5,
+      "$25,980.00",
+      "n",
+      "=B5*C5*(1-D5)"
+     ],
+     [
+      5,
+      6,
+      "31 Dec 2026",
+      "d"
+     ]
+    ]
+   },
+   {
+    "name": "Employees",
+    "index": 2,
+    "kind": "worksheet",
+    "state": "visible",
+    "rows": 6,
+    "cols": 5,
+    "merges": [],
+    "cells": [
+     [
+      1,
+      1,
+      "Name",
+      "s"
+     ],
+     [
+      1,
+      2,
+      "Role",
+      "s"
+     ],
+     [
+      1,
+      3,
+      "Start date",
+      "s"
+     ],
+     [
+      1,
+      4,
+      "Salary",
+      "s"
+     ],
+     [
+      1,
+      5,
+      "Location",
+      "s"
+     ],
+     [
+      2,
+      1,
+      "John Carter",
+      "s"
+     ],
+     [
+      2,
+      2,
+      "Engineering Lead",
+      "s"
+     ],
+     [
+      2,
+      3,
+      "2021-04-01",
+      "d"
+     ],
+     [
+      2,
+      4,
+      "₹2,400,000",
+      "n"
+     ],
+     [
+      2,
+      5,
+      "Bengaluru",
+      "s"
+     ],
+     [
+      3,
+      1,
+      "Asha Rao",
+      "s"
+     ],
+     [
+      3,
+      2,
+      "Data Analyst",
+      "s"
+     ],
+     [
+      3,
+      3,
+      "2023-07-17",
+      "d"
+     ],
+     [
+      3,
+      4,
+      "₹1,150,000",
+      "n"
+     ],
+     [
+      3,
+      5,
+      "Pune",
+      "s"
+     ],
+     [
+      4,
+      1,
+      "Mei Lin",
+      "s"
+     ],
+     [
+      4,
+      2,
+      "Designer",
+      "s"
+     ],
+     [
+      4,
+      3,
+      "2022-01-10",
+      "d"
+     ],
+     [
+      4,
+      4,
+      "₹1,300,000",
+      "n"
+     ],
+     [
+      5,
+      1,
+      "Omar Haddad",
+      "s"
+     ],
+     [
+      5,
+      2,
+      "Support Manager",
+      "s"
+     ],
+     [
+      5,
+      3,
+      "2020-11-02",
+      "d"
+     ],
+     [
+      5,
+      4,
+      "₹1,600,000",
+      "n"
+     ],
+     [
+      5,
+      5,
+      "Hyderabad",
+      "s"
+     ],
+     [
+      6,
+      1,
+      "Lena Novak",
+      "s"
+     ],
+     [
+      6,
+      2,
+      "Accountant",
+      "s"
+     ],
+     [
+      6,
+      3,
+      "2024-02-19",
+      "d"
+     ],
+     [
+      6,
+      4,
+      "₹980,000",
+      "n"
+     ],
+     [
+      6,
+      5,
+      "Remote",
+      "s"
+     ]
+    ]
+   },
+   {
+    "name": "Settings",
+    "index": 3,
+    "kind": "worksheet",
+    "state": "visible",
+    "rows": 5,
+    "cols": 2,
+    "merges": [],
+    "cells": [
+     [
+      1,
+      1,
+      "Setting",
+      "s"
+     ],
+     [
+      1,
+      2,
+      "Value",
+      "s"
+     ],
+     [
+      2,
+      1,
+      "Currency",
+      "s"
+     ],
+     [
+      2,
+      2,
+      "USD",
+      "s"
+     ],
+     [
+      3,
+      1,
+      "Tax rate",
+      "s"
+     ],
+     [
+      3,
+      2,
+      "18%",
+      "n"
+     ],
+     [
+      4,
+      1,
+      "Fiscal year start",
+      "s"
+     ],
+     [
+      4,
+      2,
+      "1 April 2026",
+      "d"
+     ],
+     [
+      5,
+      1,
+      "Support",
+      "s"
+     ],
+     [
+      5,
+      2,
+      "support@example.com",
+      "s",
+      null,
+      "mailto:support@example.com"
+     ]
+    ]
+   }
+  ],
+  "revised": [
+   {
+    "name": "Summary",
+    "index": 0,
+    "kind": "worksheet",
+    "state": "visible",
+    "rows": 6,
+    "cols": 2,
+    "merges": [],
+    "cells": [
+     [
+      1,
+      1,
+      "Company Plan Summary",
+      "s"
+     ],
+     [
+      3,
+      1,
+      "Total monthly revenue",
+      "s"
+     ],
+     [
+      3,
+      2,
+      "$32,208.05",
+      "n",
+      "=SUM(Pricing!E2:E6)"
+     ],
+     [
+      4,
+      1,
+      "Plans offered",
+      "s"
+     ],
+     [
+      4,
+      2,
+      "5",
+      "n",
+      "=COUNTA(Pricing!A2:A6)"
+     ],
+     [
+      5,
+      1,
+      "Average price",
+      "s"
+     ],
+     [
+      5,
+      2,
+      "$489.00",
+      "n",
+      "=AVERAGE(Pricing!B2:B6)"
+     ],
+     [
+      6,
+      1,
+      "Report date",
+      "s"
+     ],
+     [
+      6,
+      2,
+      "30 September 2026",
+      "d"
+     ]
+    ]
+   },
+   {
+    "name": "Pricing",
+    "index": 1,
+    "kind": "worksheet",
+    "state": "visible",
+    "rows": 6,
+    "cols": 6,
+    "merges": [],
+    "cells": [
+     [
+      1,
+      1,
+      "Plan",
+      "s"
+     ],
+     [
+      1,
+      2,
+      "Price",
+      "s"
+     ],
+     [
+      1,
+      3,
+      "Seats",
+      "s"
+     ],
+     [
+      1,
+      4,
+      "Discount",
+      "s"
+     ],
+     [
+      1,
+      5,
+      "Total",
+      "s"
+     ],
+     [
+      1,
+      6,
+      "Renewal",
+      "s"
+     ],
+     [
+      2,
+      1,
+      "Starter",
+      "s",
+      null,
+      "https://example.com/plans/basic"
+     ],
+     [
+      2,
+      2,
+      "$99.00",
+      "n"
+     ],
+     [
+      2,
+      3,
+      "1",
+      "n"
+     ],
+     [
+      2,
+      4,
+      "0%",
+      "n"
+     ],
+     [
+      2,
+      5,
+      "$99.00",
+      "n",
+      "=B2*C2*(1-D2)"
+     ],
+     [
+      2,
+      6,
+      "30 Sep 2026",
+      "d"
+     ],
+     [
+      3,
+      1,
+      "Pro",
+      "s"
+     ],
+     [
+      3,
+      2,
+      "$349.00",
+      "n"
+     ],
+     [
+      3,
+      3,
+      "3",
+      "n"
+     ],
+     [
+      3,
+      4,
+      "10%",
+      "n"
+     ],
+     [
+      3,
+      5,
+      "$942.30",
+      "n",
+      "=B3*C3*(1-D3)"
+     ],
+     [
+      3,
+      6,
+      "30 Sep 2026",
+      "d"
+     ],
+     [
+      4,
+      1,
+      "Growth",
+      "s"
+     ],
+     [
+      4,
+      2,
+      "$199.00",
+      "n"
+     ],
+     [
+      4,
+      3,
+      "5",
+      "n"
+     ],
+     [
+      4,
+      4,
+      "5%",
+      "n"
+     ],
+     [
+      4,
+      5,
+      "$945.25",
+      "n",
+      "=B4*C4*(1-D4)"
+     ],
+     [
+      4,
+      6,
+      "30 Sep 2026",
+      "d"
+     ],
+     [
+      5,
+      1,
+      "Team",
+      "s"
+     ],
+     [
+      5,
+      2,
+      "$499.00",
+      "n"
+     ],
+     [
+      5,
+      3,
+      "10",
+      "n"
+     ],
+     [
+      5,
+      4,
+      "15%",
+      "n"
+     ],
+     [
+      5,
+      5,
+      "$4,241.50",
+      "n",
+      "=B5*C5*(1-D5)"
+     ],
+     [
+      5,
+      6,
+      "1 Nov 2026",
+      "d"
+     ],
+     [
+      6,
+      1,
+      "Enterprise",
+      "s"
+     ],
+     [
+      6,
+      2,
+      "$1,299.00",
+      "n"
+     ],
+     [
+      6,
+      3,
+      "25",
+      "n"
+     ],
+     [
+      6,
+      4,
+      "20%",
+      "n"
+     ],
+     [
+      6,
+      5,
+      "$25,980.00",
+      "n",
+      "=B6*C6*(1-D6)"
+     ],
+     [
+      6,
+      6,
+      "31 Dec 2026",
+      "d"
+     ]
+    ]
+   },
+   {
+    "name": "Employees",
+    "index": 2,
+    "kind": "worksheet",
+    "state": "visible",
+    "rows": 5,
+    "cols": 5,
+    "merges": [],
+    "cells": [
+     [
+      1,
+      1,
+      "Name",
+      "s"
+     ],
+     [
+      1,
+      2,
+      "Role",
+      "s"
+     ],
+     [
+      1,
+      3,
+      "Start date",
+      "s"
+     ],
+     [
+      1,
+      4,
+      "Salary",
+      "s"
+     ],
+     [
+      1,
+      5,
+      "Location",
+      "s"
+     ],
+     [
+      2,
+      1,
+      "Jonathan Carter",
+      "s"
+     ],
+     [
+      2,
+      2,
+      "Engineering Lead",
+      "s"
+     ],
+     [
+      2,
+      3,
+      "2021-04-01",
+      "d"
+     ],
+     [
+      2,
+      4,
+      "₹2,400,000",
+      "n"
+     ],
+     [
+      2,
+      5,
+      "Bengaluru",
+      "s"
+     ],
+     [
+      3,
+      1,
+      "Asha Rao",
+      "s"
+     ],
+     [
+      3,
+      2,
+      "Data Analyst",
+      "s"
+     ],
+     [
+      3,
+      3,
+      "2023-07-17",
+      "d"
+     ],
+     [
+      3,
+      4,
+      "₹1,150,000",
+      "n"
+     ],
+     [
+      3,
+      5,
+      "Pune",
+      "s"
+     ],
+     [
+      4,
+      1,
+      "Mei Lin",
+      "s"
+     ],
+     [
+      4,
+      2,
+      "Designer",
+      "s"
+     ],
+     [
+      4,
+      3,
+      "2022-01-10",
+      "d"
+     ],
+     [
+      4,
+      4,
+      "₹1,300,000",
+      "n"
+     ],
+     [
+      5,
+      1,
+      "Lena Novak",
+      "s"
+     ],
+     [
+      5,
+      2,
+      "Accountant",
+      "s"
+     ],
+     [
+      5,
+      3,
+      "2024-02-19",
+      "d"
+     ],
+     [
+      5,
+      4,
+      "₹980,000",
+      "n"
+     ],
+     [
+      5,
+      5,
+      "Remote",
+      "s"
+     ]
+    ]
+   },
+   {
+    "name": "Settings",
+    "index": 3,
+    "kind": "worksheet",
+    "state": "visible",
+    "rows": 5,
+    "cols": 2,
+    "merges": [],
+    "cells": [
+     [
+      1,
+      1,
+      "Setting",
+      "s"
+     ],
+     [
+      1,
+      2,
+      "Value",
+      "s"
+     ],
+     [
+      2,
+      1,
+      "Currency",
+      "s"
+     ],
+     [
+      2,
+      2,
+      "USD",
+      "s"
+     ],
+     [
+      3,
+      1,
+      "Tax rate",
+      "s"
+     ],
+     [
+      3,
+      2,
+      "18%",
+      "n"
+     ],
+     [
+      4,
+      1,
+      "Fiscal year start",
+      "s"
+     ],
+     [
+      4,
+      2,
+      "1 April 2026",
+      "d"
+     ],
+     [
+      5,
+      1,
+      "Support",
+      "s"
+     ],
+     [
+      5,
+      2,
+      "support@example.com",
+      "s",
+      null,
+      "mailto:support@example.com"
+     ]
+    ]
+   },
+   {
+    "name": "Regions",
+    "index": 4,
+    "kind": "worksheet",
+    "state": "visible",
+    "rows": 3,
+    "cols": 2,
+    "merges": [],
+    "cells": [
+     [
+      1,
+      1,
+      "Region",
+      "s"
+     ],
+     [
+      1,
+      2,
+      "Target",
+      "s"
+     ],
+     [
+      2,
+      1,
+      "North",
+      "s"
+     ],
+     [
+      2,
+      2,
+      "120000",
+      "n"
+     ],
+     [
+      3,
+      1,
+      "South",
+      "s"
+     ],
+     [
+      3,
+      2,
+      "95000",
+      "n"
+     ]
+    ]
+   }
+  ]
+ },
+ "diagnostics": {
+  "notes": [],
+  "droppedUntraceable": 0
+ }
+}

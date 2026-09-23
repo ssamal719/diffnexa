@@ -32,6 +32,15 @@ export function docxErrorMessage(code: string): string | null {
   return code in DOCX_ERROR_MESSAGES ? DOCX_ERROR_MESSAGES[code as DocxErrorCode] : null;
 }
 
+/** Workbook errors, from the same shared source as the engine's. */
+export type ExcelErrorCode = keyof typeof errorsContract.excel_messages;
+
+export const EXCEL_ERROR_MESSAGES: Record<ExcelErrorCode, string> = errorsContract.excel_messages;
+
+export function excelErrorMessage(code: string): string | null {
+  return code in EXCEL_ERROR_MESSAGES ? EXCEL_ERROR_MESSAGES[code as ExcelErrorCode] : null;
+}
+
 export function errorMessage(code: ErrorCode): string {
   return ERROR_MESSAGES[code];
 }
@@ -148,4 +157,27 @@ function containsUtf16(bytes: Uint8Array, text: string): boolean {
     return true;
   }
   return false;
+}
+
+// ---------------------------------------------------------------- Excel workbooks
+
+/** The first-pass ceiling in the browser. The server re-checks on the real bytes. */
+export const EXCEL_MAX_FILE_BYTES = 20 * 1024 * 1024;
+
+export type ExcelCheck = { ok: true } | { ok: false; code: ExcelErrorCode };
+
+/**
+ * A first look at a workbook's bytes, mirroring the engine's own first check. A
+ * file that passes is still fully validated on the server; nothing here trusts
+ * the file's name or declared type.
+ */
+export function checkXlsxBytes(bytes: Uint8Array, size = bytes.length): ExcelCheck {
+  if (size === 0) return { ok: false, code: "excel_empty_file" };
+  if (size > EXCEL_MAX_FILE_BYTES) return { ok: false, code: "excel_too_large" };
+  const startsWith = (signature: number[]) => signature.every((byte, index) => bytes[index] === byte);
+  if (startsWith(ZIP_SIGNATURE)) return { ok: true };
+  if (startsWith(OLE_SIGNATURE)) {
+    return { ok: false, code: containsUtf16(bytes, "EncryptedPackage") ? "excel_encrypted" : "excel_legacy_xls" };
+  }
+  return { ok: false, code: "excel_not_xlsx" };
 }

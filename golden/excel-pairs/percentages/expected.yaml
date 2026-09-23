@@ -1,0 +1,9 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: percentages
+description: 'The tax rate and the Team discount change, in percentage points; the Team total and Summary revenue recalculate.'
+expected_changes:
+- {group: 'values', kind: 'modified', category: 'number', subtype: 'cell', sheet: 'Settings', ref: 'B3', old: '18%', new: '20%', delta: '+2 percentage points'}
+- {group: 'values', kind: 'modified', category: 'number', subtype: 'cell', sheet: 'Pricing', ref: 'D4', old: '15%', new: '20%', delta: '+5 percentage points'}
+- {group: 'values', kind: 'modified', category: 'number', subtype: 'calculated', sheet: 'Pricing', ref: 'E4', old: '$4,241.50', new: '$3,992.00'}
+- {group: 'values', kind: 'modified', category: 'number', subtype: 'calculated', sheet: 'Summary', ref: 'B3', old: '$31,127.80', new: '$30,878.30'}

@@ -1,0 +1,5 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: malformed-workbook
+description: 'The revised file is a workbook cut off part-way through. It must be refused as unreadable.'
+expected_error: {side: revised, code: excel_unreadable}

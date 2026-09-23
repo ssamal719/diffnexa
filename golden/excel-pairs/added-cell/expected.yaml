@@ -1,0 +1,6 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: added-cell
+description: "Mei Lin's empty Location is filled in as Chennai."
+expected_changes:
+- {group: 'values', kind: 'added', subtype: 'cell', sheet: 'Employees', ref: 'E4', original_ref: 'E4', revised_ref: 'E4', new: 'Chennai'}

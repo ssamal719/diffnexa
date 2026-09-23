@@ -1,0 +1,5 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: format-only
+description: 'Pricing prices lose their $ and decimals, and renewal dates change to year-month-day. Stored values are identical; formatting is not compared in V1, so nothing is reported.'
+expected_changes: []

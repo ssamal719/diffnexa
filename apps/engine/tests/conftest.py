@@ -22,6 +22,8 @@ def isolated_engine_environment(monkeypatch: pytest.MonkeyPatch) -> None:
         "DIFFNEXA_MAX_FILE_MB",
         "DIFFNEXA_MAX_PAGES",
         "DIFFNEXA_DOCX_MAX_FILE_MB",
+        "DIFFNEXA_EXCEL_MAX_FILE_MB",
+        "DIFFNEXA_EXCEL_MAX_CELLS",
     ):
         monkeypatch.delenv(name, raising=False)
 

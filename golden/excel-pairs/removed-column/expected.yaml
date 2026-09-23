@@ -1,0 +1,6 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: removed-column
+description: 'The Location column is removed from Employees.'
+expected_changes:
+- {group: 'structure', kind: 'removed', subtype: 'column', sheet: 'Employees', ref: 'E1:E6', old: 'Location · Bengaluru · Pune · Hyderabad · Remote'}

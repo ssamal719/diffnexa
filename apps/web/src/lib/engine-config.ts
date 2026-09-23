@@ -16,6 +16,10 @@ export const COMPARE_TIMEOUT_MS = Number(process.env.ENGINE_TIMEOUT_MS ?? 120_00
 /** Matches the engine's own ceiling; the engine re-checks it regardless. */
 export const MAX_UPLOAD_BYTES = Number(process.env.DIFFNEXA_MAX_FILE_MB ?? 50) * 1024 * 1024;
 
+/** The workbook ceiling. Matches the engine's DIFFNEXA_EXCEL_MAX_FILE_MB. */
+export const EXCEL_MAX_UPLOAD_BYTES =
+  Number(process.env.DIFFNEXA_EXCEL_MAX_FILE_MB ?? 20) * 1024 * 1024;
+
 /** The Word document ceiling. Matches the engine's DIFFNEXA_DOCX_MAX_FILE_MB. */
 export const DOCX_MAX_UPLOAD_BYTES =
   Number(process.env.DIFFNEXA_DOCX_MAX_FILE_MB ?? 20) * 1024 * 1024;

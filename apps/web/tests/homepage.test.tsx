@@ -53,12 +53,13 @@ describe("the homepage", () => {
     expect(hrefs).toContain("/competitor-monitor");
     expect(hrefs).toContain("/price-monitor");
     expect(hrefs).toContain("/docx-compare");
+    expect(hrefs).toContain("/excel-compare");
   });
 
   it("shows a card for every tool, each linking to its own page", () => {
     render(<HomePage />);
     const cards = screen.getAllByRole("article");
-    expect(cards).toHaveLength(6);
+    expect(cards).toHaveLength(7);
 
     for (const tool of TOOLS) {
       const card = cards.find((element) => element.textContent?.includes(tool.name));
@@ -362,5 +363,24 @@ describe("the docx compare card", () => {
     const { container } = render(<SiteHeader />);
     const hrefs = Array.from(container.querySelectorAll("a")).map((a) => a.getAttribute("href"));
     expect(hrefs.filter((href) => href === "/docx-compare")).toHaveLength(1);
+  });
+});
+
+describe("the excel compare card", () => {
+  it("has the agreed words and an Open Excel Compare button", () => {
+    render(<HomePage />);
+    const cards = screen.getAllByRole("article").filter((element) => element.textContent?.includes("Excel Compare"));
+    expect(cards).toHaveLength(1);
+    expect(cards[0].textContent).toContain(
+      "Compare two Excel workbooks side by side and find changed cells, formulas, rows, columns and sheets.",
+    );
+    const button = within(cards[0]).getByRole("link", { name: "Open Excel Compare" });
+    expect(button.getAttribute("href")).toBe("/excel-compare");
+  });
+
+  it("is in the header exactly once", () => {
+    const { container } = render(<SiteHeader />);
+    const hrefs = Array.from(container.querySelectorAll("a")).map((a) => a.getAttribute("href"));
+    expect(hrefs.filter((href) => href === "/excel-compare")).toHaveLength(1);
   });
 });

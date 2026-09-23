@@ -1,0 +1,6 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: removed-cell
+description: "Lena Novak's Location (Remote) is cleared."
+expected_changes:
+- {group: 'values', kind: 'removed', subtype: 'cell', sheet: 'Employees', ref: 'E6', old: 'Remote'}

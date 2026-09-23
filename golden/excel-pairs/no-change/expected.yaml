@@ -1,0 +1,5 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: no-change
+description: 'The same company workbook saved twice. Nothing changed.'
+expected_changes: []

@@ -3,7 +3,7 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { DOCX_ERROR_MESSAGES, ERROR_MESSAGES, WEB_ERROR_MESSAGES } from "@/lib/validation";
+import { DOCX_ERROR_MESSAGES, ERROR_MESSAGES, EXCEL_ERROR_MESSAGES, WEB_ERROR_MESSAGES } from "@/lib/validation";
 
 const REPO_ROOT = join(import.meta.dirname, "..", "..", "..");
 
@@ -38,6 +38,25 @@ describe("shared error contract", () => {
       "docx_too_large",
       "docx_tracked_changes",
       "docx_unreadable",
+    ]);
+  });
+
+  it("shares the Excel workbook error wording with the engine", () => {
+    const source = JSON.parse(
+      readFileSync(join(REPO_ROOT, "packages", "contracts", "errors.json"), "utf8"),
+    );
+    expect(EXCEL_ERROR_MESSAGES).toEqual(source.excel_messages);
+    expect(Object.keys(EXCEL_ERROR_MESSAGES).sort()).toEqual([
+      "excel_empty_file",
+      "excel_encrypted",
+      "excel_legacy_xls",
+      "excel_macro_enabled",
+      "excel_no_sheets",
+      "excel_not_xlsx",
+      "excel_too_complex",
+      "excel_too_large",
+      "excel_unreadable",
+      "excel_unsupported",
     ]);
   });
 

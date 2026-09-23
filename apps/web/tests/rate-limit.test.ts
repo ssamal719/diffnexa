@@ -28,6 +28,7 @@ describe("the limits themselves", () => {
       "competitor-capture",
       "competitor-compare",
       "docx-compare",
+      "excel-compare",
       "pdf-compare",
       "policy-capture",
       "policy-compare",

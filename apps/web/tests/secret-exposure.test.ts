@@ -54,7 +54,7 @@ describe("the engine secret", () => {
   it("is sent to the engine by every tool's routes through that helper", () => {
     const routes = FILES.filter((file) => file.path.startsWith(join("app", "api")) && file.path.endsWith("route.ts"));
     const engineRoutes = routes.filter((file) => /callEngine|engineAuthHeaders/.test(file.text));
-    for (const tool of ["web", "policy", "competitor", "price", "docx"]) {
+    for (const tool of ["web", "policy", "competitor", "price", "docx", "excel"]) {
       expect(engineRoutes.some((file) => file.path.includes(join("api", tool))), tool).toBe(true);
     }
   });

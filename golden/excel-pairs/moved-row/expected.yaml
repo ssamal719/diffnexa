@@ -1,0 +1,6 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: moved-row
+description: "John Carter's row moves from the top of Employees to the bottom, unchanged."
+expected_changes:
+- {group: 'structure', kind: 'moved', subtype: 'row', sheet: 'Employees', ref: 'A6:E6', original_ref: 'A2:E2', revised_ref: 'A6:E6', old: 'Row 2', new: 'Row 6'}

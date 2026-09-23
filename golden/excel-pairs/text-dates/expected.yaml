@@ -1,0 +1,6 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: text-dates
+description: 'A review date typed as text changes. Both are whole dates, so it is compared as a date.'
+expected_changes:
+- {group: 'values', kind: 'modified', category: 'date', subtype: 'cell', sheet: 'Settings', ref: 'B6', old: '30 September 2026', new: '15 October 2026', delta: '15 days later'}

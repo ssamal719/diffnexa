@@ -1,0 +1,5 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: blank-rows-inserted
+description: 'Two blank rows are inserted in the middle of Employees. No value changed; the rows after them are matched to their new positions.'
+expected_changes: []

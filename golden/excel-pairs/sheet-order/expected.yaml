@@ -1,0 +1,6 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: sheet-order
+description: 'The Settings sheet moves from last to second. Nothing else changes.'
+expected_changes:
+- {group: 'structure', kind: 'moved', subtype: 'sheet_order', sheet: 'Settings', old: 'Sheet 4 of 4', new: 'Sheet 2 of 4'}

@@ -51,6 +51,10 @@ from diffnexa_engine.web.api import (
     serialize_web_comparison,
 )
 from diffnexa_engine.web.errors import WebErrorCode, WebRequestError
+from diffnexa_engine.xlsx.api import serialize_excel_comparison
+from diffnexa_engine.xlsx.compare import compare_xlsx
+from diffnexa_engine.xlsx.errors import ExcelError, ExcelErrorCode
+from diffnexa_engine.xlsx.extract import ExcelLimits, extract_xlsx
 
 MAX_REQUEST_BYTES_HEADROOM = 2 * 1024 * 1024  # room for multipart overhead
 
@@ -273,6 +277,38 @@ def build_app():  # noqa: C901 - a single route with explicit error handling
         outcome = compare_docx(documents["original"], documents["revised"])
         elapsed_ms = int((time.perf_counter() - started) * 1000)
         return JSONResponse(content=serialize_docx_comparison(outcome, elapsed_ms))
+
+    excel_limits = ExcelLimits.from_env()
+
+    @app.post("/v1/excel/compare")
+    async def excel_compare(
+        original: UploadFile = File(...),
+        revised: UploadFile = File(...),
+    ) -> Any:
+        """Compare two Excel (.xlsx) workbooks.
+
+        Both files are read into memory with a hard size ceiling and validated
+        from their bytes. No formula is calculated, no macro runs, no link is
+        opened, and nothing is written anywhere or kept after the response.
+        """
+        started = time.perf_counter()
+        workbooks = {}
+        for side, upload in (("original", original), ("revised", revised)):
+            data = await upload.read(excel_limits.max_file_bytes + 1)
+            try:
+                if len(data) > excel_limits.max_file_bytes:
+                    raise ExcelError(ExcelErrorCode.TOO_LARGE, f"{len(data)}+ bytes")
+                workbooks[side] = extract_xlsx(data, excel_limits)
+            except ExcelError as exc:
+                # exc.detail stays in the server log; it never holds cell contents.
+                return JSONResponse(
+                    status_code=413 if exc.code is ExcelErrorCode.TOO_LARGE else 400,
+                    content={"error": {"code": exc.code.value, "message": exc.user_message, "side": side}},
+                )
+
+        outcome = compare_xlsx(workbooks["original"], workbooks["revised"])
+        elapsed_ms = int((time.perf_counter() - started) * 1000)
+        return JSONResponse(content=serialize_excel_comparison(outcome, elapsed_ms))
 
     @app.post("/v1/compare")
     async def compare_endpoint(

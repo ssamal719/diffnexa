@@ -1,0 +1,6 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: sheet-rename
+description: 'The Employees sheet is renamed Staff; its content is unchanged.'
+expected_changes:
+- {group: 'structure', kind: 'modified', subtype: 'sheet_rename', sheet: 'Staff', old: 'Employees', new: 'Staff'}

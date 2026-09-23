@@ -39,4 +39,10 @@ export const TOOLS = [
     summary:
       "Compare two Word documents and find changes in text, numbers, dates, lists, and tables.",
   },
+  {
+    href: "/excel-compare",
+    name: "Excel Compare",
+    summary:
+      "Compare two Excel workbooks side by side and find changed cells, formulas, rows, columns and sheets.",
+  },
 ] as const;

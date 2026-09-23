@@ -1,0 +1,5 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: unsupported-xls
+description: 'The original is an old binary .xls file. It must be refused as a legacy format.'
+expected_error: {side: original, code: excel_legacy_xls}

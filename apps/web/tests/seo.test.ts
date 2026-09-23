@@ -12,6 +12,7 @@ import { metadata as rootMetadata, TOOLS } from "@/app/layout";
 import { metadata as homeMetadata } from "@/app/page";
 import { metadata as competitorMetadata } from "@/app/competitor-monitor/page";
 import { metadata as docxMetadata } from "@/app/docx-compare/page";
+import { metadata as excelMetadata } from "@/app/excel-compare/page";
 import { metadata as pdfMetadata } from "@/app/pdf-compare/page";
 import { metadata as policyMetadata } from "@/app/policy-monitor/page";
 import { metadata as priceMetadata } from "@/app/price-monitor/page";
@@ -27,6 +28,7 @@ const PAGES = [
   { name: "competitor-monitor", metadata: competitorMetadata, path: "/competitor-monitor" },
   { name: "price-monitor", metadata: priceMetadata, path: "/price-monitor" },
   { name: "docx-compare", metadata: docxMetadata, path: "/docx-compare" },
+  { name: "excel-compare", metadata: excelMetadata, path: "/excel-compare" },
 ];
 
 function titleOf(metadata: (typeof PAGES)[number]["metadata"]): string {
@@ -45,6 +47,7 @@ describe("the tools", () => {
       "/competitor-monitor",
       "/price-monitor",
       "/docx-compare",
+      "/excel-compare",
     ]);
     expect(TOOLS.map((tool) => tool.name)).toEqual([
       "PDF Compare",
@@ -53,6 +56,7 @@ describe("the tools", () => {
       "Competitor Monitor",
       "Price Monitor",
       "DOCX Compare",
+      "Excel Compare",
     ]);
     for (const tool of TOOLS) expect(tool.summary.length).toBeGreaterThan(30);
     expect(TOOLS.find((tool) => tool.href === "/competitor-monitor")?.summary).toBe(
@@ -306,6 +310,49 @@ describe("the docx compare page", () => {
   });
 });
 
+describe("the excel compare page", () => {
+  it("has the agreed title, with the site name added once by the template", async () => {
+    expect(titleOf(excelMetadata)).toBe("Excel Compare — Find Changes Between Two Excel Files");
+    const { metadata: root } = await import("@/app/layout");
+    const template = (root.title as { template: string }).template;
+    expect(template.replace("%s", titleOf(excelMetadata))).toBe(
+      "Excel Compare — Find Changes Between Two Excel Files | DiffNexa",
+    );
+    expect((excelMetadata.openGraph as Record<string, unknown>).title).toBe(
+      "Excel Compare — Find Changes Between Two Excel Files | DiffNexa",
+    );
+  });
+
+  it("has the agreed description, canonical and Open Graph address", () => {
+    expect(excelMetadata.description).toBe(
+      "Compare two Excel files and see changed cells, values, formulas, rows, columns and sheets with clear visual evidence.",
+    );
+    expect(excelMetadata.alternates?.canonical).toBe("/excel-compare");
+    expect((excelMetadata.openGraph as Record<string, unknown>).url).toBe("/excel-compare");
+  });
+
+  it("claims no capability the product does not have", () => {
+    const openGraph = excelMetadata.openGraph as Record<string, unknown>;
+    const wording = `${titleOf(excelMetadata)} ${excelMetadata.description} ${openGraph.title} ${openGraph.description}`.toLowerCase();
+    for (const claim of ["ai", "automatic", "formatting", "charts?", "images?", "macros?", "xls", "xlsm", "important"]) {
+      expect(wording, `claims ${claim}`).not.toMatch(new RegExp(`\\b${claim}\\b`));
+    }
+  });
+
+  it("describes the tool card truthfully", () => {
+    const tool = TOOLS.find((item) => item.href === "/excel-compare");
+    expect(tool?.name).toBe("Excel Compare");
+    expect(tool?.summary).toBe(
+      "Compare two Excel workbooks side by side and find changed cells, formulas, rows, columns and sheets.",
+    );
+  });
+
+  it("is in the sitemap once", () => {
+    const urls = sitemap().map((entry) => entry.url);
+    expect(urls.filter((url) => url.endsWith("/excel-compare"))).toHaveLength(1);
+  });
+});
+
 describe("the sitemap", () => {
   it("lists exactly the public pages", () => {
     const paths = sitemap().map((entry) => new URL(entry.url).pathname);
@@ -313,6 +360,7 @@ describe("the sitemap", () => {
       "/",
       "/competitor-monitor",
       "/docx-compare",
+      "/excel-compare",
       "/pdf-compare",
       "/policy-monitor",
       "/price-monitor",

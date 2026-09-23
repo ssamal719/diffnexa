@@ -37,3 +37,7 @@ Tool 5 Price Monitor: add 28 price golden pairs (prices in $, €, £, ₹ and I
 ## 2026-09-23
 
 Tool 6 DOCX Compare: add 27 DOCX golden pairs (real Word documents: paragraphs added/removed/reworded, headings added/renamed/re-levelled, bulleted and numbered list items added/removed/edited, a numbered-list insertion Word renumbers itself, a paragraph that became a list item, tables added/removed, rows added/removed, a cell amount, a cell date, an added column, numbers, dates, three values in one paragraph, a link, the title property, a moved paragraph, formatting-only and no-change). Every pair scores recall 100%, 0 false positives, 0 noise leakage, 100% evidence, with each change in its expected group and its evidence at its expected location. No existing pair changed its score.
+
+## 2026-09-23
+
+Excel Compare V1: add 33 Excel golden pairs (real workbooks saved by a spreadsheet application with stored formula results: text, number, date, formula and calculated-result changes; added and removed cells, rows, columns and sheets; a sheet rename and a sheet reorder; a moved row; blank rows inserted; hyperlinks; currency, percentage and text dates; format-only; multiple sheets and a mixed revision; a 3,000-row workbook; and six files that must be refused: truncated, legacy .xls, macro-enabled .xlsm, zip bomb, path traversal and external entity). Every pair scores recall 100%, 0 false positives, 0 noise leakage, 100% evidence, each change in its expected group and at its expected sheet and cell. No existing pair changed its score.

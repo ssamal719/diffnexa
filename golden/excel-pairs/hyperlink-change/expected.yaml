@@ -1,0 +1,6 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: hyperlink-change
+description: "The Starter plan's link points to a different page; its text is unchanged."
+expected_changes:
+- {group: 'links', kind: 'modified', category: 'link', sheet: 'Pricing', ref: 'A2', old: 'https://example.com/plans/starter', new: 'https://example.com/plans/basic'}

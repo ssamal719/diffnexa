@@ -460,6 +460,303 @@
         "evidence_completeness": 1.0
       }
     },
+    "excel:added-cell": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:added-column": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:added-row": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:added-sheet": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:blank-rows-inserted": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:currency": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:date-change": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:dates": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:format-only": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:formula-change": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:formula-result": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:hyperlink-change": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:large-workbook": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:malformed-workbook": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:moved-row": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:multiple-changes": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:multiple-sheets": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:no-change": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:number-change": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:percentages": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:removed-cell": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:removed-column": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:removed-row": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:removed-sheet": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:security-external-entity": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:security-path-traversal": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:security-zip-bomb": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:sheet-order": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:sheet-rename": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:text-change": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:text-dates": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:unsupported-xls": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "excel:unsupported-xlsm": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
     "formatting-only": {
       "extraction_passed": true,
       "comparison": {

@@ -1,0 +1,5 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: security-zip-bomb
+description: 'The revised file expands to more than the decompression ceiling. It must be refused before it is read in full.'
+expected_error: {side: revised, code: excel_too_large}

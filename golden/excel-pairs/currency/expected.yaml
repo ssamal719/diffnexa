@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two workbooks, the group
+# each change belongs to, and the sheet and cell a reader must be taken to.
+pair: currency
+description: 'A dollar price and a rupee salary change; the Starter total and Summary revenue and average recalculate.'
+expected_changes:
+- {group: 'values', kind: 'modified', category: 'number', subtype: 'cell', sheet: 'Pricing', ref: 'B2', old: '$99.00', new: '$109.00', delta: '+10 (+10.1%)'}
+- {group: 'values', kind: 'modified', category: 'number', subtype: 'calculated', sheet: 'Pricing', ref: 'E2', old: '$99.00', new: '$109.00'}
+- {group: 'values', kind: 'modified', category: 'number', subtype: 'calculated', sheet: 'Summary', ref: 'B3', old: '$31,127.80', new: '$31,137.80'}
+- {group: 'values', kind: 'modified', category: 'number', subtype: 'calculated', sheet: 'Summary', ref: 'B5', old: '$549.00', new: '$551.50'}
+- {group: 'values', kind: 'modified', category: 'number', subtype: 'cell', sheet: 'Employees', ref: 'D5', old: '₹1,600,000', new: '₹1,750,000', delta: '+150000 (+9.38%)'}

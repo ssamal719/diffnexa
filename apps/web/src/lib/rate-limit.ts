@@ -87,6 +87,11 @@ export const LIMITS: Record<string, RateLimit[]> = {
     { limit: 10, windowMs: 60_000 },
     { limit: 60, windowMs: 60 * 60_000 },
   ],
+  // Comparing two workbooks is the same kind of work, with the same limits.
+  "excel-compare": [
+    { limit: 10, windowMs: 60_000 },
+    { limit: 60, windowMs: 60 * 60_000 },
+  ],
 };
 
 type Hit = { at: number };

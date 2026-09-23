@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { sealHeaders } from "@/lib/analysis-seal";
 import {
   COMPARE_TIMEOUT_MS,
   DOCX_MAX_UPLOAD_BYTES,
@@ -112,5 +113,6 @@ export async function POST(request: Request) {
     return failure(502, "engine_unavailable", webErrorMessage("engine_unavailable")!);
   }
 
-  return NextResponse.json(body, { status: 200 });
+  // The seal lets this result be sent for AI analysis later, and nothing else.
+  return NextResponse.json(body, { status: 200, headers: sealHeaders("docx", body) });
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, type ReactNode } from "react";
 
 import { SectionMap } from "@/components/website/SectionMap";
 import { WebChangeCard } from "@/components/website/WebChangeCard";
@@ -19,6 +19,7 @@ import {
   type WebComparison,
   type WebFilters,
 } from "@/lib/web-report";
+import { useChangeFocus, type FocusRequest } from "@/lib/use-change-focus";
 
 /**
  * The comparison result, as a report about a webpage.
@@ -27,7 +28,19 @@ import {
  * but everything below "where" is website-native: sections and headings rather
  * than pages, and links, tables and page details rather than images and layout.
  */
-export function WebReport({ result, url }: { result: WebComparison; url: string }) {
+export function WebReport({
+  result,
+  url,
+  analyst,
+  focus = null,
+}: {
+  result: WebComparison;
+  url: string;
+  /** AI Change Analyst, shown between the summary and the list of changes. */
+  analyst?: ReactNode;
+  /** A change to show, asked for from outside the report ("View change"). */
+  focus?: FocusRequest;
+}) {
   const report = useMemo(() => buildWebReport(result), [result]);
   const [filters, setFilters] = useState<WebFilters>(NO_WEB_FILTERS);
   const [current, setCurrent] = useState(0);
@@ -41,6 +54,16 @@ export function WebReport({ result, url }: { result: WebComparison; url: string 
     setCurrent(0);
     requestAnimationFrame(() => listRef.current?.scrollIntoView({ block: "start" }));
   }
+
+  useChangeFocus(
+    focus,
+    (id) => visible.findIndex((change) => change.id === id),
+    () => {
+      setFilters({ ...NO_WEB_FILTERS, includeMinor: true });
+      setCurrent(0);
+    },
+    cardRefs,
+  );
 
   function goTo(index: number) {
     if (index < 0 || index >= visible.length) return;
@@ -145,6 +168,8 @@ export function WebReport({ result, url }: { result: WebComparison; url: string 
           {note}
         </Alert>
       ))}
+
+      {analyst}
 
       <div ref={listRef} className="rounded-[var(--radius-panel)] border border-rule bg-paper">
         <div className="flex flex-wrap items-center gap-3 border-b border-rule p-3 md:p-4">

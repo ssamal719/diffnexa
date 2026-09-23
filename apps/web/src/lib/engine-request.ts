@@ -11,6 +11,8 @@
 
 import { NextResponse } from "next/server";
 
+import type { AnalysisTool } from "@/lib/analysis";
+import { sealHeaders } from "@/lib/analysis-seal";
 import { COMPARE_TIMEOUT_MS, ENGINE_URL, engineAuthHeaders } from "@/lib/engine-config";
 import { webErrorMessage } from "@/lib/validation";
 
@@ -71,8 +73,11 @@ export async function readJsonBody(
  *
  * The engine's address, the shared secret and any internal detail in a failure
  * stay on this side; the browser sees a code and a sentence.
+ *
+ * A comparison result is returned with a seal for `sealAs`, so it can be sent
+ * for AI analysis later (see analysis-seal.ts).
  */
-export async function callEngine(path: string, payload: unknown): Promise<NextResponse> {
+export async function callEngine(path: string, payload: unknown, sealAs?: AnalysisTool): Promise<NextResponse> {
   let response: Response;
   try {
     response = await fetch(`${ENGINE_URL}${path}`, {
@@ -110,5 +115,5 @@ export async function callEngine(path: string, payload: unknown): Promise<NextRe
     return failure(502, "engine_unavailable", webErrorMessage("engine_unavailable")!);
   }
 
-  return NextResponse.json(body, { status: 200 });
+  return NextResponse.json(body, { status: 200, headers: sealAs ? sealHeaders(sealAs, body) : undefined });
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { ReportWithAnalyst } from "@/components/analysis/ReportWithAnalyst";
 import { DocxReport } from "@/components/docx/DocxReport";
 import { DocxUploadSlot, type DocxSlotFile } from "@/components/docx/DocxUploadSlot";
 import { ProcessingState, type ProcessingStage, type StageText } from "@/components/results/ProcessingState";
@@ -9,13 +10,14 @@ import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import type { DocxComparison, DocxFailure } from "@/lib/docx-report";
 import { docxErrorMessage } from "@/lib/validation";
+import { SEAL_HEADER } from "@/lib/analysis";
 
 type EngineStatus = { checked: boolean; available: boolean };
 
 type Phase =
   | { name: "idle" }
   | { name: "working"; stage: ProcessingStage; uploadPercent: number | null }
-  | { name: "done"; result: DocxComparison; original: DocxSlotFile; revised: DocxSlotFile }
+  | { name: "done"; result: DocxComparison; original: DocxSlotFile; revised: DocxSlotFile; seal: string | null }
   | { name: "failed"; error: DocxFailure };
 
 const STAGES: StageText[] = [
@@ -95,8 +97,9 @@ export function DocxDesk() {
       }
       if (request.status >= 200 && request.status < 300 && body) {
         setPhase({ name: "working", stage: "preparing", uploadPercent: 100 });
+        const seal = request.getResponseHeader?.(SEAL_HEADER) ?? null;
         requestAnimationFrame(() =>
-          setPhase({ name: "done", result: body as DocxComparison, ...files }),
+          setPhase({ name: "done", result: body as DocxComparison, ...files, seal }),
         );
         return;
       }
@@ -177,7 +180,7 @@ export function DocxDesk() {
             <li>Word .docx files only. Older .doc files and macro-enabled .docm files are not accepted.</li>
             <li>
               Your files are processed for this comparison only and are not stored as account history.
-              Nothing is sent to any AI service.
+              The comparison sends nothing to any AI service.
             </li>
             <li>
               Text and structure are compared. Visual formatting and images are not compared in this
@@ -192,11 +195,17 @@ export function DocxDesk() {
       )}
       {phase.name === "failed" && <DocxError error={phase.error} onRetry={runComparison} />}
       {phase.name === "done" && (
-        <DocxReport
-          result={phase.result}
-          original={{ name: phase.original.displayName, sizeBytes: phase.original.sizeBytes }}
-          revised={{ name: phase.revised.displayName, sizeBytes: phase.revised.sizeBytes }}
-        />
+        <ReportWithAnalyst tool="docx" result={phase.result} seal={phase.seal}>
+          {({ analyst, focus }) => (
+            <DocxReport
+              result={phase.result}
+              original={{ name: phase.original.displayName, sizeBytes: phase.original.sizeBytes }}
+              revised={{ name: phase.revised.displayName, sizeBytes: phase.revised.sizeBytes }}
+              analyst={analyst}
+              focus={focus}
+            />
+          )}
+        </ReportWithAnalyst>
       )}
     </>
   );

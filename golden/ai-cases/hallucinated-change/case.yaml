@@ -1,0 +1,8 @@
+# Written by hand: a deterministic comparison result, what the scripted model replies,
+# and what DiffNexa must then show. See golden/ai-cases/README.md.
+case: hallucinated-change
+description: "The model explains a change the comparison never found (c99): the whole reply is refused."
+tool: docx
+source: {"pair": "table-cell-number"}
+provider: {"replies": ["reply.json"]}
+expect: {"status": "error", "error": "ai_invalid", "must_not_display": ["salary"]}

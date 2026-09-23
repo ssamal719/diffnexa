@@ -1,0 +1,86 @@
+{
+  "summary": [
+    {
+      "text": "The revised pricing page renames a plan, changes three amounts and changes Business availability to Contact sales.",
+      "change_ids": [
+        "c0",
+        "c1",
+        "c2",
+        "c3",
+        "c4"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "change_id": "c0",
+      "significance": "notable",
+      "explanation": "A plan heading changes from Team to Growth.",
+      "why_it_may_matter": "This renames a plan shown on the pricing page.",
+      "evidence_refs": [
+        "c0.e1",
+        "c0.e2"
+      ]
+    },
+    {
+      "change_id": "c1",
+      "significance": "important",
+      "explanation": "In the Starter plan, the number changes from 10 to 15.",
+      "why_it_may_matter": "This changes a stated figure in a plan.",
+      "evidence_refs": [
+        "c1.e1",
+        "c1.e2"
+      ]
+    },
+    {
+      "change_id": "c2",
+      "significance": "important",
+      "explanation": "The Growth plan price changes from $15 to $18.",
+      "why_it_may_matter": "This makes the Growth plan a worse deal.",
+      "evidence_refs": [
+        "c2.e1",
+        "c2.e2"
+      ]
+    },
+    {
+      "change_id": "c3",
+      "significance": "important",
+      "explanation": "Another Growth plan price changes from $19 to $16, a decrease of $3.",
+      "why_it_may_matter": "This changes a stated price.",
+      "evidence_refs": [
+        "c3.e1",
+        "c3.e2"
+      ]
+    },
+    {
+      "change_id": "c4",
+      "significance": "notable",
+      "explanation": "The Business plan changes from Available to Contact sales.",
+      "why_it_may_matter": "This may change how the Business plan can be obtained.",
+      "evidence_refs": [
+        "c4.e1",
+        "c4.e2"
+      ]
+    },
+    {
+      "change_id": "c5",
+      "significance": "minor",
+      "explanation": "In About Tasklane, the number changes from 12,000 to 13,000.",
+      "why_it_may_matter": "Impact could not be determined from the documents.",
+      "evidence_refs": [
+        "c5.e1",
+        "c5.e2"
+      ]
+    },
+    {
+      "change_id": "c6",
+      "significance": "minor",
+      "explanation": "A link changes from https://tasklane.example.com/blog to https://tasklane.example.com/news.",
+      "why_it_may_matter": "This changes where a link on the page leads.",
+      "evidence_refs": [
+        "c6.e1",
+        "c6.e2"
+      ]
+    }
+  ]
+}

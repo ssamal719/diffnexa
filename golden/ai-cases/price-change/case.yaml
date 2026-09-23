@@ -1,0 +1,8 @@
+# Written by hand: a deterministic comparison result, what the scripted model replies,
+# and what DiffNexa must then show. See golden/ai-cases/README.md.
+case: price-change
+description: "Several pricing changes; one explanation calls a price a worse deal and is withheld."
+tool: price
+source: {"pair": "mixed-release"}
+provider: {"replies": ["reply.json"]}
+expect: {"status": "partial", "explained": ["c0", "c1", "c3", "c4", "c5", "c6"], "not_shown": ["c2"], "withheld": 1, "must_not_display": ["worse deal", "better deal"]}

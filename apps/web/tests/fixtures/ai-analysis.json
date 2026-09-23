@@ -1,0 +1,464 @@
+{
+ "engineVersion": "0.1.0",
+ "tool": "docx",
+ "provider": {
+  "name": "gemini",
+  "model": "gemini-3.5-flash-lite"
+ },
+ "unchanged": [],
+ "limitations": [
+  "AI Change Analyst explains changes detected by DiffNexa's deterministic comparison. It does not independently verify facts, determine legal meaning, or replace professional review.",
+  "A Word document has no fixed pages, so locations are paragraphs and table cells, counted from the start of the document."
+ ],
+ "status": "partial",
+ "coverage": {
+  "totalChanges": 11,
+  "excludedNoise": 0,
+  "eligible": 11,
+  "analyzed": 10,
+  "notAnalyzedIds": [
+   "c10"
+  ],
+  "prioritised": false
+ },
+ "summary": [
+  {
+   "text": "The revised agreement extends the payment period from 30 to 45 days and moves a date from 15 March 2026 to 30 March 2026.",
+   "changeIds": [
+    "c2",
+    "c3"
+   ]
+  },
+  {
+   "text": "It also adds a mediation sentence and raises a table amount from $10,000 to $12,000.",
+   "changeIds": [
+    "c5",
+    "c9"
+   ]
+  }
+ ],
+ "changes": [
+  {
+   "changeId": "c0",
+   "comparison": {
+    "type": "Metadata changed",
+    "kind": "modified",
+    "category": "metadata",
+    "location": "Document title (properties)",
+    "original": "Supplier Agreement",
+    "revised": "Supplier Agreement v2",
+    "difference": null,
+    "signals": [
+     "Group: Other"
+    ],
+    "details": [],
+    "evidence": [
+     {
+      "ref": "c0.e1",
+      "side": "original",
+      "location": "Document title (properties)",
+      "excerpt": "Supplier Agreement"
+     },
+     {
+      "ref": "c0.e2",
+      "side": "revised",
+      "location": "Document title (properties)",
+      "excerpt": "Supplier Agreement v2"
+     }
+    ]
+   },
+   "analysis": {
+    "significance": "minor",
+    "explanation": "The document title in the properties changes from Supplier Agreement to Supplier Agreement v2.",
+    "whyItMayMatter": "Impact could not be determined from the documents.",
+    "evidenceRefs": [
+     "c0.e2"
+    ]
+   }
+  },
+  {
+   "changeId": "c1",
+   "comparison": {
+    "type": "Text added",
+    "kind": "added",
+    "category": "text",
+    "location": "Heading 2, paragraph 2, under “Supplier Agreement”",
+    "original": null,
+    "revised": "and Refund",
+    "difference": null,
+    "signals": [
+     "Group: Headings"
+    ],
+    "details": [],
+    "evidence": [
+     {
+      "ref": "c1.e1",
+      "side": "revised",
+      "location": "Heading 2, paragraph 2, under “Supplier Agreement”",
+      "excerpt": "and Refund"
+     }
+    ]
+   },
+   "analysis": {
+    "significance": "minor",
+    "explanation": "A heading gains the words and Refund.",
+    "whyItMayMatter": "The section heading now names refunds as well as payment.",
+    "evidenceRefs": [
+     "c1.e1"
+    ]
+   }
+  },
+  {
+   "changeId": "c2",
+   "comparison": {
+    "type": "Number changed",
+    "kind": "modified",
+    "category": "number",
+    "location": "Paragraph 3, under “Payment and Refund Terms” (was Paragraph 3, under “Payment Terms”)",
+    "original": "30",
+    "revised": "45",
+    "difference": "+15 (+50%)",
+    "signals": [
+     "Group: Numbers"
+    ],
+    "details": [],
+    "evidence": [
+     {
+      "ref": "c2.e1",
+      "side": "original",
+      "location": "Paragraph 3, under “Payment Terms”",
+      "excerpt": "30"
+     },
+     {
+      "ref": "c2.e2",
+      "side": "revised",
+      "location": "Paragraph 3, under “Payment and Refund Terms”",
+      "excerpt": "45"
+     }
+    ]
+   },
+   "analysis": {
+    "significance": "important",
+    "explanation": "In the Payment and Refund Terms, a number changes from 30 to 45, an increase of 15.",
+    "whyItMayMatter": "This may change a payment period stated in the agreement.",
+    "evidenceRefs": [
+     "c2.e1",
+     "c2.e2"
+    ]
+   }
+  },
+  {
+   "changeId": "c3",
+   "comparison": {
+    "type": "Date changed",
+    "kind": "modified",
+    "category": "date",
+    "location": "Paragraph 4, under “Payment and Refund Terms” (was Paragraph 4, under “Payment Terms”)",
+    "original": "15 March 2026",
+    "revised": "30 March 2026",
+    "difference": "15 days later",
+    "signals": [
+     "Group: Dates"
+    ],
+    "details": [],
+    "evidence": [
+     {
+      "ref": "c3.e1",
+      "side": "original",
+      "location": "Paragraph 4, under “Payment Terms”",
+      "excerpt": "15 March 2026."
+     },
+     {
+      "ref": "c3.e2",
+      "side": "revised",
+      "location": "Paragraph 4, under “Payment and Refund Terms”",
+      "excerpt": "30 March 2026."
+     }
+    ]
+   },
+   "analysis": {
+    "significance": "important",
+    "explanation": "A date changes from 15 March 2026 to 30 March 2026, 15 days later.",
+    "whyItMayMatter": "This may move a deadline tied to this date.",
+    "evidenceRefs": [
+     "c3.e1",
+     "c3.e2"
+    ]
+   }
+  },
+  {
+   "changeId": "c4",
+   "comparison": {
+    "type": "Text modified",
+    "kind": "modified",
+    "category": "text",
+    "location": "Paragraph 5, under “Payment and Refund Terms” (was Paragraph 5, under “Payment Terms”)",
+    "original": "monthly",
+    "revised": "weekly",
+    "difference": null,
+    "signals": [
+     "Group: Text changes"
+    ],
+    "details": [],
+    "evidence": [
+     {
+      "ref": "c4.e1",
+      "side": "original",
+      "location": "Paragraph 5, under “Payment Terms”",
+      "excerpt": "monthly"
+     },
+     {
+      "ref": "c4.e2",
+      "side": "revised",
+      "location": "Paragraph 5, under “Payment and Refund Terms”",
+      "excerpt": "weekly"
+     }
+    ]
+   },
+   "analysis": {
+    "significance": "notable",
+    "explanation": "The word monthly is replaced with weekly.",
+    "whyItMayMatter": "This may change how often something in the payment terms happens.",
+    "evidenceRefs": [
+     "c4.e1",
+     "c4.e2"
+    ]
+   }
+  },
+  {
+   "changeId": "c5",
+   "comparison": {
+    "type": "Text added",
+    "kind": "added",
+    "category": "text",
+    "location": "Paragraph 6, under “Payment and Refund Terms”",
+    "original": null,
+    "revised": "Disputes go to mediation first.",
+    "difference": null,
+    "signals": [
+     "Group: Text changes"
+    ],
+    "details": [],
+    "evidence": [
+     {
+      "ref": "c5.e1",
+      "side": "revised",
+      "location": "Paragraph 6, under “Payment and Refund Terms”",
+      "excerpt": "Disputes go to mediation first."
+     }
+    ]
+   },
+   "analysis": {
+    "significance": "important",
+    "explanation": "A sentence is added: Disputes go to mediation first.",
+    "whyItMayMatter": "This adds a step for handling disputes.",
+    "evidenceRefs": [
+     "c5.e1"
+    ]
+   }
+  },
+  {
+   "changeId": "c6",
+   "comparison": {
+    "type": "Text added",
+    "kind": "added",
+    "category": "text",
+    "location": "Bulleted list item (level 1), paragraph 9, under “Payment and Refund Terms”",
+    "original": null,
+    "revised": "Annual audit",
+    "difference": null,
+    "signals": [
+     "Group: Lists"
+    ],
+    "details": [],
+    "evidence": [
+     {
+      "ref": "c6.e1",
+      "side": "revised",
+      "location": "Bulleted list item (level 1), paragraph 9, under “Payment and Refund Terms”",
+      "excerpt": "Annual audit"
+     }
+    ]
+   },
+   "analysis": {
+    "significance": "notable",
+    "explanation": "A list item, Annual audit, is added.",
+    "whyItMayMatter": "This adds an item to the list in the payment terms.",
+    "evidenceRefs": [
+     "c6.e1"
+    ]
+   }
+  },
+  {
+   "changeId": "c7",
+   "comparison": {
+    "type": "Layout changed",
+    "kind": "modified",
+    "category": "layout",
+    "location": "Heading 3, paragraph 10, under “Payment and Refund Terms” (was Heading 2, paragraph 8, under “Supplier Agreement”)",
+    "original": "Heading 2",
+    "revised": "Heading 3",
+    "difference": null,
+    "signals": [
+     "Group: Structure"
+    ],
+    "details": [],
+    "evidence": [
+     {
+      "ref": "c7.e1",
+      "side": "original",
+      "location": "Heading 2, paragraph 8, under “Supplier Agreement”",
+      "excerpt": "Scope"
+     },
+     {
+      "ref": "c7.e2",
+      "side": "revised",
+      "location": "Heading 3, paragraph 10, under “Payment and Refund Terms”",
+      "excerpt": "Scope"
+     }
+    ]
+   },
+   "analysis": {
+    "significance": "minor",
+    "explanation": "A heading moves from level 2 to level 3.",
+    "whyItMayMatter": "This changes the document's structure, not its wording.",
+    "evidenceRefs": [
+     "c7.e1",
+     "c7.e2"
+    ]
+   }
+  },
+  {
+   "changeId": "c8",
+   "comparison": {
+    "type": "Link changed",
+    "kind": "modified",
+    "category": "link",
+    "location": "Link in paragraph 11, under “Scope” (was Link in paragraph 9, under “Scope”)",
+    "original": "https://example.com/terms",
+    "revised": "https://example.org/terms-2026",
+    "difference": null,
+    "signals": [
+     "Group: Other"
+    ],
+    "details": [],
+    "evidence": [
+     {
+      "ref": "c8.e1",
+      "side": "original",
+      "location": "Link in paragraph 9, under “Scope”",
+      "excerpt": "the terms"
+     },
+     {
+      "ref": "c8.e2",
+      "side": "revised",
+      "location": "Link in paragraph 11, under “Scope”",
+      "excerpt": "the terms"
+     }
+    ]
+   },
+   "analysis": {
+    "significance": "notable",
+    "explanation": "A link changes from https://example.com/terms to https://example.org/terms-2026.",
+    "whyItMayMatter": "Readers following the link reach a different address.",
+    "evidenceRefs": [
+     "c8.e1",
+     "c8.e2"
+    ]
+   }
+  },
+  {
+   "changeId": "c9",
+   "comparison": {
+    "type": "Number changed",
+    "kind": "modified",
+    "category": "number",
+    "location": "Table 1, row 2, column 2, under “Scope”",
+    "original": "$10,000",
+    "revised": "$12,000",
+    "difference": "+2000 (+20%)",
+    "signals": [
+     "Group: Tables"
+    ],
+    "details": [],
+    "evidence": [
+     {
+      "ref": "c9.e1",
+      "side": "original",
+      "location": "Table 1, row 2, column 2, under “Scope”",
+      "excerpt": "$10,000"
+     },
+     {
+      "ref": "c9.e2",
+      "side": "revised",
+      "location": "Table 1, row 2, column 2, under “Scope”",
+      "excerpt": "$12,000"
+     }
+    ]
+   },
+   "analysis": {
+    "significance": "important",
+    "explanation": "In table 1, a value changes from $10,000 to $12,000, an increase of $2,000.",
+    "whyItMayMatter": "This changes an amount stated in the table.",
+    "evidenceRefs": [
+     "c9.e1",
+     "c9.e2"
+    ]
+   }
+  }
+ ],
+ "references": {
+  "c0": {
+   "type": "Metadata changed",
+   "location": "Document title (properties)"
+  },
+  "c1": {
+   "type": "Text added",
+   "location": "Heading 2, paragraph 2, under “Supplier Agreement”"
+  },
+  "c2": {
+   "type": "Number changed",
+   "location": "Paragraph 3, under “Payment and Refund Terms” (was Paragraph 3, under “Payment Terms”)"
+  },
+  "c3": {
+   "type": "Date changed",
+   "location": "Paragraph 4, under “Payment and Refund Terms” (was Paragraph 4, under “Payment Terms”)"
+  },
+  "c4": {
+   "type": "Text modified",
+   "location": "Paragraph 5, under “Payment and Refund Terms” (was Paragraph 5, under “Payment Terms”)"
+  },
+  "c5": {
+   "type": "Text added",
+   "location": "Paragraph 6, under “Payment and Refund Terms”"
+  },
+  "c6": {
+   "type": "Text added",
+   "location": "Bulleted list item (level 1), paragraph 9, under “Payment and Refund Terms”"
+  },
+  "c7": {
+   "type": "Layout changed",
+   "location": "Heading 3, paragraph 10, under “Payment and Refund Terms” (was Heading 2, paragraph 8, under “Supplier Agreement”)"
+  },
+  "c8": {
+   "type": "Link changed",
+   "location": "Link in paragraph 11, under “Scope” (was Link in paragraph 9, under “Scope”)"
+  },
+  "c9": {
+   "type": "Number changed",
+   "location": "Table 1, row 2, column 2, under “Scope”"
+  }
+ },
+ "withheld": {
+  "statements": 1,
+  "reasons": {
+   "unsupported_judgement": 1
+  }
+ },
+ "usage": {
+  "providerCalls": 1,
+  "inputTokens": 100,
+  "outputTokens": 50,
+  "ms": 1840
+ }
+}

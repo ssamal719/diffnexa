@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 
+import { ReportWithAnalyst } from "@/components/analysis/ReportWithAnalyst";
 import { PolicyReport } from "@/components/policy/PolicyReport";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
@@ -10,6 +11,7 @@ import { Tabs } from "@/components/ui/Tabs";
 import { TextField } from "@/components/ui/TextField";
 import { WebError } from "@/components/website/WebError";
 import { WebProcessing, type WebStage } from "@/components/website/WebProcessing";
+import { SEAL_HEADER } from "@/lib/analysis";
 import {
   POLICY_TYPES,
   baselineFilename,
@@ -31,6 +33,7 @@ type State =
   | {
       name: "checked";
       result: PolicyComparison;
+      seal: string | null;
       url: string;
       policyType: string | null;
       baselineCapturedAt: string | null;
@@ -116,9 +119,12 @@ export function PolicyDesk() {
         return;
       }
       setState({ name: "working", mode: "compare", stage: "preparing" });
+      // The seal lets this result be sent for AI analysis later, if the person asks.
+      const seal = response.headers?.get?.(SEAL_HEADER) ?? null;
       setState({
         name: "checked",
         result: body as PolicyComparison,
+        seal,
         url: checked.url,
         policyType: baseline.policyType ?? policyType,
         baselineCapturedAt: capturedAtOf(baseline.snapshot),
@@ -273,7 +279,7 @@ export function PolicyDesk() {
 
           <p className="text-[0.8rem] text-ink-soft">
             DiffNexa reads the page and discards it once your result is ready. Nothing about the
-            page is stored, there is no account, and nothing is sent to any AI service. DiffNexa
+            page is stored, there is no account, and the comparison sends nothing to any AI service. DiffNexa
             reports what changed, not what it means — it does not give legal advice.
           </p>
         </div>
@@ -329,12 +335,18 @@ export function PolicyDesk() {
       )}
 
       {state.name === "checked" && (
-        <PolicyReport
-          result={state.result}
-          url={state.url}
-          policyType={state.policyType}
-          baselineCapturedAt={state.baselineCapturedAt}
-        />
+        <ReportWithAnalyst tool="policy" result={state.result} seal={state.seal}>
+          {({ analyst, focus }) => (
+            <PolicyReport
+              result={state.result}
+              url={state.url}
+              policyType={state.policyType}
+              baselineCapturedAt={state.baselineCapturedAt}
+              analyst={analyst}
+              focus={focus}
+            />
+          )}
+        </ReportWithAnalyst>
       )}
     </>
   );

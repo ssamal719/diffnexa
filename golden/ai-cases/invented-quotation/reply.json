@@ -1,0 +1,22 @@
+{
+  "summary": [
+    {
+      "text": "The revised agreement renames one heading.",
+      "change_ids": [
+        "c0"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "change_id": "c0",
+      "significance": "minor",
+      "explanation": "The heading now reads “Fees and Charges”.",
+      "why_it_may_matter": "The section is renamed.",
+      "evidence_refs": [
+        "c0.e1",
+        "c0.e2"
+      ]
+    }
+  ]
+}

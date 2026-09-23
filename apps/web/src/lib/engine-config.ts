@@ -56,7 +56,23 @@ export const ENGINE_AUTH_HEADER = "authorization";
  * rejects anything without it.
  */
 export function engineAuthHeaders(): Record<string, string> {
-  const secret = process.env.ENGINE_SHARED_SECRET;
-  if (!secret || secret.trim() === "") return {};
-  return { Authorization: `Bearer ${secret.trim()}` };
+  const secret = engineSecret();
+  return secret ? { Authorization: `Bearer ${secret}` } : {};
 }
+
+/**
+ * The shared secret itself, for the two server-side uses that need it: the
+ * header above, and the key that seals comparison results for AI analysis
+ * (src/lib/analysis-seal.ts). This is the only place it is read.
+ */
+export function engineSecret(): string | null {
+  const secret = process.env.ENGINE_SHARED_SECRET;
+  return secret && secret.trim() !== "" ? secret.trim() : null;
+}
+
+/**
+ * AI analysis sends several batches to an AI service and validates each, so it
+ * is allowed longer than a comparison. The engine's own per-call timeouts end
+ * well within this.
+ */
+export const AI_TIMEOUT_MS = Number(process.env.ENGINE_AI_TIMEOUT_MS ?? 150_000);

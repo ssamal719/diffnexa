@@ -1,5 +1,5 @@
 {
-  "_comment": "Single source of truth for user-facing error codes and messages. 'messages' covers document (PDF) errors; 'web_messages' covers webpage errors. The engine (Python) and the website (TypeScript) are each tested against this file so their wording can never drift apart.",
+  "_comment": "Single source of truth for user-facing error codes and messages. 'messages' covers document (PDF) errors; 'web_messages' covers webpage errors. The engine (Python) and the website (TypeScript) are each tested against this file so their wording can never drift apart. 'ai_messages' covers AI Change Analyst, which only ever explains a completed comparison.",
   "messages": {
     "not_pdf": "This file isn't a PDF. Choose a file that ends in .pdf and was saved as a PDF.",
     "empty_file": "This file is empty. Choose the PDF again, or re-save it and try once more.",
@@ -44,5 +44,17 @@
     "excel_too_complex": "That workbook has more cells or sheets than Excel Compare can show at once. Try comparing a smaller workbook, or only the sheets you need.",
     "excel_no_sheets": "That workbook has no worksheets to compare.",
     "excel_empty_file": "That file is empty. Choose the Excel workbook you want to compare."
+  },
+  "ai_messages": {
+    "ai_unavailable": "AI analysis isn't available right now. Your comparison is complete and is not affected.",
+    "ai_bad_request": "This comparison couldn't be sent for AI analysis. Run the comparison again, then try once more.",
+    "ai_unverified": "This comparison couldn't be confirmed as DiffNexa's own result, so it was not sent for AI analysis. Run the comparison again, then try once more.",
+    "ai_unsupported": "AI analysis isn't available for this kind of comparison.",
+    "ai_too_large": "This comparison is too large to send for AI analysis. Every change is still listed in the comparison.",
+    "ai_timeout": "The AI analysis took too long. Your comparison is not affected. Try again in a moment.",
+    "ai_failed": "The AI service didn't respond properly. Your comparison is not affected. Try again in a moment.",
+    "ai_invalid": "AI analysis could not be validated against the comparison evidence.",
+    "ai_busy": "An AI analysis of this comparison is already running.",
+    "ai_limit_reached": "AI analysis has reached its limit for today. Your comparison is complete and is not affected."
   }
 }

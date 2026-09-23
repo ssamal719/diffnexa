@@ -1,0 +1,8 @@
+# Written by hand: a deterministic comparison result, what the scripted model replies,
+# and what DiffNexa must then show. See golden/ai-cases/README.md.
+case: output-limit
+description: "The model's reply is cut off at its output limit: nothing partial is shown."
+tool: docx
+source: {"pair": "table-cell-number"}
+provider: {"error": "truncated"}
+expect: {"status": "error", "error": "ai_failed"}

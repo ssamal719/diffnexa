@@ -25,6 +25,11 @@ from typing import Any
 
 from diffnexa_engine import ENGINE_VERSION
 from diffnexa_engine.adapters.pdf.extract import extract_document
+from diffnexa_engine.ai.adapters import build_facts
+from diffnexa_engine.ai.analyst import DailyBudget, analyze_facts
+from diffnexa_engine.ai.config import AIConfig
+from diffnexa_engine.ai.errors import AIAnalysisError, AIErrorCode
+from diffnexa_engine.ai.providers import AIAnalysisProvider, provider_from_config
 from diffnexa_engine.compare import compare_documents_verbose
 from diffnexa_engine.competitor.api import serialize_competitor_comparison
 from diffnexa_engine.competitor.classify import classify_changes as classify_competitor_changes
@@ -58,15 +63,43 @@ from diffnexa_engine.xlsx.extract import ExcelLimits, extract_xlsx
 
 MAX_REQUEST_BYTES_HEADROOM = 2 * 1024 * 1024  # room for multipart overhead
 
+#: A comparison result sent back for AI analysis (without Excel's cell grids).
+MAX_AI_REQUEST_BYTES = 4 * 1024 * 1024
 
-def build_app():  # noqa: C901 - a single route with explicit error handling
-    """Create the FastAPI application. Imported lazily so FastAPI stays optional."""
+
+def build_app(ai_provider: AIAnalysisProvider | None = None, ai_config: AIConfig | None = None):  # noqa: C901
+    """Create the FastAPI application. Imported lazily so FastAPI stays optional.
+
+    `ai_provider` replaces the configured AI provider (tests use it, so no test
+    ever needs a real key or reaches a real AI service).
+    """
+    import hashlib
+    import logging
+    import threading
+
     from fastapi import FastAPI, File, Request, UploadFile
     from fastapi.middleware.cors import CORSMiddleware
     from fastapi.responses import JSONResponse
+    from starlette.concurrency import run_in_threadpool
 
     limits = EngineLimits.from_env()
     secret = configured_secret()
+    ai_config = ai_config or AIConfig.from_env()
+    ai = ai_provider if ai_provider is not None else provider_from_config(ai_config)
+    ai_budget = DailyBudget(ai_config.daily_limit)
+    # One line per AI analysis, so usage and cost can be followed in the host's logs:
+    # tool, change counts, provider calls, tokens and time. Never content.
+    ai_log = logging.getLogger("diffnexa.ai")
+    ai_log.setLevel(logging.INFO)
+    if not ai_log.handlers:
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter("%(asctime)s %(name)s %(message)s"))
+        ai_log.addHandler(handler)
+    ai_running: set[str] = set()
+    ai_lock = threading.Lock()
+    if ai is None and ai_config.problem and ai_config.problem != "DIFFNEXA_AI_PROVIDER is not set":
+        # Says what is misconfigured; never prints the key.
+        print(f"WARNING: AI Change Analyst is off: {ai_config.problem}.")
     if secret is None:
         print(
             "WARNING: ENGINE_SHARED_SECRET is not set, so this engine accepts requests "
@@ -137,6 +170,7 @@ def build_app():  # noqa: C901 - a single route with explicit error handling
             },
             "requires_auth": secret is not None,
             "authenticated": credentials_ok,
+            "ai": {"available": ai is not None},
         }
 
     def web_error(exc: WebRequestError) -> JSONResponse:
@@ -310,6 +344,46 @@ def build_app():  # noqa: C901 - a single route with explicit error handling
         elapsed_ms = int((time.perf_counter() - started) * 1000)
         return JSONResponse(content=serialize_excel_comparison(outcome, elapsed_ms))
 
+    def ai_error(code: AIErrorCode) -> JSONResponse:
+        error = AIAnalysisError(code, "")
+        return JSONResponse(
+            status_code=error.status,
+            content={"error": {"code": code.value, "message": error.user_message, "side": None}},
+        )
+
+    @app.post("/v1/ai/analyze")
+    async def ai_analyze(request: Request) -> Any:
+        """Explain a comparison result the website sealed when the engine returned it.
+
+        Only the result's changes and evidence are used; no document is sent here
+        or onward. Nothing from the request or the analysis is logged.
+        """
+        if ai is None:
+            return ai_error(AIErrorCode.UNAVAILABLE)
+        try:
+            raw = await _read_ai_body(request)
+        except AIAnalysisError as exc:
+            return ai_error(exc.code)
+        fingerprint = hashlib.sha256(raw).hexdigest()
+        with ai_lock:
+            if fingerprint in ai_running:
+                return ai_error(AIErrorCode.BUSY)
+            ai_running.add(fingerprint)
+        try:
+            payload = _parse_ai_body(raw)
+            facts = build_facts(payload.get("tool"), payload.get("result"))
+            if facts.eligible and not ai_budget.take():
+                raise AIAnalysisError(AIErrorCode.LIMIT_REACHED, "daily limit")
+            analysis = await run_in_threadpool(
+                analyze_facts, facts, ai, ai_config, engine_version=ENGINE_VERSION
+            )
+        except AIAnalysisError as exc:
+            return ai_error(exc.code)
+        finally:
+            with ai_lock:
+                ai_running.discard(fingerprint)
+        return JSONResponse(content=analysis)
+
     @app.post("/v1/compare")
     async def compare_endpoint(
         previous: UploadFile = File(...),
@@ -359,6 +433,30 @@ async def _read_json(request: Any) -> dict[str, Any]:
         raise WebRequestError(WebErrorCode.BAD_REQUEST, f"unreadable body: {exc}") from exc
     if not isinstance(payload, dict):
         raise WebRequestError(WebErrorCode.BAD_REQUEST, "body must be an object")
+    return payload
+
+
+async def _read_ai_body(request: Any) -> bytes:
+    declared = request.headers.get("content-length")
+    if declared and declared.isdigit() and int(declared) > MAX_AI_REQUEST_BYTES:
+        raise AIAnalysisError(AIErrorCode.TOO_LARGE, "declared size")
+    raw = await request.body()
+    if len(raw) > MAX_AI_REQUEST_BYTES:
+        raise AIAnalysisError(AIErrorCode.TOO_LARGE, "body size")
+    if not raw:
+        raise AIAnalysisError(AIErrorCode.BAD_REQUEST, "empty body")
+    return raw
+
+
+def _parse_ai_body(raw: bytes) -> dict[str, Any]:
+    import json
+
+    try:
+        payload = json.loads(raw)
+    except (ValueError, RecursionError):
+        raise AIAnalysisError(AIErrorCode.BAD_REQUEST, "unreadable body") from None
+    if not isinstance(payload, dict):
+        raise AIAnalysisError(AIErrorCode.BAD_REQUEST, "body must be an object")
     return payload
 
 

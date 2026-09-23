@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { ReportWithAnalyst } from "@/components/analysis/ReportWithAnalyst";
 import { PriceReport } from "@/components/price/PriceReport";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
@@ -10,6 +11,7 @@ import { Tabs } from "@/components/ui/Tabs";
 import { TextField } from "@/components/ui/TextField";
 import { WebError } from "@/components/website/WebError";
 import { WebProcessing, type WebStage } from "@/components/website/WebProcessing";
+import { SEAL_HEADER } from "@/lib/analysis";
 import {
   MAX_PRODUCT_NAME,
   PAGE_TYPES,
@@ -35,6 +37,7 @@ type State =
   | {
       name: "checked";
       result: PriceComparison;
+      seal: string | null;
       url: string;
       product: string;
       pageType: string;
@@ -117,9 +120,12 @@ export function PriceDesk() {
         setState({ name: "failed", mode: "check", failure: body?.error ?? unknownFailure() });
         return;
       }
+      // The seal lets this result be sent for AI analysis later, if the person asks.
+      const seal = response.headers?.get?.(SEAL_HEADER) ?? null;
       setState({
         name: "checked",
         result: body as PriceComparison,
+        seal,
         url: checked.url,
         product: cleanProductName(product) || fallbackProductName(checked.url),
         pageType,
@@ -289,7 +295,7 @@ export function PriceDesk() {
 
           <p className="text-[0.8rem] text-ink-soft">
             DiffNexa reads the page once and discards it — and your baseline — when your result is
-            ready. Nothing is stored, there is no account, and nothing is sent to any AI service.
+            ready. Nothing is stored, there is no account, and the comparison sends nothing to any AI service.
             DiffNexa reports what the page says, not whether a price is good or bad.
           </p>
         </div>
@@ -348,13 +354,19 @@ export function PriceDesk() {
       )}
 
       {state.name === "checked" && (
-        <PriceReport
-          result={state.result}
-          url={state.url}
-          product={state.product}
-          pageType={state.pageType}
-          baselineCapturedAt={state.baselineCapturedAt}
-        />
+        <ReportWithAnalyst tool="price" result={state.result} seal={state.seal}>
+          {({ analyst, focus }) => (
+            <PriceReport
+              result={state.result}
+              url={state.url}
+              product={state.product}
+              pageType={state.pageType}
+              baselineCapturedAt={state.baselineCapturedAt}
+              analyst={analyst}
+              focus={focus}
+            />
+          )}
+        </ReportWithAnalyst>
       )}
     </>
   );

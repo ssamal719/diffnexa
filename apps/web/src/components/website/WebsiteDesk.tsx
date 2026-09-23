@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 
+import { ReportWithAnalyst } from "@/components/analysis/ReportWithAnalyst";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import { Tabs } from "@/components/ui/Tabs";
@@ -9,6 +10,7 @@ import { TextField } from "@/components/ui/TextField";
 import { WebError } from "@/components/website/WebError";
 import { WebProcessing, type WebStage } from "@/components/website/WebProcessing";
 import { WebReport } from "@/components/website/WebReport";
+import { SEAL_HEADER } from "@/lib/analysis";
 import {
   baselineFilename,
   checkUrl,
@@ -25,7 +27,7 @@ type State =
   | { name: "idle" }
   | { name: "working"; mode: Mode; stage: WebStage }
   | { name: "captured"; baseline: Baseline }
-  | { name: "compared"; result: WebComparison; url: string }
+  | { name: "compared"; result: WebComparison; url: string; seal: string | null }
   | { name: "failed"; failure: WebFailure; mode: Mode };
 
 /**
@@ -111,7 +113,9 @@ export function WebsiteDesk() {
         return;
       }
       setState({ name: "working", mode: "compare", stage: "preparing" });
-      setState({ name: "compared", result: body as WebComparison, url: checked.url });
+      // The seal lets this result be sent for AI analysis later, if the person asks.
+      const seal = response.headers?.get?.(SEAL_HEADER) ?? null;
+      setState({ name: "compared", result: body as WebComparison, url: checked.url, seal });
     } catch {
       setState({ name: "failed", mode: "compare", failure: connectionFailure() });
     }
@@ -243,7 +247,7 @@ export function WebsiteDesk() {
 
           <p className="text-[0.8rem] text-ink-soft">
             DiffNexa reads the page and discards it once the result is ready. Nothing about the
-            page is stored, and nothing is sent to any AI service.
+            page is stored, and the comparison sends nothing to any AI service.
           </p>
         </div>
       </div>
@@ -294,7 +298,13 @@ export function WebsiteDesk() {
         </section>
       )}
 
-      {state.name === "compared" && <WebReport result={state.result} url={state.url} />}
+      {state.name === "compared" && (
+        <ReportWithAnalyst tool="web" result={state.result} seal={state.seal}>
+          {({ analyst, focus }) => (
+            <WebReport result={state.result} url={state.url} analyst={analyst} focus={focus} />
+          )}
+        </ReportWithAnalyst>
+      )}
     </>
   );
 }

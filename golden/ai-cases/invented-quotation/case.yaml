@@ -1,0 +1,8 @@
+# Written by hand: a deterministic comparison result, what the scripted model replies,
+# and what DiffNexa must then show. See golden/ai-cases/README.md.
+case: invented-quotation
+description: "An explanation quotes wording that is not in the document: it is withheld."
+tool: docx
+source: {"pair": "heading-renamed"}
+provider: {"replies": ["reply.json"]}
+expect: {"status": "partial", "not_shown": ["c0"], "withheld": 1, "summary_sentences": 1, "must_not_display": ["fees and charges"]}

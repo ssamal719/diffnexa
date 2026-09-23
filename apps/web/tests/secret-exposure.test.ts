@@ -51,10 +51,21 @@ describe("the engine secret", () => {
     expect(readers.map((file) => file.path)).toEqual([join("lib", "engine-config.ts")]);
   });
 
+  it("keys the analysis seal on the server only, never in the browser", () => {
+    const clientFiles = FILES.filter((file) => /^\s*["']use client["']/.test(file.text));
+    for (const file of clientFiles) {
+      expect(file.text, file.path).not.toContain("analysis-seal");
+      expect(file.text, file.path).not.toContain("engineSecret");
+      expect(file.text, file.path).not.toContain("node:crypto");
+    }
+    const sealers = FILES.filter((file) => file.text.includes("engineSecret()"));
+    expect(sealers.map((file) => file.path).sort()).toEqual([join("lib", "analysis-seal.ts"), join("lib", "engine-config.ts")]);
+  });
+
   it("is sent to the engine by every tool's routes through that helper", () => {
     const routes = FILES.filter((file) => file.path.startsWith(join("app", "api")) && file.path.endsWith("route.ts"));
     const engineRoutes = routes.filter((file) => /callEngine|engineAuthHeaders/.test(file.text));
-    for (const tool of ["web", "policy", "competitor", "price", "docx", "excel"]) {
+    for (const tool of ["web", "policy", "competitor", "price", "docx", "excel", "ai"]) {
       expect(engineRoutes.some((file) => file.path.includes(join("api", tool))), tool).toBe(true);
     }
   });

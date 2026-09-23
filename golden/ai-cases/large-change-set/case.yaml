@@ -1,0 +1,9 @@
+# Written by hand: a deterministic comparison result, what the scripted model replies,
+# and what DiffNexa must then show. See golden/ai-cases/README.md.
+case: large-change-set
+description: "180 changes with a limit of 100: numbers go first, 4 calls of 25, and the coverage is stated."
+tool: web
+source: {"crafted": "many-numbers", "count": 180}
+provider: {"echo": true}
+limits: {"max_changes": 100, "batch_size": 25}
+expect: {"status": "partial", "explained": ["c1", "c2", "c149"], "not_shown": ["c0", "c3", "c151"], "analyzed": 100, "provider_calls": 4}

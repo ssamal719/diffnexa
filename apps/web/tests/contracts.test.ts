@@ -3,6 +3,7 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { AI_ERROR_MESSAGES } from "@/lib/analysis";
 import { DOCX_ERROR_MESSAGES, ERROR_MESSAGES, EXCEL_ERROR_MESSAGES, WEB_ERROR_MESSAGES } from "@/lib/validation";
 
 const REPO_ROOT = join(import.meta.dirname, "..", "..", "..");
@@ -58,6 +59,14 @@ describe("shared error contract", () => {
       "excel_unreadable",
       "excel_unsupported",
     ]);
+  });
+
+  it("shares the AI Change Analyst error wording with the engine", () => {
+    const source = JSON.parse(
+      readFileSync(join(REPO_ROOT, "packages", "contracts", "errors.json"), "utf8"),
+    );
+    expect(AI_ERROR_MESSAGES).toEqual(source.ai_messages);
+    expect(AI_ERROR_MESSAGES.ai_invalid).toBe("AI analysis could not be validated against the comparison evidence.");
   });
 
   it("covers every code the engine can return", () => {

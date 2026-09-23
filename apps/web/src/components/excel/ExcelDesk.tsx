@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { ReportWithAnalyst } from "@/components/analysis/ReportWithAnalyst";
 import { ExcelWorkspace } from "@/components/excel/ExcelWorkspace";
 import { ProcessingState, type ProcessingStage, type StageText } from "@/components/results/ProcessingState";
 import { Alert } from "@/components/ui/Alert";
@@ -9,13 +10,14 @@ import { Button } from "@/components/ui/Button";
 import { OfficeFileSlot, type FileCheck, type SlotFile } from "@/components/upload/OfficeFileSlot";
 import type { ExcelComparison, ExcelFailure } from "@/lib/excel-report";
 import { EXCEL_ERROR_MESSAGES, EXCEL_MAX_FILE_BYTES, checkXlsxBytes, excelErrorMessage, formatFileSize } from "@/lib/validation";
+import { SEAL_HEADER } from "@/lib/analysis";
 
 type EngineStatus = { checked: boolean; available: boolean };
 
 type Phase =
   | { name: "idle" }
   | { name: "working"; stage: ProcessingStage; uploadPercent: number | null }
-  | { name: "done"; result: ExcelComparison; original: SlotFile; revised: SlotFile }
+  | { name: "done"; result: ExcelComparison; original: SlotFile; revised: SlotFile; seal: string | null }
   | { name: "failed"; error: ExcelFailure };
 
 const STAGES: StageText[] = [
@@ -108,7 +110,8 @@ export function ExcelDesk() {
       }
       if (request.status >= 200 && request.status < 300 && body) {
         setPhase({ name: "working", stage: "preparing", uploadPercent: 100 });
-        requestAnimationFrame(() => setPhase({ name: "done", result: body as ExcelComparison, ...files }));
+        const seal = request.getResponseHeader?.(SEAL_HEADER) ?? null;
+        requestAnimationFrame(() => setPhase({ name: "done", result: body as ExcelComparison, ...files, seal }));
         return;
       }
       const error = (body as { error?: ExcelFailure } | null)?.error;
@@ -192,7 +195,7 @@ export function ExcelDesk() {
             <li>Excel .xlsx files only. Older .xls, macro-enabled .xlsm and binary .xlsb files are not accepted.</li>
             <li>
               Your files are read for this comparison only and are not stored. No formula is calculated, no macro is
-              run and nothing is sent to any AI service.
+              run and the comparison sends nothing to any AI service.
             </li>
             <li>Values, formulas, rows, columns, sheets and links are compared. Formatting and charts are not.</li>
           </ul>
@@ -207,11 +210,19 @@ export function ExcelDesk() {
       </div>
       {phase.name === "done" && (
         <div ref={resultRef} className="scroll-mt-4">
-          <ExcelWorkspace
-            result={phase.result}
-            original={{ name: phase.original.displayName, sizeBytes: phase.original.sizeBytes }}
-            revised={{ name: phase.revised.displayName, sizeBytes: phase.revised.sizeBytes }}
-          />
+          <ReportWithAnalyst tool="excel" result={phase.result} seal={phase.seal}>
+            {({ analyst, focus }) => (
+              <>
+                <ExcelWorkspace
+                  result={phase.result}
+                  original={{ name: phase.original.displayName, sizeBytes: phase.original.sizeBytes }}
+                  revised={{ name: phase.revised.displayName, sizeBytes: phase.revised.sizeBytes }}
+                  focus={focus}
+                />
+                <div className="mx-auto mt-4 max-w-5xl">{analyst}</div>
+              </>
+            )}
+          </ReportWithAnalyst>
         </div>
       )}
     </>

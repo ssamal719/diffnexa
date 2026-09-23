@@ -92,6 +92,13 @@ export const LIMITS: Record<string, RateLimit[]> = {
     { limit: 10, windowMs: 60_000 },
     { limit: 60, windowMs: 60 * 60_000 },
   ],
+  // AI analysis is paid per use, so it is limited far more tightly than any
+  // comparison: a person analyses a comparison once, perhaps twice. The engine
+  // adds a daily ceiling for all visitors together on top of this.
+  "ai-analyze": [
+    { limit: 3, windowMs: 60_000 },
+    { limit: 20, windowMs: 60 * 60_000 },
+  ],
 };
 
 type Hit = { at: number };

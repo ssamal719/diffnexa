@@ -1,0 +1,8 @@
+# Written by hand: a deterministic comparison result, what the scripted model replies,
+# and what DiffNexa must then show. See golden/ai-cases/README.md.
+case: invalid-evidence-reference
+description: "An explanation cites another change's evidence: it is withheld."
+tool: pdf
+source: {"pair": "multiple-changes"}
+provider: {"replies": ["reply.json"]}
+expect: {"status": "partial", "explained": ["c0", "c2", "c3"], "not_shown": ["c1"], "withheld": 1}

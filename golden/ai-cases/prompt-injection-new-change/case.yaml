@@ -1,0 +1,8 @@
+# Written by hand: a deterministic comparison result, what the scripted model replies,
+# and what DiffNexa must then show. See golden/ai-cases/README.md.
+case: prompt-injection-new-change
+description: "Document text tells the model to add change c99; a model that obeys has its whole reply refused."
+tool: web
+source: {"crafted": "prompt-injection"}
+provider: {"replies": ["reply.json"]}
+expect: {"status": "error", "error": "ai_invalid", "must_not_display": ["free", "illegal"]}

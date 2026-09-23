@@ -1,0 +1,10 @@
+{
+  "summary": [
+    {"text": "The competitor's page changes a Team plan price from $15 to $16 and rewords its call to action.", "change_ids": ["c2", "c4"]}
+  ],
+  "changes": [
+    {"change_id": "c2", "significance": "notable", "explanation": "A call-to-action link changes from Start to Try Northwind.", "why_it_may_matter": "This changes what the page asks visitors to do.", "evidence_refs": ["c2.e1", "c2.e2"]},
+    {"change_id": "c4", "significance": "important", "explanation": "In the Team plan, the stated price changes from $15 to $16, an increase of $1.", "why_it_may_matter": "This changes a price the page states.", "evidence_refs": ["c4.e1", "c4.e2"]},
+    {"change_id": "c5", "significance": "minor", "explanation": "In About Northwind, a number changes from 12,000 to 13,000.", "why_it_may_matter": "The competitor is becoming more expensive and outperforms rivals.", "evidence_refs": ["c5.e1", "c5.e2"]}
+  ]
+}

@@ -25,6 +25,7 @@ afterEach(() => {
 describe("the limits themselves", () => {
   it("cover every expensive operation", () => {
     expect(Object.keys(LIMITS).sort()).toEqual([
+      "ai-analyze",
       "competitor-capture",
       "competitor-compare",
       "docx-compare",
@@ -42,6 +43,17 @@ describe("the limits themselves", () => {
       for (const rule of rules) {
         expect(rule.limit).toBeGreaterThan(0);
         expect(rule.windowMs).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it("limit AI analysis more tightly than any comparison, per minute and per hour", () => {
+    const ai = LIMITS["ai-analyze"]!;
+    for (const [operation, rules] of Object.entries(LIMITS)) {
+      if (operation === "ai-analyze") continue;
+      for (const window of [60_000, 60 * 60_000]) {
+        const theirs = rules.find((rule) => rule.windowMs === window)!.limit;
+        expect(ai.find((rule) => rule.windowMs === window)!.limit, operation).toBeLessThan(theirs);
       }
     }
   });

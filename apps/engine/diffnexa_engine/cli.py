@@ -83,6 +83,7 @@ def cmd_golden_generate(args: argparse.Namespace) -> int:
 
 def cmd_golden_run(args: argparse.Namespace) -> int:
     from diffnexa_engine.compare import compare_documents
+    from diffnexa_engine.golden.ai_cases import discover_ai_cases, score_ai_case
     from diffnexa_engine.golden.baseline import find_regressions, load_baseline, write_baseline
     from diffnexa_engine.golden.competitor import discover_competitor_pairs, score_competitor_pair
     from diffnexa_engine.golden.docx import discover_docx_pairs, score_docx_pair
@@ -229,6 +230,25 @@ def cmd_golden_run(args: argparse.Namespace) -> int:
                 extraction_failures=[],
                 comparison_status="scored",
                 score=excel_score,
+            )
+        )
+    # AI Change Analyst cases: a real comparison result, a scripted model, and what
+    # may be shown. False positives here are ungrounded statements that were shown.
+    try:
+        ai_cases = discover_ai_cases(root / "golden" / "ai-cases")
+    except Exception as exc:
+        print(f"AI golden case error: {exc}")
+        return 1
+    for ai_case in ai_cases:
+        ai_score, _analysis = score_ai_case(ai_case, root)
+        suite.pairs.append(
+            PairOutcome(
+                name=f"ai:{ai_case.name}",
+                source="ai",
+                description=ai_case.spec.description,
+                extraction_failures=[],
+                comparison_status="scored",
+                score=ai_score,
             )
         )
     baseline_path = root / "golden" / "baseline.json"

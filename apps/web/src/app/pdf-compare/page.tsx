@@ -80,10 +80,10 @@ export default function PdfComparePage() {
             delete them yourself at any time.
           </p>
           <p>
-            <strong>On AI:</strong> comparison itself will not depend on AI. When the optional AI
-            summary is switched on, only short excerpts of the differences already found will be
-            sent to the AI provider—never your whole document. You will be told before that
-            happens, and be able to turn it off.
+            <strong>On AI:</strong> the comparison itself never uses AI. Where this site offers AI
+            Change Analyst, you can ask it, after a comparison, to explain the changes already
+            found. Only those changes and their short evidence excerpts are sent to the AI
+            provider—never your whole document—and nothing is sent unless you ask.
           </p>
         </div>
       </section>
@@ -147,7 +147,7 @@ const FAQ = [
   {
     question: "Is my document sent anywhere?",
     answer:
-      "Your PDFs go to the comparison engine, which reads them in memory and discards them as soon as the result is returned. Nothing is stored, and nothing is sent to any AI service.",
+      "Your PDFs go to the comparison engine, which reads them in memory and discards them as soon as the result is returned. Nothing is stored, and the comparison sends nothing to any AI service.",
   },
   {
     question: "Why is the compare button sometimes disabled?",

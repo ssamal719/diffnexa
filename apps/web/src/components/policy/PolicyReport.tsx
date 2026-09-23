@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, type ReactNode } from "react";
 
 import { SectionMap } from "@/components/website/SectionMap";
 import { WebChangeCard } from "@/components/website/WebChangeCard";
@@ -24,6 +24,7 @@ import {
   type WebComparison,
   type WebFilters,
 } from "@/lib/web-report";
+import { useChangeFocus, type FocusRequest } from "@/lib/use-change-focus";
 
 /**
  * The result of checking a policy page.
@@ -42,11 +43,17 @@ export function PolicyReport({
   url,
   policyType,
   baselineCapturedAt,
+  analyst,
+  focus = null,
 }: {
   result: PolicyComparison;
   url: string;
   policyType: string | null;
   baselineCapturedAt: string | null;
+  /** AI Change Analyst, shown between the summary and the list of changes. */
+  analyst?: ReactNode;
+  /** A change to show, asked for from outside the report ("View change"). */
+  focus?: FocusRequest;
 }) {
   const report = useMemo(() => buildWebReport(result as unknown as WebComparison), [result]);
   const [filters, setFilters] = useState<WebFilters>(NO_WEB_FILTERS);
@@ -67,6 +74,17 @@ export function PolicyReport({
     setCurrent(0);
     requestAnimationFrame(() => listRef.current?.scrollIntoView({ block: "start" }));
   }
+
+  useChangeFocus(
+    focus,
+    (id) => visible.findIndex((change) => change.id === id),
+    () => {
+      setFilters({ ...NO_WEB_FILTERS, includeMinor: true });
+      setTopic(null);
+      setCurrent(0);
+    },
+    cardRefs,
+  );
 
   function goTo(index: number) {
     if (index < 0 || index >= visible.length) return;
@@ -133,6 +151,8 @@ export function PolicyReport({
           {note}
         </Alert>
       ))}
+
+      {analyst}
 
       {total > 0 && (
         <div ref={listRef} className="rounded-[var(--radius-panel)] border border-rule bg-paper">

@@ -24,6 +24,16 @@ def isolated_engine_environment(monkeypatch: pytest.MonkeyPatch) -> None:
         "DIFFNEXA_DOCX_MAX_FILE_MB",
         "DIFFNEXA_EXCEL_MAX_FILE_MB",
         "DIFFNEXA_EXCEL_MAX_CELLS",
+        # AI settings: no test may ever pick up a real key and reach a real AI service.
+        "DIFFNEXA_AI_PROVIDER",
+        "DIFFNEXA_AI_API_KEY",
+        "DIFFNEXA_AI_MODEL",
+        "DIFFNEXA_AI_BASE_URL",
+        "DIFFNEXA_AI_TIMEOUT_SECONDS",
+        "DIFFNEXA_AI_MAX_CHANGES",
+        "DIFFNEXA_AI_BATCH_SIZE",
+        "DIFFNEXA_AI_MAX_OUTPUT_TOKENS",
+        "DIFFNEXA_AI_DAILY_LIMIT",
     ):
         monkeypatch.delenv(name, raising=False)
 

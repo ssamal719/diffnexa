@@ -1,0 +1,22 @@
+{
+  "summary": [
+    {
+      "text": "The revised document changes one value in the Vacancies table.",
+      "change_ids": [
+        "c0"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "change_id": "c0",
+      "significance": "important",
+      "explanation": "In table 1, row 2, column 2, under Vacancies, the value changes from 627 to 654 (+27).",
+      "why_it_may_matter": "This changes a stated number of vacancies.",
+      "evidence_refs": [
+        "c0.e1",
+        "c0.e2"
+      ]
+    }
+  ]
+}

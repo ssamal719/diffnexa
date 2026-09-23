@@ -294,4 +294,6 @@ def test_errors_never_leak_internal_detail(client, server):
 def test_health_is_unchanged_and_still_public(client):
     body = client.get("/healthz").json()
     assert body["status"] == "ok"
-    assert set(body) == {"status", "engine_version", "limits", "requires_auth", "authenticated"}
+    assert set(body) == {"status", "engine_version", "limits", "requires_auth", "authenticated", "ai"}
+    # AI Change Analyst adds only a yes/no: no provider, model or key.
+    assert body["ai"] == {"available": False}

@@ -1,0 +1,22 @@
+{
+  "summary": [
+    {
+      "text": "The revised page changes a number in the Pricing section from 25 to 40.",
+      "change_ids": [
+        "c1"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "change_id": "c1",
+      "significance": "important",
+      "explanation": "In the Pricing section, the number changes from 25 to 40, an increase of 15.",
+      "why_it_may_matter": "This may change a stated price or amount on the page.",
+      "evidence_refs": [
+        "c1.e1",
+        "c1.e2"
+      ]
+    }
+  ]
+}

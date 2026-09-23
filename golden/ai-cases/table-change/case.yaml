@@ -1,0 +1,8 @@
+# Written by hand: a deterministic comparison result, what the scripted model replies,
+# and what DiffNexa must then show. See golden/ai-cases/README.md.
+case: table-change
+description: "A table cell in a Word document changes from 627 to 654."
+tool: docx
+source: {"pair": "table-cell-number"}
+provider: {"replies": ["reply.json"]}
+expect: {"status": "complete", "explained": ["c0"], "withheld": 0}

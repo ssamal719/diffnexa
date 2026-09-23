@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { ReportWithAnalyst } from "@/components/analysis/ReportWithAnalyst";
 import { ComparisonError } from "@/components/results/ComparisonError";
 import { ComparisonReport } from "@/components/results/ComparisonReport";
 import { ProcessingState, type ProcessingStage } from "@/components/results/ProcessingState";
@@ -13,13 +14,14 @@ import type {
   ComparisonResponse,
 } from "@/lib/comparison";
 import { DEFAULT_LIMITS } from "@/lib/validation";
+import { SEAL_HEADER } from "@/lib/analysis";
 
 type EngineStatus = { checked: boolean; available: boolean };
 
 type Phase =
   | { name: "idle" }
   | { name: "working"; stage: ProcessingStage; uploadPercent: number | null }
-  | { name: "done"; result: ComparisonResponse }
+  | { name: "done"; result: ComparisonResponse; seal: string | null }
   | { name: "failed"; error: ComparisonErrorPayload };
 
 /**
@@ -99,7 +101,9 @@ export function CompareDesk() {
         setPhase({ name: "working", stage: "preparing", uploadPercent: 100 });
         // Give the browser a frame to paint the final stage before the report
         // replaces it, so the last step is seen rather than skipped.
-        requestAnimationFrame(() => setPhase({ name: "done", result: body as ComparisonResponse }));
+        // The seal lets this result be sent for AI analysis later, if the person asks.
+        const seal = request.getResponseHeader?.(SEAL_HEADER) ?? null;
+        requestAnimationFrame(() => setPhase({ name: "done", result: body as ComparisonResponse, seal }));
         return;
       }
 
@@ -192,7 +196,7 @@ export function CompareDesk() {
 
           <p className="text-[0.8rem] text-ink-soft">
             Your documents are sent to the comparison service, compared in memory, and discarded
-            when the result comes back. Nothing is stored and nothing is sent to any AI service.
+            when the result comes back. Nothing is stored and the comparison sends nothing to any AI service.
           </p>
         </div>
       </div>
@@ -201,7 +205,11 @@ export function CompareDesk() {
         <ProcessingState stage={phase.stage} uploadPercent={phase.uploadPercent} />
       )}
       {phase.name === "failed" && <ComparisonError error={phase.error} onRetry={runComparison} />}
-      {phase.name === "done" && <ComparisonReport result={phase.result} />}
+      {phase.name === "done" && (
+        <ReportWithAnalyst tool="pdf" result={phase.result} seal={phase.seal}>
+          {({ analyst, focus }) => <ComparisonReport result={phase.result} analyst={analyst} focus={focus} />}
+        </ReportWithAnalyst>
+      )}
     </>
   );
 }

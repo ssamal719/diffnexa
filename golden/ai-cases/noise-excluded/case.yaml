@@ -1,0 +1,8 @@
+# Written by hand: a deterministic comparison result, what the scripted model replies,
+# and what DiffNexa must then show. See golden/ai-cases/README.md.
+case: noise-excluded
+description: "A real price change beside a counter classed as noise: only the real change is sent and explained."
+tool: web
+source: {"pair": "real-number-beside-counter"}
+provider: {"replies": ["reply.json"]}
+expect: {"status": "complete", "explained": ["c1"], "not_shown": ["c0"], "analyzed": 1, "withheld": 0}

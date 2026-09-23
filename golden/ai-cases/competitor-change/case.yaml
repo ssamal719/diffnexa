@@ -1,0 +1,8 @@
+# Written by hand: a deterministic comparison result, what the scripted model replies,
+# and what DiffNexa must then show. See golden/ai-cases/README.md.
+case: competitor-change
+description: "A competitor's pricing page changes; factual explanations are shown, a ranking about the competitor is withheld."
+tool: competitor
+source: {"pair": "mixed-release"}
+provider: {"replies": ["reply.json"]}
+expect: {"status": "partial", "explained": ["c2", "c4"], "not_shown": ["c5"], "withheld": 1, "must_not_display": ["becoming more expensive", "outperform"]}

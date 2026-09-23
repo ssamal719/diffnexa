@@ -1,0 +1,8 @@
+# Written by hand: a deterministic comparison result, what the scripted model replies,
+# and what DiffNexa must then show. See golden/ai-cases/README.md.
+case: invalid-json
+description: "The model replies in prose instead of JSON."
+tool: pdf
+source: {"pair": "vacancy-number-change"}
+provider: {"raw": "Sure! The number of vacancies went up a lot, which is great news."}
+expect: {"status": "error", "error": "ai_invalid", "must_not_display": ["great news"]}

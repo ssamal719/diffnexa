@@ -1,0 +1,21 @@
+{
+  "summary": [
+    {
+      "text": "The revised agreement adds one paragraph about renewal.",
+      "change_ids": [
+        "c0"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "change_id": "c0",
+      "significance": "important",
+      "explanation": "Under 3. Term and Termination, a paragraph is added: Either party may renew this agreement for a further 12 months by written agreement.",
+      "why_it_may_matter": "This adds a renewal option that could affect how long the agreement runs.",
+      "evidence_refs": [
+        "c0.e1"
+      ]
+    }
+  ]
+}

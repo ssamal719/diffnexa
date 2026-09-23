@@ -1,0 +1,8 @@
+# Written by hand: a deterministic comparison result, what the scripted model replies,
+# and what DiffNexa must then show. See golden/ai-cases/README.md.
+case: wrong-shape
+description: "The model replies with JSON of the wrong shape."
+tool: pdf
+source: {"pair": "vacancy-number-change"}
+provider: {"raw": "{\"summary\": \"The vacancies increased.\", \"changes\": \"one\"}"}
+expect: {"status": "error", "error": "ai_invalid"}

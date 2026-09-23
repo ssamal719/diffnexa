@@ -1,0 +1,42 @@
+{
+  "summary": [],
+  "changes": [
+    {
+      "change_id": "c0",
+      "significance": "important",
+      "explanation": "On page 2, a number changes from 627 to 654.",
+      "why_it_may_matter": "This changes a stated quantity.",
+      "evidence_refs": [
+        "c0.e1",
+        "c0.e2"
+      ]
+    },
+    {
+      "change_id": "c1",
+      "significance": "important",
+      "explanation": "On page 2, a number changes from 30 to 32.",
+      "why_it_may_matter": "This changes a stated number.",
+      "evidence_refs": [
+        "c0.e1"
+      ]
+    },
+    {
+      "change_id": "c2",
+      "significance": "notable",
+      "explanation": "A sentence about reservation is added on revised page 2.",
+      "why_it_may_matter": "This adds wording a reader may want to review.",
+      "evidence_refs": [
+        "c2.e1"
+      ]
+    },
+    {
+      "change_id": "c3",
+      "significance": "important",
+      "explanation": "On page 3, the date changes from 30 September 2026 to 15 October 2026.",
+      "why_it_may_matter": "This may affect a deadline.",
+      "evidence_refs": [
+        "c3.e2"
+      ]
+    }
+  ]
+}

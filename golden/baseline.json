@@ -1,6 +1,303 @@
 {
   "version": 1,
   "pairs": {
+    "ai:added-content": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:competitor-change": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:date-change": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:docx-change": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:empty-comparison": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:everything-withheld": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:excel-formula-change": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:excel-value-change": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:hallucinated-change": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:internal-id-shown": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:invalid-evidence-reference": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:invalid-json": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:invented-figure": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:invented-quotation": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:large-change-set": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:link-change": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:multiple-simultaneous-changes": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:multiple-wording-changes": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:no-changes": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:noise-excluded": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:noise-only": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:numeric-change": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:one-wording-change": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:output-limit": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:policy-topic-change": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:price-change": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:prompt-injection-new-change": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:prompt-injection-verdict": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:provider-failure": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:provider-timeout": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:removed-content": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:table-change": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "ai:wrong-shape": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
     "competitor:billing-period-wording": {
       "extraction_passed": true,
       "comparison": {

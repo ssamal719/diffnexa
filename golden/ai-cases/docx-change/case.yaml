@@ -1,0 +1,8 @@
+# Written by hand: a deterministic comparison result, what the scripted model replies,
+# and what DiffNexa must then show. See golden/ai-cases/README.md.
+case: docx-change
+description: "A heading is renamed in a Word agreement; quotations are verified against the document."
+tool: docx
+source: {"pair": "heading-renamed"}
+provider: {"replies": ["reply.json"]}
+expect: {"status": "complete", "explained": ["c0"], "withheld": 0}

@@ -1,0 +1,8 @@
+# Written by hand: a deterministic comparison result, what the scripted model replies,
+# and what DiffNexa must then show. See golden/ai-cases/README.md.
+case: everything-withheld
+description: "Every statement in the reply fails its check: nothing is shown and the analysis is refused."
+tool: pdf
+source: {"pair": "vacancy-number-change"}
+provider: {"replies": ["reply.json"]}
+expect: {"status": "error", "error": "ai_invalid", "must_not_display": ["dangerous", "you should"]}

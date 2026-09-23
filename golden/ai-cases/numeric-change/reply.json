@@ -1,0 +1,22 @@
+{
+  "summary": [
+    {
+      "text": "The revised notice increases a number on page 2 from 627 to 654.",
+      "change_ids": [
+        "c0"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "change_id": "c0",
+      "significance": "important",
+      "explanation": "On page 2, the number changes from 627 to 654, an increase of 27.",
+      "why_it_may_matter": "This changes a stated quantity in the document.",
+      "evidence_refs": [
+        "c0.e1",
+        "c0.e2"
+      ]
+    }
+  ]
+}

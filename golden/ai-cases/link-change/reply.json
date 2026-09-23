@@ -1,0 +1,22 @@
+{
+  "summary": [
+    {
+      "text": "The revised page points a link to a different address.",
+      "change_ids": [
+        "c0"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "change_id": "c0",
+      "significance": "notable",
+      "explanation": "A link changes from https://example.com/guide to https://example.com/handbook.",
+      "why_it_may_matter": "Readers following this link reach a different page.",
+      "evidence_refs": [
+        "c0.e1",
+        "c0.e2"
+      ]
+    }
+  ]
+}

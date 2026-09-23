@@ -1,0 +1,21 @@
+{
+  "summary": [
+    {
+      "text": "The revised notice removes a sentence about admit cards.",
+      "change_ids": [
+        "c0"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "change_id": "c0",
+      "significance": "important",
+      "explanation": "The sentence \"Section B. Admit cards will be issued to eligible candidates by email.\" on original page 1 is not in the revised version.",
+      "why_it_may_matter": "Readers relying on this sentence may no longer find it in the revised notice.",
+      "evidence_refs": [
+        "c0.e1"
+      ]
+    }
+  ]
+}

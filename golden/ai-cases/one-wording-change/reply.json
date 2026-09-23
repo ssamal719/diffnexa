@@ -1,0 +1,22 @@
+{
+  "summary": [
+    {
+      "text": "The revised notice changes one word on page 2, from bachelor's to master's.",
+      "change_ids": [
+        "c0"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "change_id": "c0",
+      "significance": "important",
+      "explanation": "On page 2, the revised version replaces bachelor's with master's.",
+      "why_it_may_matter": "This may change which qualification the notice asks for.",
+      "evidence_refs": [
+        "c0.e1",
+        "c0.e2"
+      ]
+    }
+  ]
+}

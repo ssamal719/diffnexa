@@ -1,0 +1,8 @@
+# Written by hand: a deterministic comparison result, what the scripted model replies,
+# and what DiffNexa must then show. See golden/ai-cases/README.md.
+case: numeric-change
+description: "A vacancy count in a PDF changes from 627 to 654."
+tool: pdf
+source: {"pair": "vacancy-number-change"}
+provider: {"replies": ["reply.json"]}
+expect: {"status": "complete", "explained": ["c0"], "withheld": 0, "must_not_display": ["risk"]}

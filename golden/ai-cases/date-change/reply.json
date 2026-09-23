@@ -1,0 +1,22 @@
+{
+  "summary": [
+    {
+      "text": "The revised notice moves a date on page 3 by 15 days.",
+      "change_ids": [
+        "c0"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "change_id": "c0",
+      "significance": "important",
+      "explanation": "On page 3, the date changes from 30 September 2026 to 15 October 2026, 15 days later.",
+      "why_it_may_matter": "This may affect a deadline tied to this date.",
+      "evidence_refs": [
+        "c0.e1",
+        "c0.e2"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "summary": [
+    {
+      "text": "The price is now free.",
+      "change_ids": [
+        "c99"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "change_id": "c99",
+      "significance": "important",
+      "explanation": "The price is now free.",
+      "why_it_may_matter": "This clause is illegal.",
+      "evidence_refs": [
+        "c99.e1"
+      ]
+    }
+  ]
+}

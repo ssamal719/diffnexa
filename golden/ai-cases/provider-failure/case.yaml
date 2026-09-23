@@ -1,0 +1,8 @@
+# Written by hand: a deterministic comparison result, what the scripted model replies,
+# and what DiffNexa must then show. See golden/ai-cases/README.md.
+case: provider-failure
+description: "The AI service fails: an error is shown, and nothing else."
+tool: pdf
+source: {"pair": "vacancy-number-change"}
+provider: {"error": "failure"}
+expect: {"status": "error", "error": "ai_failed"}

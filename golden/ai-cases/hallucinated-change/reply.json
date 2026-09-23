@@ -1,0 +1,31 @@
+{
+  "summary": [
+    {
+      "text": "The vacancies and the salary both changed.",
+      "change_ids": [
+        "c0",
+        "c99"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "change_id": "c0",
+      "significance": "important",
+      "explanation": "The value changes from 627 to 654.",
+      "why_it_may_matter": "This changes a stated number.",
+      "evidence_refs": [
+        "c0.e1"
+      ]
+    },
+    {
+      "change_id": "c99",
+      "significance": "important",
+      "explanation": "The salary changes from 30,000 to 45,000.",
+      "why_it_may_matter": "This changes pay.",
+      "evidence_refs": [
+        "c99.e1"
+      ]
+    }
+  ]
+}

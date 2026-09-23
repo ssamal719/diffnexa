@@ -12,6 +12,7 @@ import {
   type WorkspaceChange,
   type WorkspaceMode,
 } from "@/lib/workspace";
+import type { FocusRequest } from "@/lib/use-change-focus";
 
 const TONE = {
   added: "text-added",
@@ -55,6 +56,7 @@ export function ComparisonWorkspace({
   renderMain,
   renderDetails,
   notes,
+  focus = null,
 }: {
   title: string;
   headline: string;
@@ -68,6 +70,8 @@ export function ComparisonWorkspace({
   renderMain: (context: WorkspaceContext) => ReactNode;
   renderDetails?: (context: WorkspaceContext) => ReactNode;
   notes?: ReactNode;
+  /** A change to show, asked for from outside the workspace (AI Change Analyst's "View change"). */
+  focus?: FocusRequest;
 }) {
   const id = useId();
   const [mode, setMode] = useState(initialMode);
@@ -81,6 +85,25 @@ export function ComparisonWorkspace({
   const active = changes.find((change) => change.id === activeId) ?? null;
 
   const [focusActive, setFocusActive] = useState(false);
+  const [handledFocus, setHandledFocus] = useState<number | null>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const scrolledFor = useRef<number | null>(null);
+
+  // A change asked for from outside becomes the active change, exactly as if it
+  // had been chosen in the navigator, and is never hidden by a search.
+  if (focus && handledFocus !== focus.token && changes.some((change) => change.id === focus.id)) {
+    setHandledFocus(focus.token);
+    setQuery("");
+    setActiveId(focus.id);
+    setActivation((count) => count + 1);
+    setFocusActive(false);
+  }
+
+  useEffect(() => {
+    if (!focus || handledFocus !== focus.token || scrolledFor.current === focus.token) return;
+    scrolledFor.current = focus.token;
+    sectionRef.current?.scrollIntoView?.({ block: "start" });
+  }, [focus, handledFocus]);
 
   function activate(next: string | null, focus = false) {
     if (!next) return;
@@ -119,7 +142,11 @@ export function ComparisonWorkspace({
   const atEnd = visible.length === 0 || visible[visible.length - 1].id === activeId;
 
   return (
-    <section aria-labelledby={`${id}-headline`} className="mt-6 rounded-[var(--radius-panel)] border border-rule bg-paper">
+    <section
+      ref={sectionRef}
+      aria-labelledby={`${id}-headline`}
+      className="mt-6 scroll-mt-4 rounded-[var(--radius-panel)] border border-rule bg-paper"
+    >
       {/* Overview */}
       <header className="flex flex-wrap items-end gap-x-6 gap-y-2 border-b border-rule px-4 py-3">
         <div className="min-w-0">

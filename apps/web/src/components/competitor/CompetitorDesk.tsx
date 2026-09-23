@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { ReportWithAnalyst } from "@/components/analysis/ReportWithAnalyst";
 import { CompetitorReport } from "@/components/competitor/CompetitorReport";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
@@ -10,6 +11,7 @@ import { Tabs } from "@/components/ui/Tabs";
 import { TextField } from "@/components/ui/TextField";
 import { WebError } from "@/components/website/WebError";
 import { WebProcessing, type WebStage } from "@/components/website/WebProcessing";
+import { SEAL_HEADER } from "@/lib/analysis";
 import {
   COMPETITOR_ERRORS,
   MAX_COMPETITOR_NAME,
@@ -35,6 +37,7 @@ type State =
   | {
       name: "checked";
       result: CompetitorComparison;
+      seal: string | null;
       url: string;
       competitor: string;
       pageType: string;
@@ -117,9 +120,12 @@ export function CompetitorDesk() {
         setState({ name: "failed", mode: "check", failure: body?.error ?? unknownFailure() });
         return;
       }
+      // The seal lets this result be sent for AI analysis later, if the person asks.
+      const seal = response.headers?.get?.(SEAL_HEADER) ?? null;
       setState({
         name: "checked",
         result: body as CompetitorComparison,
+        seal,
         url: checked.url,
         competitor: cleanCompetitorName(competitor) || fallbackCompetitorName(checked.url),
         pageType,
@@ -293,7 +299,7 @@ export function CompetitorDesk() {
 
           <p className="text-[0.8rem] text-ink-soft">
             DiffNexa reads the page once and discards it when your result is ready. Nothing about
-            the page is stored, there is no account, and nothing is sent to any AI service.
+            the page is stored, there is no account, and the comparison sends nothing to any AI service.
             DiffNexa reports what changed on the page, not what it means.
           </p>
         </div>
@@ -352,13 +358,19 @@ export function CompetitorDesk() {
       )}
 
       {state.name === "checked" && (
-        <CompetitorReport
-          result={state.result}
-          url={state.url}
-          competitor={state.competitor}
-          pageType={state.pageType}
-          baselineCapturedAt={state.baselineCapturedAt}
-        />
+        <ReportWithAnalyst tool="competitor" result={state.result} seal={state.seal}>
+          {({ analyst, focus }) => (
+            <CompetitorReport
+              result={state.result}
+              url={state.url}
+              competitor={state.competitor}
+              pageType={state.pageType}
+              baselineCapturedAt={state.baselineCapturedAt}
+              analyst={analyst}
+              focus={focus}
+            />
+          )}
+        </ReportWithAnalyst>
       )}
     </>
   );

@@ -1,0 +1,8 @@
+# Written by hand: a deterministic comparison result, what the scripted model replies,
+# and what DiffNexa must then show. See golden/ai-cases/README.md.
+case: invented-figure
+description: "One explanation states a difference the comparison does not support: it is withheld, the others are shown."
+tool: pdf
+source: {"pair": "multiple-changes"}
+provider: {"replies": ["reply.json"]}
+expect: {"status": "partial", "explained": ["c1", "c2", "c3"], "not_shown": ["c0"], "withheld": 1, "must_not_display": ["increase of 50"]}

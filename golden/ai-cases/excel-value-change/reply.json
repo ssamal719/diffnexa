@@ -1,0 +1,55 @@
+{
+  "summary": [
+    {
+      "text": "The revised workbook raises one price on the Pricing sheet, and the totals that use it change too.",
+      "change_ids": [
+        "c0",
+        "c1",
+        "c2",
+        "c3"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "change_id": "c0",
+      "significance": "important",
+      "explanation": "On the Summary sheet, B3 changes from $31,127.80 to $31,262.80, an increase of 135.",
+      "why_it_may_matter": "This changes a total shown in the workbook.",
+      "evidence_refs": [
+        "c0.e1",
+        "c0.e2"
+      ]
+    },
+    {
+      "change_id": "c1",
+      "significance": "notable",
+      "explanation": "On the Summary sheet, B5 changes from $549.00 to $561.50.",
+      "why_it_may_matter": "This changes a figure shown in the workbook.",
+      "evidence_refs": [
+        "c1.e1",
+        "c1.e2"
+      ]
+    },
+    {
+      "change_id": "c2",
+      "significance": "important",
+      "explanation": "On the Pricing sheet, B3 changes from $299.00 to $349.00, an increase of $50.",
+      "why_it_may_matter": "This changes a stated price.",
+      "evidence_refs": [
+        "c2.e1",
+        "c2.e2"
+      ]
+    },
+    {
+      "change_id": "c3",
+      "significance": "notable",
+      "explanation": "On the Pricing sheet, the stored value in E3 changes from $807.30 to $942.30.",
+      "why_it_may_matter": "This changes an amount shown in the workbook.",
+      "evidence_refs": [
+        "c3.e1",
+        "c3.e2"
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, type ReactNode } from "react";
 
 import { CategoryTiles } from "@/components/results/CategoryTiles";
 import { ChangeCard } from "@/components/results/ChangeCard";
@@ -23,6 +23,7 @@ import {
   type EditKind,
   type Filters,
 } from "@/lib/report";
+import { useChangeFocus, type FocusRequest } from "@/lib/use-change-focus";
 
 /**
  * The comparison result, as a report a person can explore.
@@ -31,7 +32,17 @@ import {
  * the list beneath. The list is a pure function of the filter state, so what a
  * person sees always matches what they clicked.
  */
-export function ComparisonReport({ result }: { result: ComparisonResponse }) {
+export function ComparisonReport({
+  result,
+  analyst,
+  focus = null,
+}: {
+  result: ComparisonResponse;
+  /** AI Change Analyst, shown between the summary and the list of changes. */
+  analyst?: ReactNode;
+  /** A change to show, asked for from outside the report ("View change"). */
+  focus?: FocusRequest;
+}) {
   const report = useMemo(() => buildReport(result), [result]);
   const [filters, setFilters] = useState<Filters>(NO_FILTERS);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -64,6 +75,16 @@ export function ComparisonReport({ result }: { result: ComparisonResponse }) {
     cardRefs.current[index]?.focus();
     cardRefs.current[index]?.scrollIntoView({ block: "center" });
   }
+
+  useChangeFocus(
+    focus,
+    (id) =>
+      items.findIndex((item) =>
+        item.type === "change" ? item.change.id === id : item.members.some((member) => member.id === id),
+      ),
+    () => setFiltersAndReset(NO_FILTERS),
+    cardRefs,
+  );
 
   const empty = report.totalMeaningful === 0;
 
@@ -121,6 +142,8 @@ export function ComparisonReport({ result }: { result: ComparisonResponse }) {
           {note}
         </Alert>
       ))}
+
+      {analyst}
 
       <div ref={listRef} className="rounded-[var(--radius-panel)] border border-rule bg-paper">
         <div className="flex flex-wrap items-center gap-3 border-b border-rule p-3 md:p-4">

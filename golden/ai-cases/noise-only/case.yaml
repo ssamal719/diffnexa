@@ -1,0 +1,8 @@
+# Written by hand: a deterministic comparison result, what the scripted model replies,
+# and what DiffNexa must then show. See golden/ai-cases/README.md.
+case: noise-only
+description: "The only change is a visitor counter the comparison classed as noise: nothing is sent."
+tool: web
+source: {"pair": "volatile-counter"}
+provider: {"error": "failure"}
+expect: {"status": "nothing_to_explain", "provider_calls": 0}

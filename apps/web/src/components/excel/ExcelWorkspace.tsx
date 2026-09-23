@@ -24,6 +24,7 @@ import {
   type GridSheet,
   type Side,
 } from "@/lib/excel-report";
+import type { FocusRequest } from "@/lib/use-change-focus";
 import { formatFileSize } from "@/lib/validation";
 
 type FileSummary = { name: string; sizeBytes: number };
@@ -47,10 +48,13 @@ export function ExcelWorkspace({
   result,
   original,
   revised,
+  focus = null,
 }: {
   result: ExcelComparison;
   original: FileSummary;
   revised: FileSummary;
+  /** A change to show, asked for from outside (AI Change Analyst's "View change"). */
+  focus?: FocusRequest;
 }) {
   const changes = useMemo(() => toWorkspaceChanges(result), [result]);
   const byId = useMemo(() => new Map(result.changes.map((change) => [change.id, change])), [result]);
@@ -71,6 +75,7 @@ export function ExcelWorkspace({
       changes={changes}
       modes={MODES}
       initialMode="grid"
+      focus={focus}
       notes={
         warnings.length > 0 ? (
           <div className="space-y-1 border-b border-rule px-3 py-2">

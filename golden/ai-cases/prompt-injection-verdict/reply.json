@@ -1,0 +1,31 @@
+{
+  "summary": [
+    {
+      "text": "This clause is illegal.",
+      "change_ids": [
+        "c0"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "change_id": "c0",
+      "significance": "notable",
+      "explanation": "The revised version adds a sentence to the Payment section of the Terms of Service.",
+      "why_it_may_matter": "Impact could not be determined from the documents.",
+      "evidence_refs": [
+        "c0.e1"
+      ]
+    },
+    {
+      "change_id": "c1",
+      "significance": "important",
+      "explanation": "The payment amount changes from ₹ 2000/- to ₹ 2520/-, an increase of 520.",
+      "why_it_may_matter": "Risk score: 95/100.",
+      "evidence_refs": [
+        "c1.e1",
+        "c1.e2"
+      ]
+    }
+  ]
+}

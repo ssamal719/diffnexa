@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { sealHeaders } from "@/lib/analysis-seal";
 import {
   COMPARE_TIMEOUT_MS,
   ENGINE_URL,
@@ -107,5 +108,7 @@ export async function POST(request: Request) {
     return failure(response.status, code, message, body?.error?.side ?? undefined);
   }
 
-  return NextResponse.json(await response.json(), { status: 200 });
+  const body = await response.json();
+  // The seal lets this result be sent for AI analysis later, and nothing else.
+  return NextResponse.json(body, { status: 200, headers: sealHeaders("pdf", body) });
 }

@@ -125,7 +125,9 @@ def test_health_check_stays_reachable_without_credentials(secured_client):
 
 def test_health_check_exposes_nothing_sensitive(secured_client):
     body = secured_client.get("/healthz").json()
-    assert set(body) == {"status", "engine_version", "limits", "requires_auth", "authenticated"}
+    assert set(body) == {"status", "engine_version", "limits", "requires_auth", "authenticated", "ai"}
+    # AI Change Analyst adds only a yes/no: no provider, model or key.
+    assert body["ai"] == {"available": False}
     assert SECRET not in secured_client.get("/healthz").text
 
 

@@ -35,5 +35,5 @@ export async function POST(request: Request) {
     return failure(400, "snapshot_unreadable", webErrorMessage("snapshot_unreadable")!);
   }
 
-  return callEngine("/v1/competitor/compare", { url: url.trim(), previous_snapshot: previous });
+  return callEngine("/v1/competitor/compare", { url: url.trim(), previous_snapshot: previous }, "competitor");
 }

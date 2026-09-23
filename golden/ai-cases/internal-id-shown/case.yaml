@@ -1,0 +1,8 @@
+# Written by hand: a deterministic comparison result, what the scripted model replies,
+# and what DiffNexa must then show. See golden/ai-cases/README.md.
+case: internal-id-shown
+description: "An explanation shows an internal change ID to the reader: it is withheld."
+tool: pdf
+source: {"pair": "vacancy-number-change"}
+provider: {"replies": ["reply.json"]}
+expect: {"status": "partial", "not_shown": ["c0"], "withheld": 1, "summary_sentences": 1, "must_not_display": ["c0"]}

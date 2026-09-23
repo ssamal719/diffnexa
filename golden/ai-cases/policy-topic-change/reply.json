@@ -1,0 +1,33 @@
+{
+  "summary": [
+    {
+      "text": "The revised terms name Ireland instead of England and Wales in the Governing law section.",
+      "change_ids": [
+        "c0",
+        "c1"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "change_id": "c0",
+      "significance": "important",
+      "explanation": "In the Governing law section, the revised terms change England and Wales to Ireland.",
+      "why_it_may_matter": "This touches the policy topic Governing law. Its legal effect is not assessed here.",
+      "evidence_refs": [
+        "c0.e1",
+        "c0.e2"
+      ]
+    },
+    {
+      "change_id": "c1",
+      "significance": "important",
+      "explanation": "The governing law changes from England and Wales to Ireland.",
+      "why_it_may_matter": "This is unfavourable to users and weakens your rights.",
+      "evidence_refs": [
+        "c1.e1",
+        "c1.e2"
+      ]
+    }
+  ]
+}

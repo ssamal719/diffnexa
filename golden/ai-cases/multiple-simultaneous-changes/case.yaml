@@ -1,0 +1,8 @@
+# Written by hand: a deterministic comparison result, what the scripted model replies,
+# and what DiffNexa must then show. See golden/ai-cases/README.md.
+case: multiple-simultaneous-changes
+description: "Eleven changes of every kind in one workbook, explained in one call."
+tool: excel
+source: {"pair": "multiple-changes"}
+provider: {"echo": true}
+expect: {"status": "complete", "explained": ["c0", "c3", "c6", "c7", "c10"], "analyzed": 11, "provider_calls": 1, "withheld": 0}

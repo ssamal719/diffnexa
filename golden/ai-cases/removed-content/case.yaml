@@ -1,0 +1,8 @@
+# Written by hand: a deterministic comparison result, what the scripted model replies,
+# and what DiffNexa must then show. See golden/ai-cases/README.md.
+case: removed-content
+description: "A sentence about admit cards is removed from a PDF."
+tool: pdf
+source: {"pair": "text-removed"}
+provider: {"replies": ["reply.json"]}
+expect: {"status": "complete", "explained": ["c0"], "withheld": 0}

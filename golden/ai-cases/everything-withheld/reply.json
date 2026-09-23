@@ -1,0 +1,21 @@
+{
+  "summary": [
+    {
+      "text": "This change is dangerous and you should reject the revised notice.",
+      "change_ids": [
+        "c0"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "change_id": "c0",
+      "significance": "important",
+      "explanation": "The number jumps by 900.",
+      "why_it_may_matter": "You should reject it.",
+      "evidence_refs": [
+        "c0.e1"
+      ]
+    }
+  ]
+}

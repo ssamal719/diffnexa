@@ -26,7 +26,9 @@ import {
   pageGroupSummary,
   pageBuckets,
   primaryPage,
+  toWorkspaceChanges,
   toggle,
+  workspaceFilters,
 } from "@/lib/report";
 
 function change(overrides: Partial<Change> = {}): Change {
@@ -617,5 +619,59 @@ describe("whole pages that were added or removed", () => {
   it("changes nothing when no page was added or removed", () => {
     const ordinary = [change({ id: "a", seq: 0 }), change({ id: "b", seq: 1 })];
     expect(groupIntoItems(ordinary).map((item) => item.key)).toEqual(["a", "b"]);
+  });
+});
+
+describe("in the comparison workspace", () => {
+  it("numbers meaningful changes first, in document order, and keeps minor ones after them", () => {
+    const items = toWorkspaceChanges(
+      result([
+        change({ id: "late", seq: 0, oldPages: [5], newPages: [5] }),
+        change({ id: "noise", seq: 1, oldPages: [1], newPages: [1], isNoise: true, noiseReason: "Page number" }),
+        change({ id: "early", seq: 2, oldPages: [2], newPages: [2] }),
+      ]),
+    );
+    expect(items.map((item) => [item.id, item.number, Boolean(item.minor)])).toEqual([
+      ["early", 1, false],
+      ["late", 2, false],
+      ["noise", 3, true],
+    ]);
+  });
+
+  it("places a change only on a page the engine recorded, and says which version when only the original has it", () => {
+    const [moved, removed, unplaced] = toWorkspaceChanges(
+      result([
+        change({ id: "a", seq: 0, oldPages: [2], newPages: [3] }),
+        change({ id: "b", seq: 1, kind: "removed", type: "TEXT_REMOVED", newValue: null, oldPages: [4], newPages: [] }),
+        change({ id: "c", seq: 2, oldPages: [], newPages: [], evidence: [] }),
+      ]),
+    );
+    expect([moved.place, moved.groupLabel]).toEqual(["Page 2 → 3", "Page 3"]);
+    expect([removed.place, removed.groupLabel]).toEqual(["Page 4 (previous version)", "Page 4 (original)"]);
+    expect([unplaced.place, unplaced.groupLabel]).toEqual(["Location not recorded", "No page recorded"]);
+    expect(unplaced.tags?.page).toEqual([]);
+  });
+
+  it("shows values in full and long wording shortened, never altered", () => {
+    const [value, words] = toWorkspaceChanges(
+      result([
+        change({ id: "v", type: "NUMBER_CHANGED", category: "number", oldValue: "627", newValue: "654", delta: "+27" }),
+        change({ id: "w", seq: 1, oldValue: "x ".repeat(80).trim(), newValue: null, kind: "removed" }),
+      ]),
+    );
+    expect([value.before, value.after, value.title, value.category]).toEqual(["627", "654", "Value changed", "Values"]);
+    expect(words.before!.endsWith("…")).toBe(true);
+    expect("x ".repeat(80)).toContain(words.before!.slice(0, -1));
+  });
+
+  it("offers filters only for what was found, with pages chosen from the page map", () => {
+    const filters = workspaceFilters(
+      toWorkspaceChanges(result([change(), change({ id: "d", seq: 1, type: "DATE_CHANGED", category: "date", newPages: [7], oldPages: [7] })])),
+    );
+    expect(filters.map((group) => [group.id, group.options.map((option) => option.id), group.inBar !== false])).toEqual([
+      ["kind", ["changed"], true],
+      ["category", ["content", "dates"], true],
+      ["page", ["3", "7"], false],
+    ]);
   });
 });

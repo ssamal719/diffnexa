@@ -258,32 +258,58 @@ describe("in a report", () => {
   function docxReport() {
     render(
       <ReportWithAnalyst tool="docx" result={DOCX} seal="seal">
-        {({ analyst, focus }) => <DocxReport result={DOCX} {...FILES} analyst={analyst} focus={focus} />}
+        {({ analyst, focus, analysis }) => (
+          <DocxReport result={DOCX} {...FILES} analyst={analyst} analysis={analysis} focus={focus} />
+        )}
       </ReportWithAnalyst>,
     );
   }
 
-  it("sits between the summary and the list, and leaves every change in the list", async () => {
+  it("sits under the workspace as an optional second step, and leaves every change listed", async () => {
     docxReport();
     await analyse();
+    const navigator = screen.getByRole("navigation", { name: "Differences" });
     const cards = screen
       .getAllByRole("article")
       .filter((card) => card.getAttribute("aria-label")?.startsWith("Change "));
     expect(cards).toHaveLength(DOCX.changes.length);
-    const order = screen.getAllByRole("heading", { level: 2 }).map((heading) => heading.textContent);
-    expect(order.indexOf("AI Change Analyst")).toBeLessThan(order.indexOf("What changed"));
+    expect(within(navigator).getAllByRole("button", { name: /^Change \d+:/ })).toHaveLength(DOCX.changes.length);
+    const analyst = screen.getByRole("heading", { level: 2, name: "AI Change Analyst" });
+    // Comes after the comparison in reading order, never before it.
+    expect(navigator.compareDocumentPosition(analyst) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getByRole("link", { name: /AI Analysis/ }).getAttribute("href")).toMatch(/^#/);
   });
 
-  it("takes the reader to the change through the report's own navigation, clearing filters that hide it", async () => {
+  it("puts each explanation beside the change's evidence, in its own labelled section", async () => {
+    docxReport();
+    const evidence = screen.getByRole("region", { name: "Evidence" });
+    expect(evidence.textContent).toContain("Not requested");
+    await analyse();
+    const explained = ANALYSIS.changes.find((item) => item.changeId === "c2")!;
+    fireEvent.click(within(screen.getByRole("navigation", { name: "Differences" })).getByRole("button", { name: /^Change 3:/ }));
+    const text = evidence.textContent ?? "";
+    expect(text).toContain("Comparison evidence");
+    expect(text).toContain("AI explanation");
+    expect(text).toContain(explained.analysis.explanation);
+    // The deterministic evidence comes first; the AI's words follow, and say who wrote them.
+    expect(text.indexOf("Comparison evidence")).toBeLessThan(text.indexOf("AI explanation"));
+    expect(text).toContain("checked by DiffNexa against the comparison evidence");
+  });
+
+  it("takes the reader to the change through the workspace's own navigation, clearing filters that hide it", async () => {
     docxReport();
     await analyse();
     fireEvent.click(screen.getByRole("button", { name: /^Tables/ })); // hides the payment-term changes
+    const navigator = screen.getByRole("navigation", { name: "Differences" });
+    expect(within(navigator).queryByRole("button", { name: /^Change 3:/ })).toBeNull();
     const explained = screen.getByRole("article", { name: /Number changed, Paragraph 3/ });
     fireEvent.click(within(explained).getByRole("button", { name: /^View change in the comparison/ }));
-    await waitFor(() => expect(document.activeElement?.getAttribute("aria-label")).toMatch(/^Change \d+ of 11/));
-    expect(document.activeElement?.textContent).toContain("45");
-    expect(screen.queryByRole("button", { name: "Clear filters" })).toBeNull();
-    expect(document.body.textContent).toMatch(/Change \d+ of 11/);
+    await waitFor(() =>
+      expect(within(navigator).getByRole("button", { name: /^Change 3:/ }).getAttribute("aria-current")).toBe("true"),
+    );
+    expect(screen.getByRole("button", { name: /^Tables/ }).getAttribute("aria-pressed")).toBe("false");
+    expect(within(screen.getByRole("region", { name: "Evidence" })).getByText("45")).toBeTruthy();
+    expect(document.body.textContent).toMatch(/Change 3 of 11/);
   });
 
   it("moves an Excel workspace to the change, in both workbooks", async () => {

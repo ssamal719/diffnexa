@@ -15,6 +15,10 @@ import {
   GROUP_BLURBS,
   NO_CHANGES_HEADLINE,
   NO_CHANGES_SENTENCE,
+  docxFilters,
+  docxPlace,
+  docxPlaceNote,
+  docxWorkspaceChanges,
   filterChanges,
   groupChanges,
   headline,
@@ -167,5 +171,44 @@ describe("the first check in the browser", () => {
       ok: false,
       code: "docx_encrypted",
     });
+  });
+});
+
+describe("in the comparison workspace", () => {
+  it("places a change under the revised document's headings, falling back to the original's", () => {
+    const moved = find((change) => change.id === "c2");
+    expect(docxPlace(moved)).toBe("Supplier Agreement › Payment and Refund Terms");
+    expect(docxPlace(find((change) => change.category === "metadata"))).toBe("Document properties");
+  });
+
+  it("gives Word's own position as a labelled detail, never as a page", () => {
+    const note = docxPlaceNote(find((change) => change.id === "c9"))!;
+    expect(note).toContain("Table 1, row 2, column 2");
+    expect(note).toContain("Word files have no fixed page numbers");
+    expect(docxPlaceNote(find((change) => change.category === "metadata"))).toBeNull();
+    for (const item of docxWorkspaceChanges(RESULT)) {
+      expect(`${item.place} ${item.groupLabel}`).not.toMatch(/\bpage \d|paragraph \d/i);
+    }
+  });
+
+  it("names a changed heading by what it now says, when the result carries the document's text", () => {
+    const withView: DocxComparison = JSON.parse(
+      readFileSync(join(import.meta.dirname, "fixtures", "workspace-docx.json"), "utf8"),
+    );
+    const [heading, paragraph] = docxWorkspaceChanges(withView);
+    expect(heading.place).toBe("“Bereavement leave”");
+    expect(heading.groupLabel).toBe("Bereavement leave");
+    expect(paragraph.place).toBe("Bereavement leave");
+    // Without the text, the heading is still placed honestly.
+    expect(docxPlace(withView.changes[0])).toBe("A top-level heading");
+  });
+
+  it("numbers changes in reading order, each in exactly one of the engine's groups", () => {
+    const items = docxWorkspaceChanges(RESULT);
+    expect(items.map((item) => item.number)).toEqual(RESULT.changes.map((_, index) => index + 1));
+    const labels = new Set(RESULT.groups.map((group) => group.label));
+    for (const item of items) expect(labels.has(item.category)).toBe(true);
+    const groupFilter = docxFilters(RESULT, items).find((group) => group.id === "group")!;
+    expect(groupFilter.options.reduce((sum, option) => sum + option.count, 0)).toBe(RESULT.changes.length);
   });
 });

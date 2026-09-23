@@ -240,7 +240,7 @@ describe("the overview and the navigator", () => {
     fireEvent.change(screen.getByRole("searchbox", { name: "Search changes" }), { target: { value: "Carter" } });
     expect(within(navigator()).getAllByRole("button")).toHaveLength(1);
     expect(counter().textContent).toBe("Change – of 1 shown · 11 in total");
-    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    fireEvent.click(screen.getByRole("button", { name: "Next change" }));
     expect(counter().textContent).toBe("Change 1 of 1 shown · 11 in total");
     expect(activeTab("Original").textContent).toContain("Employees");
   });
@@ -274,7 +274,7 @@ describe("choosing a change moves both workbooks to it", () => {
     expect(outline("Revised")).toBeTruthy();
 
     const details = screen.getByRole("heading", { name: /^Date changed/ });
-    expect(details.textContent).toContain("Pricing · F5 (was F4)");
+    expect(details.closest("section")!.textContent).toContain("Pricing · F5 (was F4)");
   });
 
   it("shows before and after, the sheet and the cell for each side in the details", () => {
@@ -284,7 +284,8 @@ describe("choosing a change moves both workbooks to it", () => {
     expect(panel.textContent).toContain("$299.00");
     expect(panel.textContent).toContain("$349.00");
     expect(panel.textContent).toContain("+50 (+16.72%)");
-    expect(within(panel).getAllByText("B3")).toHaveLength(2);
+    // Once as the change's place, then once in each workbook's card.
+    expect(within(panel).getAllByText("B3")).toHaveLength(3);
   });
 
   it("shows a formula and its saved result on both sides", () => {
@@ -327,8 +328,8 @@ describe("choosing a change moves both workbooks to it", () => {
 
   it("steps with Previous and Next, and stops at the ends", () => {
     showWorkspace();
-    const previous = screen.getByRole("button", { name: "Previous" });
-    const next = screen.getByRole("button", { name: "Next" });
+    const previous = screen.getByRole("button", { name: "Previous change" });
+    const next = screen.getByRole("button", { name: "Next change" });
     expect(previous).toHaveProperty("disabled", true);
     fireEvent.click(next);
     expect(counter().textContent).toBe("Change 2 of 11");

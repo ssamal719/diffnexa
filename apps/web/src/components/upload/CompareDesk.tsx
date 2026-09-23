@@ -207,7 +207,16 @@ export function CompareDesk() {
       {phase.name === "failed" && <ComparisonError error={phase.error} onRetry={runComparison} />}
       {phase.name === "done" && (
         <ReportWithAnalyst tool="pdf" result={phase.result} seal={phase.seal}>
-          {({ analyst, focus }) => <ComparisonReport result={phase.result} analyst={analyst} focus={focus} />}
+          {({ analyst, focus, analysis }) => (
+            <ComparisonReport
+              result={phase.result}
+              files={{ original: previous?.file ?? null, revised: revised?.file ?? null }}
+              names={{ original: previous?.displayName ?? "Previous version", revised: revised?.displayName ?? "New version" }}
+              analyst={analyst}
+              analysis={analysis}
+              focus={focus}
+            />
+          )}
         </ReportWithAnalyst>
       )}
     </>

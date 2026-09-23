@@ -1,0 +1,754 @@
+{
+ "changes": [
+  {
+   "category": "text",
+   "confidence": 0.964,
+   "delta": null,
+   "evidence": [
+    {
+     "excerpt": "cancellation.",
+     "field": null,
+     "nodeId": "n10",
+     "path": "main > p:nth-of-type(6)",
+     "scope": "node",
+     "sectionPath": [
+      "Terms of Service",
+      "Cancellation and termination"
+     ],
+     "side": "old"
+    },
+    {
+     "excerpt": "cancellation after 30 days.",
+     "field": null,
+     "nodeId": "n10",
+     "path": "main > p:nth-of-type(6)",
+     "scope": "node",
+     "sectionPath": [
+      "Terms of Service",
+      "Cancellation and termination"
+     ],
+     "side": "new"
+    }
+   ],
+   "id": "c0",
+   "isNoise": false,
+   "kind": "modified",
+   "label": "Cancellation and termination",
+   "newValue": "cancellation after 30 days.",
+   "noiseReason": null,
+   "oldValue": "cancellation.",
+   "policyTopics": [
+    {
+     "label": "Refunds",
+     "matchedText": "no refunds",
+     "source": "text",
+     "summary": "Touches Refunds",
+     "topic": "refunds"
+    },
+    {
+     "label": "Cancellation and termination",
+     "matchedText": "cancellation and termination",
+     "source": "heading",
+     "summary": "Touches Cancellation and termination",
+     "topic": "cancellation"
+    }
+   ],
+   "sections": [
+    "Terms of Service › Cancellation and termination"
+   ],
+   "seq": 0,
+   "subtype": null,
+   "type": "TEXT_MODIFIED"
+  }
+ ],
+ "counts": {
+  "meaningful": 1,
+  "noise": 0,
+  "total": 1
+ },
+ "diagnostics": {
+  "needsJavascript": false,
+  "notes": [],
+  "previousWarnings": [],
+  "revisedWarnings": []
+ },
+ "documents": {
+  "previous": {
+   "nodeCount": 27,
+   "sha256": "7b1fdae3ab7a64bcc7976193d056f50d990ffb01d21e932cbf5e9b30b5a2ee26",
+   "url": "https://example.com/terms"
+  },
+  "revised": {
+   "nodeCount": 27,
+   "sha256": "730e0c076cf7ccb8c73662129770b2fa1921d54d8f0c051153c4031bddbf60f8",
+   "url": "https://example.com/terms"
+  }
+ },
+ "engineVersion": "0.1.0",
+ "policy": {
+  "changedTopics": [
+   "refunds",
+   "cancellation"
+  ],
+  "classifiedChanges": 1,
+  "signalsVersion": "2026.09.1",
+  "topics": [
+   {
+    "blurb": "Who is responsible when something goes wrong, and up to what amount.",
+    "changeCount": 0,
+    "id": "liability",
+    "label": "Liability",
+    "sections": [
+     "Terms of Service",
+     "Limitation of liability"
+    ],
+    "status": "present"
+   },
+   {
+    "blurb": "What is promised about the service, and what is expressly not promised.",
+    "changeCount": 0,
+    "id": "warranties",
+    "label": "Warranties",
+    "sections": [
+     "Warranties"
+    ],
+    "status": "present"
+   },
+   {
+    "blurb": "What the service costs and how those costs may change.",
+    "changeCount": 0,
+    "id": "fees_and_pricing",
+    "label": "Fees and pricing",
+    "sections": [
+     "Terms of Service",
+     "Fees and charges"
+    ],
+    "status": "present"
+   },
+   {
+    "blurb": "When payment is due, how it is taken, and what happens if it is late.",
+    "changeCount": 0,
+    "id": "payment_terms",
+    "label": "Payment terms",
+    "sections": [
+     "Terms of Service",
+     "Payment terms"
+    ],
+    "status": "present"
+   },
+   {
+    "blurb": "Whether money can be returned, and on what conditions.",
+    "changeCount": 1,
+    "id": "refunds",
+    "label": "Refunds",
+    "sections": [
+     "Refunds",
+     "Cancellation and termination"
+    ],
+    "status": "changed"
+   },
+   {
+    "blurb": "How either side ends the agreement, and with how much notice.",
+    "changeCount": 1,
+    "id": "cancellation",
+    "label": "Cancellation and termination",
+    "sections": [
+     "Fees and charges",
+     "Terms of Service",
+     "Cancellation and termination"
+    ],
+    "status": "changed"
+   },
+   {
+    "blurb": "Whether the agreement renews by itself, and how to stop it.",
+    "changeCount": 0,
+    "id": "auto_renewal",
+    "label": "Automatic renewal",
+    "sections": [
+     "Fees and charges",
+     "Terms of Service",
+     "Automatic renewal"
+    ],
+    "status": "present"
+   },
+   {
+    "blurb": "How long information is kept, and when it is deleted.",
+    "changeCount": 0,
+    "id": "data_retention",
+    "label": "Data retention",
+    "sections": [],
+    "status": "not_found"
+   },
+   {
+    "blurb": "Who else receives the information, and where it goes.",
+    "changeCount": 0,
+    "id": "data_sharing",
+    "label": "Data sharing",
+    "sections": [],
+    "status": "not_found"
+   },
+   {
+    "blurb": "What you can ask for: access, correction, deletion, portability, consent.",
+    "changeCount": 0,
+    "id": "privacy_rights",
+    "label": "Your data rights",
+    "sections": [],
+    "status": "not_found"
+   },
+   {
+    "blurb": "What rights each side grants over content and intellectual property.",
+    "changeCount": 0,
+    "id": "licence_and_ip",
+    "label": "Licence and ownership",
+    "sections": [
+     "Licence and ownership"
+    ],
+    "status": "present"
+   },
+   {
+    "blurb": "What you may and may not do, and when access can be withdrawn.",
+    "changeCount": 0,
+    "id": "acceptable_use",
+    "label": "Acceptable use",
+    "sections": [
+     "Terms of Service",
+     "Acceptable use"
+    ],
+    "status": "present"
+   },
+   {
+    "blurb": "Which country's law applies and whose courts decide.",
+    "changeCount": 0,
+    "id": "governing_law",
+    "label": "Governing law",
+    "sections": [
+     "Terms of Service",
+     "Governing law"
+    ],
+    "status": "present"
+   },
+   {
+    "blurb": "How disagreements are handled, including arbitration and class actions.",
+    "changeCount": 0,
+    "id": "dispute_resolution",
+    "label": "Disputes",
+    "sections": [
+     "Disputes"
+    ],
+    "status": "present"
+   }
+  ],
+  "unclassifiedChanges": 0
+ },
+ "processingMs": 0,
+ "view": {
+  "marks": [
+   {
+    "change": "c0",
+    "end": 186,
+    "node": "n10",
+    "side": "original",
+    "start": 173
+   },
+   {
+    "change": "c0",
+    "end": 200,
+    "node": "n10",
+    "side": "revised",
+    "start": 173
+   }
+  ],
+  "original": {
+   "fields": {
+    "metadata.description": "Terms of service for Northwind Software Limited.",
+    "metadata.title": "Terms of Service | Northwind"
+   },
+   "nodes": [
+    {
+     "id": "n0",
+     "level": 1,
+     "role": "heading",
+     "text": "Terms of Service"
+    },
+    {
+     "id": "n1",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "Last updated: 12 March 2026"
+    },
+    {
+     "id": "n2",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "These terms govern your use of the Northwind platform. By creating an account you agree to them."
+    },
+    {
+     "id": "n3",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "Fees and charges"
+    },
+    {
+     "id": "n4",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service",
+      "Fees and charges"
+     ],
+     "text": "The standard plan costs 480 per user per year, charged annually in advance. We may change our pricing on 30 days notice before your renewal date."
+    },
+    {
+     "id": "n5",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "Payment terms"
+    },
+    {
+     "id": "n6",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service",
+      "Payment terms"
+     ],
+     "text": "Invoices are payable within 30 days of issue. Late payment may result in suspension of the service until the overdue amount is settled."
+    },
+    {
+     "id": "n7",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "Refunds"
+    },
+    {
+     "id": "n8",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service",
+      "Refunds"
+     ],
+     "text": "Our refund policy allows a full refund if you cancel within 14 days of your first payment. After that period fees are non-refundable."
+    },
+    {
+     "id": "n9",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "Cancellation and termination"
+    },
+    {
+     "id": "n10",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service",
+      "Cancellation and termination"
+     ],
+     "text": "You may cancel your subscription at any time by giving 30 days written notice. We may terminate this agreement if you materially breach these terms. No refunds are given on cancellation."
+    },
+    {
+     "id": "n11",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "Automatic renewal"
+    },
+    {
+     "id": "n12",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service",
+      "Automatic renewal"
+     ],
+     "text": "Your subscription renews automatically for a further twelve months unless you cancel before the renewal date."
+    },
+    {
+     "id": "n13",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "Limitation of liability"
+    },
+    {
+     "id": "n14",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service",
+      "Limitation of liability"
+     ],
+     "text": "Our total liability under this agreement shall not exceed 10,000 or the fees paid in the preceding twelve months, whichever is lower."
+    },
+    {
+     "id": "n15",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "Warranties"
+    },
+    {
+     "id": "n16",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service",
+      "Warranties"
+     ],
+     "text": "The service is provided as is, without warranties of any kind. We disclaim all implied warranties including fitness for a particular purpose."
+    },
+    {
+     "id": "n17",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "Licence and ownership"
+    },
+    {
+     "id": "n18",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service",
+      "Licence and ownership"
+     ],
+     "text": "You grant us a non-exclusive licence to host and process your content solely to provide the service. All intellectual property rights in the platform remain ours."
+    },
+    {
+     "id": "n19",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "Acceptable use"
+    },
+    {
+     "id": "n20",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service",
+      "Acceptable use"
+     ],
+     "text": "Prohibited conduct includes scraping the service, reselling access without our consent. We may suspend your account for breach of these terms."
+    },
+    {
+     "id": "n21",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "Governing law"
+    },
+    {
+     "id": "n22",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service",
+      "Governing law"
+     ],
+     "text": "This agreement is governed by the laws of England and Wales and the courts of England and Wales shall have exclusive jurisdiction."
+    },
+    {
+     "id": "n23",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "Disputes"
+    },
+    {
+     "id": "n24",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service",
+      "Disputes"
+     ],
+     "text": "Any dispute arising under these terms shall be resolved by binding arbitration in London."
+    },
+    {
+     "id": "n25",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "About Northwind"
+    },
+    {
+     "id": "n26",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service",
+      "About Northwind"
+     ],
+     "text": "Northwind Software Limited was founded in 2011 and employs 400 people across three offices. Our support team is available on weekdays."
+    }
+   ]
+  },
+  "revised": {
+   "fields": {
+    "metadata.description": "Terms of service for Northwind Software Limited.",
+    "metadata.title": "Terms of Service | Northwind"
+   },
+   "nodes": [
+    {
+     "id": "n0",
+     "level": 1,
+     "role": "heading",
+     "text": "Terms of Service"
+    },
+    {
+     "id": "n1",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "Last updated: 12 March 2026"
+    },
+    {
+     "id": "n2",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "These terms govern your use of the Northwind platform. By creating an account you agree to them."
+    },
+    {
+     "id": "n3",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "Fees and charges"
+    },
+    {
+     "id": "n4",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service",
+      "Fees and charges"
+     ],
+     "text": "The standard plan costs 480 per user per year, charged annually in advance. We may change our pricing on 30 days notice before your renewal date."
+    },
+    {
+     "id": "n5",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "Payment terms"
+    },
+    {
+     "id": "n6",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service",
+      "Payment terms"
+     ],
+     "text": "Invoices are payable within 30 days of issue. Late payment may result in suspension of the service until the overdue amount is settled."
+    },
+    {
+     "id": "n7",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "Refunds"
+    },
+    {
+     "id": "n8",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service",
+      "Refunds"
+     ],
+     "text": "Our refund policy allows a full refund if you cancel within 14 days of your first payment. After that period fees are non-refundable."
+    },
+    {
+     "id": "n9",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "Cancellation and termination"
+    },
+    {
+     "id": "n10",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service",
+      "Cancellation and termination"
+     ],
+     "text": "You may cancel your subscription at any time by giving 30 days written notice. We may terminate this agreement if you materially breach these terms. No refunds are given on cancellation after 30 days."
+    },
+    {
+     "id": "n11",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "Automatic renewal"
+    },
+    {
+     "id": "n12",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service",
+      "Automatic renewal"
+     ],
+     "text": "Your subscription renews automatically for a further twelve months unless you cancel before the renewal date."
+    },
+    {
+     "id": "n13",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "Limitation of liability"
+    },
+    {
+     "id": "n14",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service",
+      "Limitation of liability"
+     ],
+     "text": "Our total liability under this agreement shall not exceed 10,000 or the fees paid in the preceding twelve months, whichever is lower."
+    },
+    {
+     "id": "n15",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "Warranties"
+    },
+    {
+     "id": "n16",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service",
+      "Warranties"
+     ],
+     "text": "The service is provided as is, without warranties of any kind. We disclaim all implied warranties including fitness for a particular purpose."
+    },
+    {
+     "id": "n17",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "Licence and ownership"
+    },
+    {
+     "id": "n18",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service",
+      "Licence and ownership"
+     ],
+     "text": "You grant us a non-exclusive licence to host and process your content solely to provide the service. All intellectual property rights in the platform remain ours."
+    },
+    {
+     "id": "n19",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "Acceptable use"
+    },
+    {
+     "id": "n20",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service",
+      "Acceptable use"
+     ],
+     "text": "Prohibited conduct includes scraping the service, reselling access without our consent. We may suspend your account for breach of these terms."
+    },
+    {
+     "id": "n21",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "Governing law"
+    },
+    {
+     "id": "n22",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service",
+      "Governing law"
+     ],
+     "text": "This agreement is governed by the laws of England and Wales and the courts of England and Wales shall have exclusive jurisdiction."
+    },
+    {
+     "id": "n23",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "Disputes"
+    },
+    {
+     "id": "n24",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service",
+      "Disputes"
+     ],
+     "text": "Any dispute arising under these terms shall be resolved by binding arbitration in London."
+    },
+    {
+     "id": "n25",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Terms of Service"
+     ],
+     "text": "About Northwind"
+    },
+    {
+     "id": "n26",
+     "role": "paragraph",
+     "section": [
+      "Terms of Service",
+      "About Northwind"
+     ],
+     "text": "Northwind Software Limited was founded in 2011 and employs 400 people across three offices. Our support team is available on weekdays."
+    }
+   ]
+  }
+ }
+}

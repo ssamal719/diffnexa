@@ -1,0 +1,425 @@
+{
+ "changes": [
+  {
+   "category": "text",
+   "confidence": 1.0,
+   "delta": null,
+   "evidence": [
+    {
+     "excerpt": "Bereavement leave",
+     "field": null,
+     "location": "Heading 1, paragraph 14",
+     "nodeId": "n13",
+     "path": "body/p[14]",
+     "scope": "node",
+     "sectionPath": [],
+     "side": "new"
+    }
+   ],
+   "group": "headings",
+   "id": "c0",
+   "isNoise": false,
+   "kind": "added",
+   "label": null,
+   "newValue": "Bereavement leave",
+   "noiseReason": null,
+   "oldValue": null,
+   "sections": [],
+   "seq": 0,
+   "subtype": "heading",
+   "type": "TEXT_ADDED",
+   "withinBlock": false
+  },
+  {
+   "category": "text",
+   "confidence": 1.0,
+   "delta": null,
+   "evidence": [
+    {
+     "excerpt": "Employees may take up to 5 days of paid bereavement leave.",
+     "field": null,
+     "location": "Paragraph 15",
+     "nodeId": "n14",
+     "path": "body/p[15]",
+     "scope": "node",
+     "sectionPath": [
+      "Bereavement leave"
+     ],
+     "side": "new"
+    }
+   ],
+   "group": "text",
+   "id": "c1",
+   "isNoise": false,
+   "kind": "added",
+   "label": "Bereavement leave",
+   "newValue": "Employees may take up to 5 days of paid bereavement leave.",
+   "noiseReason": null,
+   "oldValue": null,
+   "sections": [
+    "Bereavement leave"
+   ],
+   "seq": 1,
+   "subtype": null,
+   "type": "TEXT_ADDED",
+   "withinBlock": false
+  }
+ ],
+ "counts": {
+  "meaningful": 2,
+  "noise": 0,
+  "total": 2
+ },
+ "diagnostics": {
+  "droppedUntraceable": 0,
+  "notes": [],
+  "previousWarnings": [],
+  "revisedWarnings": []
+ },
+ "documents": {
+  "previous": {
+   "nodeCount": 13,
+   "sha256": "c4b2e45f571bea544f71e19d28cfaf21004a51f15555e7b587ea4302bbf6be46"
+  },
+  "revised": {
+   "nodeCount": 15,
+   "sha256": "72f34ddbe7d4d7604c2d58693a17481db22e3f505a408f48c8ec9013d03f2d25"
+  }
+ },
+ "engineVersion": "0.1.0",
+ "groups": [
+  {
+   "changeCount": 1,
+   "changeIds": [
+    "c1"
+   ],
+   "id": "text",
+   "label": "Text changes"
+  },
+  {
+   "changeCount": 1,
+   "changeIds": [
+    "c0"
+   ],
+   "id": "headings",
+   "label": "Headings"
+  },
+  {
+   "changeCount": 0,
+   "changeIds": [],
+   "id": "lists",
+   "label": "Lists"
+  },
+  {
+   "changeCount": 0,
+   "changeIds": [],
+   "id": "tables",
+   "label": "Tables"
+  },
+  {
+   "changeCount": 0,
+   "changeIds": [],
+   "id": "numbers",
+   "label": "Numbers"
+  },
+  {
+   "changeCount": 0,
+   "changeIds": [],
+   "id": "dates",
+   "label": "Dates"
+  },
+  {
+   "changeCount": 0,
+   "changeIds": [],
+   "id": "structure",
+   "label": "Structure"
+  },
+  {
+   "changeCount": 0,
+   "changeIds": [],
+   "id": "other",
+   "label": "Other"
+  }
+ ],
+ "processingMs": 0,
+ "view": {
+  "marks": [
+   {
+    "change": "c0",
+    "end": 17,
+    "node": "n13",
+    "side": "revised",
+    "start": 0
+   },
+   {
+    "change": "c1",
+    "end": 58,
+    "node": "n14",
+    "side": "revised",
+    "start": 0
+   }
+  ],
+  "original": {
+   "fields": {
+    "properties.subject": "Annual, sick and parental leave",
+    "properties.title": "Leave Policy"
+   },
+   "nodes": [
+    {
+     "id": "n0",
+     "level": 1,
+     "place": "Heading 1, paragraph 1",
+     "role": "heading",
+     "text": "Leave Policy"
+    },
+    {
+     "id": "n1",
+     "place": "Paragraph 2",
+     "role": "paragraph",
+     "section": [
+      "Leave Policy"
+     ],
+     "text": "This policy applies to all permanent employees from 1 January 2027."
+    },
+    {
+     "id": "n2",
+     "level": 1,
+     "place": "Heading 1, paragraph 3",
+     "role": "heading",
+     "text": "Annual leave"
+    },
+    {
+     "id": "n3",
+     "place": "Paragraph 4",
+     "role": "paragraph",
+     "section": [
+      "Annual leave"
+     ],
+     "text": "Employees receive 20 days of paid annual leave each year."
+    },
+    {
+     "id": "n4",
+     "place": "Paragraph 5",
+     "role": "paragraph",
+     "section": [
+      "Annual leave"
+     ],
+     "text": "Up to 5 unused days may be carried over to the next year."
+    },
+    {
+     "id": "n5",
+     "level": 1,
+     "place": "Heading 1, paragraph 6",
+     "role": "heading",
+     "text": "Sick leave"
+    },
+    {
+     "id": "n6",
+     "place": "Paragraph 7",
+     "role": "paragraph",
+     "section": [
+      "Sick leave"
+     ],
+     "text": "Employees receive 10 days of paid sick leave each year."
+    },
+    {
+     "id": "n7",
+     "place": "Paragraph 8",
+     "role": "paragraph",
+     "section": [
+      "Sick leave"
+     ],
+     "text": "A medical certificate is required for absences longer than 3 days."
+    },
+    {
+     "id": "n8",
+     "level": 1,
+     "place": "Heading 1, paragraph 9",
+     "role": "heading",
+     "text": "Parental leave"
+    },
+    {
+     "id": "n9",
+     "place": "Paragraph 10",
+     "role": "paragraph",
+     "section": [
+      "Parental leave"
+     ],
+     "text": "Eligible employees may take parental leave as follows:"
+    },
+    {
+     "id": "n10",
+     "list": "bulleted",
+     "listLevel": 1,
+     "place": "Bulleted list item (level 1), paragraph 11",
+     "role": "list_item",
+     "section": [
+      "Parental leave"
+     ],
+     "text": "Primary carers: 16 weeks at full pay"
+    },
+    {
+     "id": "n11",
+     "list": "bulleted",
+     "listLevel": 1,
+     "place": "Bulleted list item (level 1), paragraph 12",
+     "role": "list_item",
+     "section": [
+      "Parental leave"
+     ],
+     "text": "Secondary carers: 4 weeks at full pay"
+    },
+    {
+     "id": "n12",
+     "list": "bulleted",
+     "listLevel": 1,
+     "place": "Bulleted list item (level 1), paragraph 13",
+     "role": "list_item",
+     "section": [
+      "Parental leave"
+     ],
+     "text": "Can be taken within 12 months of the birth"
+    }
+   ]
+  },
+  "revised": {
+   "fields": {
+    "properties.subject": "Annual, sick and parental leave",
+    "properties.title": "Leave Policy"
+   },
+   "nodes": [
+    {
+     "id": "n0",
+     "level": 1,
+     "place": "Heading 1, paragraph 1",
+     "role": "heading",
+     "text": "Leave Policy"
+    },
+    {
+     "id": "n1",
+     "place": "Paragraph 2",
+     "role": "paragraph",
+     "section": [
+      "Leave Policy"
+     ],
+     "text": "This policy applies to all permanent employees from 1 January 2027."
+    },
+    {
+     "id": "n2",
+     "level": 1,
+     "place": "Heading 1, paragraph 3",
+     "role": "heading",
+     "text": "Annual leave"
+    },
+    {
+     "id": "n3",
+     "place": "Paragraph 4",
+     "role": "paragraph",
+     "section": [
+      "Annual leave"
+     ],
+     "text": "Employees receive 20 days of paid annual leave each year."
+    },
+    {
+     "id": "n4",
+     "place": "Paragraph 5",
+     "role": "paragraph",
+     "section": [
+      "Annual leave"
+     ],
+     "text": "Up to 5 unused days may be carried over to the next year."
+    },
+    {
+     "id": "n5",
+     "level": 1,
+     "place": "Heading 1, paragraph 6",
+     "role": "heading",
+     "text": "Sick leave"
+    },
+    {
+     "id": "n6",
+     "place": "Paragraph 7",
+     "role": "paragraph",
+     "section": [
+      "Sick leave"
+     ],
+     "text": "Employees receive 10 days of paid sick leave each year."
+    },
+    {
+     "id": "n7",
+     "place": "Paragraph 8",
+     "role": "paragraph",
+     "section": [
+      "Sick leave"
+     ],
+     "text": "A medical certificate is required for absences longer than 3 days."
+    },
+    {
+     "id": "n8",
+     "level": 1,
+     "place": "Heading 1, paragraph 9",
+     "role": "heading",
+     "text": "Parental leave"
+    },
+    {
+     "id": "n9",
+     "place": "Paragraph 10",
+     "role": "paragraph",
+     "section": [
+      "Parental leave"
+     ],
+     "text": "Eligible employees may take parental leave as follows:"
+    },
+    {
+     "id": "n10",
+     "list": "bulleted",
+     "listLevel": 1,
+     "place": "Bulleted list item (level 1), paragraph 11",
+     "role": "list_item",
+     "section": [
+      "Parental leave"
+     ],
+     "text": "Primary carers: 16 weeks at full pay"
+    },
+    {
+     "id": "n11",
+     "list": "bulleted",
+     "listLevel": 1,
+     "place": "Bulleted list item (level 1), paragraph 12",
+     "role": "list_item",
+     "section": [
+      "Parental leave"
+     ],
+     "text": "Secondary carers: 4 weeks at full pay"
+    },
+    {
+     "id": "n12",
+     "list": "bulleted",
+     "listLevel": 1,
+     "place": "Bulleted list item (level 1), paragraph 13",
+     "role": "list_item",
+     "section": [
+      "Parental leave"
+     ],
+     "text": "Can be taken within 12 months of the birth"
+    },
+    {
+     "id": "n13",
+     "level": 1,
+     "place": "Heading 1, paragraph 14",
+     "role": "heading",
+     "text": "Bereavement leave"
+    },
+    {
+     "id": "n14",
+     "place": "Paragraph 15",
+     "role": "paragraph",
+     "section": [
+      "Bereavement leave"
+     ],
+     "text": "Employees may take up to 5 days of paid bereavement leave."
+    }
+   ]
+  }
+ }
+}

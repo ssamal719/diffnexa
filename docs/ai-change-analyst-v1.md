@@ -60,7 +60,7 @@ Code:
 | `apps/web/src/lib/analysis-seal.ts` | Server-only: seals results, checks seals |
 | `apps/web/src/app/api/ai/analyze`, `/api/ai/status` | The proxy and the availability check |
 | `apps/web/src/components/analysis/` | The panel, and the per-result wrapper |
-| `apps/web/src/lib/use-change-focus.ts` | "View change" through each report's own navigation |
+| `apps/web/src/lib/use-change-focus.ts` | The "View change" request type; since the Unified Comparison Workspace V2 the workspace itself handles it (see unified-workspace-v2.md) |
 
 The existing rule still holds and is still enforced by
 `tests/test_ai_boundary.py`: nothing in `diffnexa_engine/ai/` imports or builds a

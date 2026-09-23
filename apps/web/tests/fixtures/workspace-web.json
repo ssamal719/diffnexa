@@ -1,0 +1,820 @@
+{
+ "changes": [
+  {
+   "category": "metadata",
+   "confidence": 1.0,
+   "delta": null,
+   "evidence": [
+    {
+     "excerpt": "Service Agreement | Example",
+     "field": "metadata.title",
+     "nodeId": null,
+     "path": null,
+     "scope": "document",
+     "sectionPath": [],
+     "side": "old"
+    },
+    {
+     "excerpt": "Service Agreement (2026 revision) | Example",
+     "field": "metadata.title",
+     "nodeId": null,
+     "path": null,
+     "scope": "document",
+     "sectionPath": [],
+     "side": "new"
+    }
+   ],
+   "id": "c0",
+   "isNoise": false,
+   "kind": "modified",
+   "label": "Page title",
+   "newValue": "Service Agreement (2026 revision) | Example",
+   "noiseReason": null,
+   "oldValue": "Service Agreement | Example",
+   "sections": [],
+   "seq": 0,
+   "subtype": "title",
+   "type": "METADATA_CHANGED"
+  },
+  {
+   "category": "text",
+   "confidence": 1.0,
+   "delta": null,
+   "evidence": [
+    {
+     "excerpt": "Termination",
+     "field": null,
+     "nodeId": "n20",
+     "path": "main > h2:nth-of-type(4)",
+     "scope": "node",
+     "sectionPath": [
+      "Service Agreement"
+     ],
+     "side": "new"
+    }
+   ],
+   "id": "c1",
+   "isNoise": false,
+   "kind": "added",
+   "label": "Service Agreement",
+   "newValue": "Termination",
+   "noiseReason": null,
+   "oldValue": null,
+   "sections": [
+    "Service Agreement"
+   ],
+   "seq": 1,
+   "subtype": "heading",
+   "type": "TEXT_ADDED"
+  },
+  {
+   "category": "number",
+   "confidence": 0.985,
+   "delta": "+25000 (+50%)",
+   "evidence": [
+    {
+     "excerpt": "50,000",
+     "field": null,
+     "nodeId": "n3",
+     "path": "main > p:nth-of-type(2)",
+     "scope": "node",
+     "sectionPath": [
+      "Service Agreement",
+      "Pricing"
+     ],
+     "side": "old"
+    },
+    {
+     "excerpt": "75,000",
+     "field": null,
+     "nodeId": "n3",
+     "path": "main > p:nth-of-type(2)",
+     "scope": "node",
+     "sectionPath": [
+      "Service Agreement",
+      "Pricing"
+     ],
+     "side": "new"
+    }
+   ],
+   "id": "c2",
+   "isNoise": false,
+   "kind": "modified",
+   "label": "Pricing",
+   "newValue": "75,000",
+   "noiseReason": null,
+   "oldValue": "50,000",
+   "sections": [
+    "Service Agreement › Pricing"
+   ],
+   "seq": 2,
+   "subtype": null,
+   "type": "NUMBER_CHANGED"
+  },
+  {
+   "category": "date",
+   "confidence": 0.935,
+   "delta": "15 days later",
+   "evidence": [
+    {
+     "excerpt": "30 June 2026",
+     "field": null,
+     "nodeId": "n6",
+     "path": "main > p:nth-of-type(4)",
+     "scope": "node",
+     "sectionPath": [
+      "Service Agreement",
+      "Delivery"
+     ],
+     "side": "old"
+    },
+    {
+     "excerpt": "15 July 2026",
+     "field": null,
+     "nodeId": "n6",
+     "path": "main > p:nth-of-type(4)",
+     "scope": "node",
+     "sectionPath": [
+      "Service Agreement",
+      "Delivery"
+     ],
+     "side": "new"
+    }
+   ],
+   "id": "c3",
+   "isNoise": false,
+   "kind": "modified",
+   "label": "Delivery",
+   "newValue": "15 July 2026",
+   "noiseReason": null,
+   "oldValue": "30 June 2026",
+   "sections": [
+    "Service Agreement › Delivery"
+   ],
+   "seq": 3,
+   "subtype": null,
+   "type": "DATE_CHANGED"
+  },
+  {
+   "category": "text",
+   "confidence": 1.0,
+   "delta": null,
+   "evidence": [
+    {
+     "excerpt": "Either party may terminate with sixty days notice.",
+     "field": null,
+     "nodeId": "n21",
+     "path": "main > p:nth-of-type(6)",
+     "scope": "node",
+     "sectionPath": [
+      "Service Agreement",
+      "Termination"
+     ],
+     "side": "new"
+    }
+   ],
+   "id": "c4",
+   "isNoise": false,
+   "kind": "added",
+   "label": "Termination",
+   "newValue": "Either party may terminate with sixty days notice.",
+   "noiseReason": null,
+   "oldValue": null,
+   "sections": [
+    "Service Agreement › Termination"
+   ],
+   "seq": 4,
+   "subtype": null,
+   "type": "TEXT_ADDED"
+  },
+  {
+   "category": "number",
+   "confidence": 1.0,
+   "delta": "+5000 (+5.56%)",
+   "evidence": [
+    {
+     "excerpt": "90,000",
+     "field": null,
+     "nodeId": "n18",
+     "path": "main > table > tbody > tr:nth-of-type(2) > td:nth-of-type(2)",
+     "scope": "node",
+     "sectionPath": [
+      "Service Agreement",
+      "Resources"
+     ],
+     "side": "old"
+    },
+    {
+     "excerpt": "95,000",
+     "field": null,
+     "nodeId": "n18",
+     "path": "main > table > tbody > tr:nth-of-type(2) > td:nth-of-type(2)",
+     "scope": "node",
+     "sectionPath": [
+      "Service Agreement",
+      "Resources"
+     ],
+     "side": "new"
+    }
+   ],
+   "id": "c5",
+   "isNoise": false,
+   "kind": "modified",
+   "label": "Premium · Price",
+   "newValue": "95,000",
+   "noiseReason": null,
+   "oldValue": "90,000",
+   "sections": [
+    "Service Agreement › Resources"
+   ],
+   "seq": 5,
+   "subtype": "table_cell",
+   "type": "NUMBER_CHANGED"
+  }
+ ],
+ "counts": {
+  "meaningful": 6,
+  "noise": 0,
+  "total": 6
+ },
+ "diagnostics": {
+  "needsJavascript": false,
+  "notes": [],
+  "previousWarnings": [],
+  "revisedWarnings": []
+ },
+ "documents": {
+  "previous": {
+   "nodeCount": 21,
+   "sha256": "50dcec97e7e63dbd2fa58b7628c6fc4e2ad0357824bfbd01e9a18219a3e3d959",
+   "url": "https://example.com/agreement"
+  },
+  "revised": {
+   "nodeCount": 23,
+   "sha256": "4125dac527bf026543d3df2c75464fd394448a08611c8628d23ca861807a13cd",
+   "url": "https://example.com/agreement"
+  }
+ },
+ "engineVersion": "0.1.0",
+ "processingMs": 0,
+ "view": {
+  "marks": [
+   {
+    "change": "c0",
+    "field": "metadata.title",
+    "side": "original"
+   },
+   {
+    "change": "c0",
+    "field": "metadata.title",
+    "side": "revised"
+   },
+   {
+    "change": "c1",
+    "end": 11,
+    "node": "n20",
+    "side": "revised",
+    "start": 0
+   },
+   {
+    "change": "c2",
+    "end": 30,
+    "node": "n3",
+    "side": "original",
+    "start": 24
+   },
+   {
+    "change": "c2",
+    "end": 30,
+    "node": "n3",
+    "side": "revised",
+    "start": 24
+   },
+   {
+    "change": "c3",
+    "end": 38,
+    "node": "n6",
+    "side": "original",
+    "start": 26
+   },
+   {
+    "change": "c3",
+    "end": 38,
+    "node": "n6",
+    "side": "revised",
+    "start": 26
+   },
+   {
+    "change": "c4",
+    "end": 50,
+    "node": "n21",
+    "side": "revised",
+    "start": 0
+   },
+   {
+    "change": "c5",
+    "end": 6,
+    "node": "n18",
+    "side": "original",
+    "start": 0
+   },
+   {
+    "change": "c5",
+    "end": 6,
+    "node": "n18",
+    "side": "revised",
+    "start": 0
+   }
+  ],
+  "original": {
+   "fields": {
+    "metadata.canonical": "https://example.com/agreement",
+    "metadata.description": "The standard terms for professional services.",
+    "metadata.title": "Service Agreement | Example"
+   },
+   "nodes": [
+    {
+     "id": "n0",
+     "level": 1,
+     "role": "heading",
+     "text": "Service Agreement"
+    },
+    {
+     "id": "n1",
+     "role": "paragraph",
+     "section": [
+      "Service Agreement"
+     ],
+     "text": "This agreement sets out the terms under which services are provided."
+    },
+    {
+     "id": "n2",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Service Agreement"
+     ],
+     "text": "Pricing"
+    },
+    {
+     "id": "n3",
+     "role": "paragraph",
+     "section": [
+      "Service Agreement",
+      "Pricing"
+     ],
+     "text": "The standard plan costs 50,000 per year for each licence purchased."
+    },
+    {
+     "id": "n4",
+     "role": "paragraph",
+     "section": [
+      "Service Agreement",
+      "Pricing"
+     ],
+     "text": "Volume discounts of 10% apply to orders above one hundred licences."
+    },
+    {
+     "id": "n5",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Service Agreement"
+     ],
+     "text": "Delivery"
+    },
+    {
+     "id": "n6",
+     "role": "paragraph",
+     "section": [
+      "Service Agreement",
+      "Delivery"
+     ],
+     "text": "Delivery is scheduled for 30 June 2026 at the agreed location."
+    },
+    {
+     "id": "n7",
+     "role": "list_item",
+     "section": [
+      "Service Agreement",
+      "Delivery"
+     ],
+     "text": "Reports are delivered monthly"
+    },
+    {
+     "id": "n8",
+     "role": "list_item",
+     "section": [
+      "Service Agreement",
+      "Delivery"
+     ],
+     "text": "Support is included for twelve months"
+    },
+    {
+     "id": "n9",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Service Agreement"
+     ],
+     "text": "Resources"
+    },
+    {
+     "id": "n10",
+     "role": "paragraph",
+     "section": [
+      "Service Agreement",
+      "Resources"
+     ],
+     "text": "See the implementation guide for further detail."
+    },
+    {
+     "id": "n11",
+     "role": "table_cell",
+     "section": [
+      "Service Agreement",
+      "Resources"
+     ],
+     "table": [
+      0,
+      0,
+      0
+     ],
+     "text": "Plan"
+    },
+    {
+     "id": "n12",
+     "role": "table_cell",
+     "section": [
+      "Service Agreement",
+      "Resources"
+     ],
+     "table": [
+      0,
+      0,
+      1
+     ],
+     "text": "Price"
+    },
+    {
+     "id": "n13",
+     "role": "table_cell",
+     "section": [
+      "Service Agreement",
+      "Resources"
+     ],
+     "table": [
+      0,
+      0,
+      2
+     ],
+     "text": "Users"
+    },
+    {
+     "id": "n14",
+     "role": "table_cell",
+     "section": [
+      "Service Agreement",
+      "Resources"
+     ],
+     "table": [
+      0,
+      1,
+      0
+     ],
+     "text": "Standard"
+    },
+    {
+     "id": "n15",
+     "role": "table_cell",
+     "section": [
+      "Service Agreement",
+      "Resources"
+     ],
+     "table": [
+      0,
+      1,
+      1
+     ],
+     "text": "50,000"
+    },
+    {
+     "id": "n16",
+     "role": "table_cell",
+     "section": [
+      "Service Agreement",
+      "Resources"
+     ],
+     "table": [
+      0,
+      1,
+      2
+     ],
+     "text": "25"
+    },
+    {
+     "id": "n17",
+     "role": "table_cell",
+     "section": [
+      "Service Agreement",
+      "Resources"
+     ],
+     "table": [
+      0,
+      2,
+      0
+     ],
+     "text": "Premium"
+    },
+    {
+     "id": "n18",
+     "role": "table_cell",
+     "section": [
+      "Service Agreement",
+      "Resources"
+     ],
+     "table": [
+      0,
+      2,
+      1
+     ],
+     "text": "90,000"
+    },
+    {
+     "id": "n19",
+     "role": "table_cell",
+     "section": [
+      "Service Agreement",
+      "Resources"
+     ],
+     "table": [
+      0,
+      2,
+      2
+     ],
+     "text": "100"
+    },
+    {
+     "href": "https://example.com/guide",
+     "id": "n20",
+     "role": "link",
+     "text": "implementation guide"
+    }
+   ]
+  },
+  "revised": {
+   "fields": {
+    "metadata.canonical": "https://example.com/agreement",
+    "metadata.description": "The standard terms for professional services.",
+    "metadata.title": "Service Agreement (2026 revision) | Example"
+   },
+   "nodes": [
+    {
+     "id": "n0",
+     "level": 1,
+     "role": "heading",
+     "text": "Service Agreement"
+    },
+    {
+     "id": "n1",
+     "role": "paragraph",
+     "section": [
+      "Service Agreement"
+     ],
+     "text": "This agreement sets out the terms under which services are provided."
+    },
+    {
+     "id": "n2",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Service Agreement"
+     ],
+     "text": "Pricing"
+    },
+    {
+     "id": "n3",
+     "role": "paragraph",
+     "section": [
+      "Service Agreement",
+      "Pricing"
+     ],
+     "text": "The standard plan costs 75,000 per year for each licence purchased."
+    },
+    {
+     "id": "n4",
+     "role": "paragraph",
+     "section": [
+      "Service Agreement",
+      "Pricing"
+     ],
+     "text": "Volume discounts of 10% apply to orders above one hundred licences."
+    },
+    {
+     "id": "n5",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Service Agreement"
+     ],
+     "text": "Delivery"
+    },
+    {
+     "id": "n6",
+     "role": "paragraph",
+     "section": [
+      "Service Agreement",
+      "Delivery"
+     ],
+     "text": "Delivery is scheduled for 15 July 2026 at the agreed location."
+    },
+    {
+     "id": "n7",
+     "role": "list_item",
+     "section": [
+      "Service Agreement",
+      "Delivery"
+     ],
+     "text": "Reports are delivered monthly"
+    },
+    {
+     "id": "n8",
+     "role": "list_item",
+     "section": [
+      "Service Agreement",
+      "Delivery"
+     ],
+     "text": "Support is included for twelve months"
+    },
+    {
+     "id": "n9",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Service Agreement"
+     ],
+     "text": "Resources"
+    },
+    {
+     "id": "n10",
+     "role": "paragraph",
+     "section": [
+      "Service Agreement",
+      "Resources"
+     ],
+     "text": "See the implementation guide for further detail."
+    },
+    {
+     "id": "n11",
+     "role": "table_cell",
+     "section": [
+      "Service Agreement",
+      "Resources"
+     ],
+     "table": [
+      0,
+      0,
+      0
+     ],
+     "text": "Plan"
+    },
+    {
+     "id": "n12",
+     "role": "table_cell",
+     "section": [
+      "Service Agreement",
+      "Resources"
+     ],
+     "table": [
+      0,
+      0,
+      1
+     ],
+     "text": "Price"
+    },
+    {
+     "id": "n13",
+     "role": "table_cell",
+     "section": [
+      "Service Agreement",
+      "Resources"
+     ],
+     "table": [
+      0,
+      0,
+      2
+     ],
+     "text": "Users"
+    },
+    {
+     "id": "n14",
+     "role": "table_cell",
+     "section": [
+      "Service Agreement",
+      "Resources"
+     ],
+     "table": [
+      0,
+      1,
+      0
+     ],
+     "text": "Standard"
+    },
+    {
+     "id": "n15",
+     "role": "table_cell",
+     "section": [
+      "Service Agreement",
+      "Resources"
+     ],
+     "table": [
+      0,
+      1,
+      1
+     ],
+     "text": "50,000"
+    },
+    {
+     "id": "n16",
+     "role": "table_cell",
+     "section": [
+      "Service Agreement",
+      "Resources"
+     ],
+     "table": [
+      0,
+      1,
+      2
+     ],
+     "text": "25"
+    },
+    {
+     "id": "n17",
+     "role": "table_cell",
+     "section": [
+      "Service Agreement",
+      "Resources"
+     ],
+     "table": [
+      0,
+      2,
+      0
+     ],
+     "text": "Premium"
+    },
+    {
+     "id": "n18",
+     "role": "table_cell",
+     "section": [
+      "Service Agreement",
+      "Resources"
+     ],
+     "table": [
+      0,
+      2,
+      1
+     ],
+     "text": "95,000"
+    },
+    {
+     "id": "n19",
+     "role": "table_cell",
+     "section": [
+      "Service Agreement",
+      "Resources"
+     ],
+     "table": [
+      0,
+      2,
+      2
+     ],
+     "text": "100"
+    },
+    {
+     "id": "n20",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Service Agreement"
+     ],
+     "text": "Termination"
+    },
+    {
+     "id": "n21",
+     "role": "paragraph",
+     "section": [
+      "Service Agreement",
+      "Termination"
+     ],
+     "text": "Either party may terminate with sixty days notice."
+    },
+    {
+     "href": "https://example.com/guide",
+     "id": "n22",
+     "role": "link",
+     "text": "implementation guide"
+    }
+   ]
+  }
+ }
+}

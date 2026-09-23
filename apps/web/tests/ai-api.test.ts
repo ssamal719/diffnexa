@@ -82,6 +82,27 @@ describe("sealing a comparison result", () => {
     expect(verifySeal("docx", analysisPayload("docx", analysisPayload("docx", inBrowser)), sealed)).toBe(true);
   });
 
+  it("never sends the documents' text to AI: the workspace view stays in the browser", async () => {
+    for (const [tool, name] of [
+      ["docx", "workspace-docx.json"],
+      ["web", "workspace-web.json"],
+      ["policy", "workspace-policy.json"],
+      ["competitor", "workspace-competitor.json"],
+      ["price", "workspace-price.json"],
+    ] as const) {
+      const result = JSON.parse(readFileSync(join(import.meta.dirname, "fixtures", name), "utf8"));
+      expect(result.view, name).toBeTruthy();
+      const payload = analysisPayload(tool, result);
+      expect(Object.keys(payload)).not.toContain("view");
+      expect(JSON.stringify(payload)).not.toContain('"nodes"');
+      // And the seal covers exactly the same parts with or without it.
+      const { view: _view, ...withoutView } = result;
+      void _view;
+      const { verifySeal } = await import("@/lib/analysis-seal");
+      expect(verifySeal(tool, payload, await seal(tool, withoutView))).toBe(true);
+    }
+  });
+
   it("fails for any change to what the engine returned", async () => {
     const sealed = await seal("docx", DOCX);
     const { verifySeal } = await import("@/lib/analysis-seal");

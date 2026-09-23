@@ -17,6 +17,10 @@ added, both factual:
   "Heading 2, paragraph 3", "Numbered list item (level 1), paragraph 8",
   "Table 2, row 3, column 2". It is derived from the structural path the
   evidence already cites.
+* **A read-only view of both documents** (`view`): every paragraph, heading,
+  list item and cell in reading order, and each piece of evidence as a
+  highlighted span within it, so the workspace can show a change in its
+  surrounding text. It is presentation data; see `diffnexa_engine.web.view`.
 """
 
 from __future__ import annotations
@@ -26,10 +30,11 @@ from typing import Any
 
 from diffnexa_engine.compare.normalize import normalize
 from diffnexa_engine.contracts.changes import Change, ChangeCategory, ChangeKind, DocxRef
-from diffnexa_engine.docx.compare import DocxComparisonOutcome
+from diffnexa_engine.docx.compare import PROPERTY_FIELDS, DocxComparisonOutcome
 from diffnexa_engine.docx.model import DocxDocument, DocxNode
 from diffnexa_engine.web.compare import _excerpt
 from diffnexa_engine.web.snapshot import NodeRole
+from diffnexa_engine.web.view import content_view
 
 GROUPS: tuple[tuple[str, str], ...] = (
     ("text", "Text changes"),
@@ -182,6 +187,16 @@ def serialize_docx_comparison(outcome: DocxComparisonOutcome, processing_ms: int
             }
             for group_id, label in GROUPS
         ],
+        "view": content_view(
+            outcome.previous.nodes,
+            outcome.current.nodes,
+            result.changes,
+            fields=tuple(
+                {name: getattr(document.properties, attribute) for name, attribute, _ in PROPERTY_FIELDS}
+                for document in (outcome.previous, outcome.current)
+            ),
+            place=describe_location,
+        ),
         "diagnostics": {
             "notes": list(outcome.diagnostics.notes),
             "previousWarnings": list(outcome.diagnostics.previous_warnings),

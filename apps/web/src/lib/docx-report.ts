@@ -7,6 +7,9 @@
  * ranks a change or says whether it is good, bad or important.
  */
 
+import { citedText, readView, type ContentView } from "@/lib/content-view";
+import { filterGroup, kindFilter, shorten, type FilterGroup, type WorkspaceChange } from "@/lib/workspace";
+
 // ---------------------------------------------------------------- the API shape
 
 export type DocxEvidence = {
@@ -73,6 +76,8 @@ export type DocxComparison = {
     revisedWarnings: string[];
     droppedUntraceable: number;
   };
+  /** Both documents' content with every change's evidence marked, for the side-by-side view (see content-view.ts). */
+  view?: unknown;
 };
 
 export type DocxFailure = { code: string; message: string; side?: "original" | "revised" | null };
@@ -231,4 +236,106 @@ export function readingNotes(result: DocxComparison): { title: string; text: str
   if (revised.length > 0) notes.push({ title: "About the revised document", text: revised.join(" ") });
   for (const note of result.diagnostics.notes) notes.push({ title: "Worth knowing", text: note });
   return notes;
+}
+
+// ---------------------------------------------------------------- the comparison workspace
+
+/**
+ * Where a Word change is, in the document's own terms: the headings it sits
+ * under. A Word file stores no page numbers — pages depend on the printer,
+ * fonts and window size — so none are ever shown. When there is no heading
+ * above the change, that is said plainly.
+ */
+export function docxPlace(change: DocxChange, view: ContentView | null = null): string {
+  if (change.category === "metadata") return "Document properties";
+  const path = sectionPathOf(change);
+  if (change.subtype === "heading" || change.subtype === "heading_level") {
+    // A heading's own place is the heading itself, under whatever headings are above it.
+    const name = citedText(view, change.evidence);
+    const parts = [...path, name ? `“${name}”` : null].filter(Boolean);
+    return parts.length > 0 ? parts.join(" › ") : "A top-level heading";
+  }
+  return path.length > 0 ? path.join(" › ") : "Before the first heading";
+}
+
+/** The headings above a change: in the revised document when it is there, otherwise in the original. */
+function sectionPathOf(change: DocxChange): string[] {
+  const revised = change.evidence.find((item) => item.side === "new" && item.scope === "node");
+  const original = change.evidence.find((item) => item.side === "old" && item.scope === "node");
+  return (revised ?? original)?.sectionPath ?? [];
+}
+
+/**
+ * The structural location the engine recorded — "Paragraph 18", "Table 2, row
+ * 3, column 2" — as a secondary detail, labelled so it is never mistaken for a
+ * page. Paragraph numbers are counted from the start of the document.
+ */
+export function docxPlaceNote(change: DocxChange): string | null {
+  const where = locationOf(change);
+  if (!where || change.category === "metadata") return null;
+  return `In Word: ${where}. Paragraphs are counted from the start of the document; Word files have no fixed page numbers.`;
+}
+
+export function docxWorkspaceChanges(result: DocxComparison): WorkspaceChange[] {
+  const labels = new Map(result.groups.map((group) => [group.id, group.label]));
+  const view = readView(result.view);
+  return [...result.changes]
+    .sort((a, b) => a.seq - b.seq)
+    .map((change, index) => {
+      const title = headlineFor(change);
+      const place = docxPlace(change, view);
+      const inline = showsValuesInline(change);
+      const before = inline ? change.oldValue : shorten(change.oldValue, 70);
+      const after = inline ? change.newValue : shorten(change.newValue, 70);
+      const excerpt =
+        change.evidence.find((item) => item.side === "new" && item.excerpt)?.excerpt ??
+        change.evidence.find((item) => item.excerpt)?.excerpt;
+      const said = [change.oldValue && `from ${shorten(change.oldValue, 60)}`, change.newValue && `to ${shorten(change.newValue, 60)}`]
+        .filter(Boolean)
+        .join(" ");
+      const heading = change.subtype === "heading" || change.subtype === "heading_level";
+      const top = sectionPathOf(change)[0] ?? (heading ? (citedText(view, change.evidence) ?? undefined) : undefined);
+      return {
+        id: change.id,
+        number: index + 1,
+        group: top ? `s:${top}` : change.category === "metadata" ? "properties" : "top",
+        groupLabel: top ?? (change.category === "metadata" ? "Document properties" : "Before the first heading"),
+        title,
+        place,
+        placeNote: docxPlaceNote(change),
+        category: labels.get(change.group) ?? "Other",
+        kind: editKindOf(change),
+        before,
+        after,
+        context: before || after ? null : shorten(excerpt, 80),
+        description: `Change ${index + 1}: ${title}, ${place}${said ? `, ${said}` : ""}.`,
+        searchText: [
+          title,
+          place,
+          labels.get(change.group),
+          change.label,
+          change.oldValue,
+          change.newValue,
+          change.delta,
+          ...change.sections,
+          ...change.evidence.flatMap((item) => [item.excerpt, item.location]),
+        ]
+          .filter(Boolean)
+          .join(" "),
+        tags: { group: [change.group] },
+      };
+    });
+}
+
+export function docxFilters(result: DocxComparison, changes: WorkspaceChange[]): FilterGroup[] {
+  return [
+    kindFilter(changes),
+    filterGroup(
+      "group",
+      "What changed",
+      changes,
+      result.groups.map(({ id, label }) => ({ id, label })),
+      { inBar: false },
+    ),
+  ];
 }

@@ -24,100 +24,104 @@ export const metadata: Metadata = {
 
 export default function PriceMonitorPage() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 md:py-10">
-      {/* One H1, saying what the tool does — and not implying it watches prices
-          on anyone's behalf. */}
-      <h1 className="text-[1.75rem] font-semibold tracking-tight md:text-[2rem]">
-        See what changed on a pricing or product page
-      </h1>
-      <p className="mt-2 max-w-[62ch] text-ink-soft">
-        Capture a public pricing or product page as it reads today. Check it whenever you choose
-        and DiffNexa shows exactly what changed — prices, currencies, billing periods, plans,
-        availability and everything else on the page — with the evidence behind every change.
-      </p>
+    <div className="mx-auto max-w-[92rem] px-4 py-8 md:py-10">
+      <div className="mx-auto max-w-5xl">
+        {/* One H1, saying what the tool does — and not implying it watches prices
+            on anyone's behalf. */}
+        <h1 className="text-[1.75rem] font-semibold tracking-tight md:text-[2rem]">
+          See what changed on a pricing or product page
+        </h1>
+        <p className="mt-2 max-w-[62ch] text-ink-soft">
+          Capture a public pricing or product page as it reads today. Check it whenever you choose
+          and DiffNexa shows exactly what changed — prices, currencies, billing periods, plans,
+          availability and everything else on the page — with the evidence behind every change.
+        </p>
+      </div>
 
-      <div className="mt-6">
+      <div className="mt-6 *:mx-auto *:max-w-5xl">
         <PriceDesk />
       </div>
 
-      <section className="mt-10" aria-labelledby="how-it-works">
-        <h2 id="how-it-works" className="text-[1.15rem] font-semibold">
-          How it works
-        </h2>
-        <ol className="mt-3 grid gap-3 md:grid-cols-3">
-          {STEPS.map((step, index) => (
-            <li
-              key={step.title}
-              className="rounded-[var(--radius-panel)] border border-rule bg-paper p-4"
-            >
-              <span className="tabular text-[0.8rem] font-semibold text-ink-soft">
-                Step {index + 1}
-              </span>
-              <h3 className="mt-1 font-medium">{step.title}</h3>
-              <p className="mt-1 text-[0.9rem] text-ink-soft">{step.detail}</p>
+      <div className="mx-auto max-w-5xl">
+        <section className="mt-10" aria-labelledby="how-it-works">
+          <h2 id="how-it-works" className="text-[1.15rem] font-semibold">
+            How it works
+          </h2>
+          <ol className="mt-3 grid gap-3 md:grid-cols-3">
+            {STEPS.map((step, index) => (
+              <li
+                key={step.title}
+                className="rounded-[var(--radius-panel)] border border-rule bg-paper p-4"
+              >
+                <span className="tabular text-[0.8rem] font-semibold text-ink-soft">
+                  Step {index + 1}
+                </span>
+                <h3 className="mt-1 font-medium">{step.title}</h3>
+                <p className="mt-1 text-[0.9rem] text-ink-soft">{step.detail}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section className="mt-10" aria-labelledby="what-counts">
+          <h2 id="what-counts" className="text-[1.15rem] font-semibold">
+            What counts as a price
+          </h2>
+          <p className="mt-2 max-w-[70ch] text-[0.95rem] text-ink-soft">
+            A number is treated as a price only when the page shows it as money: with a currency
+            symbol or code such as $29, €29.99, £29, ₹2,499, USD 29 or INR 2499, or in a table column
+            headed as a price. &ldquo;10 users&rdquo;, &ldquo;a 14-day trial&rdquo; and &ldquo;99%
+            uptime&rdquo; are not prices, and are never labelled as one. Common formats are
+            recognised; not every way of writing a price is.
+          </p>
+          <dl className="mt-3 grid gap-3 md:grid-cols-2">
+            {GROUPS.map((group) => (
+              <div
+                key={group.title}
+                className="rounded-[var(--radius-panel)] border border-rule bg-paper p-4"
+              >
+                <dt className="font-medium">{group.title}</dt>
+                <dd className="mt-1 text-[0.9rem] text-ink-soft">{group.detail}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+
+        <section className="mt-10" aria-labelledby="limits">
+          <h2 id="limits" className="text-[1.15rem] font-semibold">
+            What this does not do
+          </h2>
+          <ul className="mt-3 max-w-[70ch] space-y-2 text-[0.95rem] text-ink-soft">
+            <li>
+              It does not watch prices for you. There is no scheduled checking, no price alerts, no
+              email or notifications, and no saved history — you check when you choose to.
             </li>
-          ))}
-        </ol>
-      </section>
+            <li>
+              It does not judge prices. It shows what the page says before and after, and does not
+              call a price good, bad, high or low, compare sellers or predict anything.
+            </li>
+            <li>
+              It reads one public page at a time. It does not read pages behind a login or pages
+              that build their content in the browser, follow links, or compare screenshots.
+            </li>
+            <li>It does not connect to shops or marketplaces. It reads the public page only.</li>
+          </ul>
+        </section>
 
-      <section className="mt-10" aria-labelledby="what-counts">
-        <h2 id="what-counts" className="text-[1.15rem] font-semibold">
-          What counts as a price
-        </h2>
-        <p className="mt-2 max-w-[70ch] text-[0.95rem] text-ink-soft">
-          A number is treated as a price only when the page shows it as money: with a currency
-          symbol or code such as $29, €29.99, £29, ₹2,499, USD 29 or INR 2499, or in a table column
-          headed as a price. &ldquo;10 users&rdquo;, &ldquo;a 14-day trial&rdquo; and &ldquo;99%
-          uptime&rdquo; are not prices, and are never labelled as one. Common formats are
-          recognised; not every way of writing a price is.
-        </p>
-        <dl className="mt-3 grid gap-3 md:grid-cols-2">
-          {GROUPS.map((group) => (
-            <div
-              key={group.title}
-              className="rounded-[var(--radius-panel)] border border-rule bg-paper p-4"
-            >
-              <dt className="font-medium">{group.title}</dt>
-              <dd className="mt-1 text-[0.9rem] text-ink-soft">{group.detail}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
-
-      <section className="mt-10" aria-labelledby="limits">
-        <h2 id="limits" className="text-[1.15rem] font-semibold">
-          What this does not do
-        </h2>
-        <ul className="mt-3 max-w-[70ch] space-y-2 text-[0.95rem] text-ink-soft">
-          <li>
-            It does not watch prices for you. There is no scheduled checking, no price alerts, no
-            email or notifications, and no saved history — you check when you choose to.
-          </li>
-          <li>
-            It does not judge prices. It shows what the page says before and after, and does not
-            call a price good, bad, high or low, compare sellers or predict anything.
-          </li>
-          <li>
-            It reads one public page at a time. It does not read pages behind a login or pages
-            that build their content in the browser, follow links, or compare screenshots.
-          </li>
-          <li>It does not connect to shops or marketplaces. It reads the public page only.</li>
-        </ul>
-      </section>
-
-      <section className="mt-10" aria-labelledby="questions">
-        <h2 id="questions" className="text-[1.15rem] font-semibold">
-          Questions
-        </h2>
-        <dl className="mt-3 max-w-[65ch] space-y-4 text-[0.95rem]">
-          {FAQ.map((item) => (
-            <div key={item.question}>
-              <dt className="font-medium">{item.question}</dt>
-              <dd className="mt-1 text-ink-soft">{item.answer}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
+        <section className="mt-10" aria-labelledby="questions">
+          <h2 id="questions" className="text-[1.15rem] font-semibold">
+            Questions
+          </h2>
+          <dl className="mt-3 max-w-[65ch] space-y-4 text-[0.95rem]">
+            {FAQ.map((item) => (
+              <div key={item.question}>
+                <dt className="font-medium">{item.question}</dt>
+                <dd className="mt-1 text-ink-soft">{item.answer}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      </div>
     </div>
   );
 }

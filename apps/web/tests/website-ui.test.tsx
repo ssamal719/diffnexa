@@ -15,6 +15,8 @@ import { WebReport } from "@/components/website/WebReport";
 import { WebsiteDesk } from "@/components/website/WebsiteDesk";
 import type { WebChange, WebComparison } from "@/lib/web-report";
 
+import { counter, evidence, filterBy, listed, navigator } from "./helpers/workspace";
+
 afterEach(cleanup);
 
 beforeEach(() => {
@@ -222,7 +224,7 @@ describe("the report", () => {
   it("summarises what changed, in sections", () => {
     render(<WebReport result={comparison([change()])} url="https://example.com/pricing" />);
     expect(screen.getByRole("heading", { name: "1 change across 1 section" })).toBeTruthy();
-    expect(screen.getByText("Check complete")).toBeTruthy();
+    expect(screen.getByText("Comparison complete · Website Change Detector")).toBeTruthy();
   });
 
   it("says plainly when nothing changed", () => {
@@ -233,10 +235,11 @@ describe("the report", () => {
 
   it("shows a price change with before, after and the difference", () => {
     render(<WebReport result={comparison([change()])} url="https://example.com/pricing" />);
-    expect(screen.getByText("Number changed")).toBeTruthy();
-    expect(screen.getByText("$49/month")).toBeTruthy();
-    expect(screen.getByText("$59/month")).toBeTruthy();
-    expect(screen.getByText("+$10")).toBeTruthy();
+    const panel = evidence();
+    expect(within(panel).getByText("Number changed")).toBeTruthy();
+    expect(within(panel).getByText("$49/month")).toBeTruthy();
+    expect(within(panel).getByText("$59/month")).toBeTruthy();
+    expect(within(panel).getByText("+$10")).toBeTruthy();
     expect(document.body.textContent).not.toContain("NUMBER_CHANGED");
   });
 
@@ -246,9 +249,10 @@ describe("the report", () => {
       oldValue: "$90,000", newValue: "$95,000", delta: "+$5,000 (+5.56%)",
     });
     render(<WebReport result={comparison([cell])} url="https://example.com/pricing" />);
-    expect(screen.getByText("Table value changed")).toBeTruthy();
-    expect(screen.getByText("Premium · Price")).toBeTruthy();
-    expect(screen.getByText("+$5,000 (+5.56%)")).toBeTruthy();
+    const card = screen.getByRole("article");
+    expect(within(card).getByText("Table value changed")).toBeTruthy();
+    expect(within(card).getByText("Premium · Price")).toBeTruthy();
+    expect(within(evidence()).getByText("+$5,000 (+5.56%)")).toBeTruthy();
   });
 
   it("shows a page-details change", () => {
@@ -261,18 +265,31 @@ describe("the report", () => {
       ],
     });
     render(<WebReport result={comparison([meta])} url="https://example.com/pricing" />);
-    expect(screen.getByText("Page title")).toBeTruthy();
-    expect(screen.getByText("Whole page")).toBeTruthy();
+    expect(within(evidence()).getByRole("heading", { name: /Page title/ })).toBeTruthy();
+    expect(within(evidence()).getByText("Whole page")).toBeTruthy();
   });
 
   it("keeps evidence one click away", async () => {
     render(<WebReport result={comparison([change()])} url="https://example.com/pricing" />);
-    expect(screen.queryByText(/The Starter plan costs \$49/)).toBeNull();
+    const card = screen.getByRole("article");
+    expect(within(card).queryByText(/The Starter plan costs \$49/)).toBeNull();
 
-    fireEvent.click(screen.getByRole("button", { name: "View evidence" }));
-    expect(await screen.findByText(/The Starter plan costs \$49/)).toBeTruthy();
-    expect(screen.getByText(/The Starter plan costs \$59/)).toBeTruthy();
-    expect(document.body.textContent).toContain("Taken directly from the page");
+    fireEvent.click(within(card).getByRole("button", { name: "View evidence" }));
+    expect(await within(card).findByText(/The Starter plan costs \$49/)).toBeTruthy();
+    expect(within(card).getByText(/The Starter plan costs \$59/)).toBeTruthy();
+    expect(card.textContent).toContain("Taken directly from the page");
+  });
+
+  it("shows the evidence for the chosen change beside it, quoted from both versions", () => {
+    render(<WebReport result={comparison([change()])} url="https://example.com/pricing" />);
+    const panel = evidence();
+    expect(panel.textContent).toContain("Comparison evidence");
+    expect(within(panel).getByText(/The Starter plan costs \$49/)).toBeTruthy();
+    expect(within(panel).getByText(/The Starter plan costs \$59/)).toBeTruthy();
+    expect(panel.textContent).toContain("Pricing › Starter");
+    // AI is a separate, optional section, and says nothing until asked.
+    expect(panel.textContent).toContain("AI explanation");
+    expect(panel.textContent).toContain("Not requested");
   });
 
   it("groups changes under the page's own headings", () => {
@@ -282,8 +299,12 @@ describe("the report", () => {
     ]);
     render(<WebReport result={result} url="https://example.com/pricing" />);
     expect(screen.getByText("Where the changes are")).toBeTruthy();
-    expect(screen.getByRole("button", { name: /Pricing/ })).toBeTruthy();
-    expect(screen.getByRole("button", { name: /FAQ/ })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /^Pricing\s*\d/ })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /^FAQ\s*\d/ })).toBeTruthy();
+    // The navigator uses the same headings, and never a page number.
+    expect(within(navigator()).getAllByText("Pricing").length).toBeGreaterThan(0);
+    expect(within(navigator()).getAllByText("FAQ").length).toBeGreaterThan(0);
+    expect(navigator().textContent).not.toMatch(/Page \d/);
   });
 
   it("filters to a section when one is chosen", () => {
@@ -292,22 +313,32 @@ describe("the report", () => {
       change({ id: "b", seq: 1, sections: ["FAQ"], oldValue: "ten days", newValue: "five days", category: "text", delta: null }),
     ]);
     render(<WebReport result={result} url="https://example.com/pricing" />);
-    fireEvent.click(screen.getByRole("button", { name: /FAQ/ }));
+    fireEvent.click(screen.getByRole("button", { name: /^FAQ\s*\d/ }));
 
-    expect(screen.getByText("five days")).toBeTruthy();
-    expect(screen.queryByText("$59/month")).toBeNull();
+    expect(listed()).toHaveLength(1);
+    expect(listed()[0]).toContain("five days");
+    expect(screen.queryAllByRole("article")).toHaveLength(1);
   });
 
-  it("filters by category", () => {
+  it("filters by category, and clearing brings every change back", () => {
     const result = comparison([
       change({ id: "a", seq: 0 }),
       change({ id: "b", seq: 1, category: "link", oldValue: "https://a.example", newValue: "https://b.example", delta: null }),
     ]);
     render(<WebReport result={result} url="https://example.com/pricing" />);
-    fireEvent.click(screen.getByRole("button", { name: /Links/ }));
+    filterBy("What changed", /^Links/);
 
-    expect(screen.getByText("Link now points elsewhere")).toBeTruthy();
-    expect(screen.queryByText("Number changed")).toBeNull();
+    expect(listed()).toHaveLength(1);
+    expect(listed()[0]).toContain("Link now points elsewhere");
+    fireEvent.click(screen.getByRole("button", { name: "Clear filters" }));
+    expect(listed()).toHaveLength(2);
+  });
+
+  it("offers only the kinds of change that were found", () => {
+    render(<WebReport result={comparison([change()])} url="https://example.com/pricing" />);
+    fireEvent.click(screen.getByRole("button", { name: /^Filters/ }));
+    const kinds = within(screen.getByRole("group", { name: "What changed" })).getAllByRole("button");
+    expect(kinds.map((button) => button.textContent)).toEqual(["Numbers 1 change"]);
   });
 
   it("searches the changes", () => {
@@ -318,17 +349,17 @@ describe("the report", () => {
     render(<WebReport result={result} url="https://example.com/pricing" />);
     fireEvent.change(screen.getByRole("searchbox"), { target: { value: "fourteen" } });
 
-    expect(screen.getByText("fourteen days")).toBeTruthy();
-    expect(screen.queryByText("$59/month")).toBeNull();
+    expect(listed()).toHaveLength(1);
+    expect(listed()[0]).toContain("fourteen days");
   });
 
   it("lets a reader step through the changes", () => {
     const result = comparison([change({ id: "a", seq: 0 }), change({ id: "b", seq: 1 })]);
     render(<WebReport result={result} url="https://example.com/pricing" />);
 
-    expect(screen.getByRole("status").textContent).toContain("Change 1 of 2");
+    expect(counter()).toContain("Change 1 of 2");
     fireEvent.click(screen.getByRole("button", { name: "Next change" }));
-    expect(screen.getByRole("status").textContent).toContain("Change 2 of 2");
+    expect(counter()).toContain("Change 2 of 2");
   });
 
   it("keeps the filter context while navigating", () => {
@@ -338,10 +369,45 @@ describe("the report", () => {
       change({ id: "c", seq: 2, category: "link", oldValue: "https://a.example", newValue: "https://b.example", delta: null }),
     ]);
     render(<WebReport result={result} url="https://example.com/pricing" />);
-    fireEvent.click(screen.getByRole("button", { name: /Numbers/ }));
+    filterBy("What changed", /^Numbers/);
 
-    expect(screen.getByRole("status").textContent).toContain("of 2");
-    expect(screen.getByRole("status").textContent).toContain("filtered from 3");
+    expect(counter()).toContain("of 2 shown");
+    expect(counter()).toContain("3 in total");
+  });
+
+  it("sets unimportant differences aside, and shows them when asked", () => {
+    const result = comparison([
+      change({ id: "a", seq: 0 }),
+      change({ id: "b", seq: 1, isNoise: true, noiseReason: "A visitor counter", oldValue: "10", newValue: "11", delta: null }),
+    ]);
+    render(<WebReport result={result} url="https://example.com/pricing" />);
+    expect(listed()).toHaveLength(1);
+    fireEvent.click(screen.getByRole("button", { name: /^Filters/ }));
+    fireEvent.click(screen.getByLabelText(/Include 1 unimportant difference/));
+    expect(listed()).toHaveLength(2);
+  });
+
+  it("draws both captures side by side, with the changed words marked, when the result carries them", () => {
+    const result = {
+      ...comparison([change()]),
+      view: {
+        original: { nodes: [{ id: "n3", role: "paragraph", text: "The Starter plan costs $49/month." }], fields: {} },
+        revised: { nodes: [{ id: "n3", role: "paragraph", text: "The Starter plan costs $59/month." }], fields: {} },
+        marks: [
+          { change: "c0", side: "original", node: "n3", start: 23, end: 33 },
+          { change: "c0", side: "revised", node: "n3", start: 23, end: 33 },
+        ],
+      },
+    };
+    render(<WebReport result={result} url="https://example.com/pricing" />);
+    expect(screen.getByRole("tab", { name: "Side by side", selected: true })).toBeTruthy();
+    const before = screen.getByRole("region", { name: "Baseline capture, as compared" });
+    const after = screen.getByRole("region", { name: "The page now, as compared" });
+    expect(before.querySelector("mark")?.textContent).toContain("$49/month.");
+    expect(after.querySelector("mark")?.textContent).toContain("$59/month.");
+    expect(after.querySelector('[data-active="true"]')).toBeTruthy();
+    // No page numbers are invented for a webpage.
+    expect(document.body.textContent).not.toMatch(/Page \d+ of/);
   });
 });
 
@@ -361,9 +427,10 @@ describe("accessibility basics", () => {
   it("uses a sensible heading order in the report", () => {
     render(<WebReport result={comparison([change()])} url="https://example.com/pricing" />);
     const levels = screen.getAllByRole("heading").map((node) => Number(node.tagName.slice(1)));
-    expect(Math.min(...levels)).toBe(2);
+    expect(levels[0]).toBe(2);
+    // Never skips a level on the way down.
     for (let i = 1; i < levels.length; i += 1) {
-      expect(levels[i] - Math.min(...levels.slice(0, i))).toBeLessThanOrEqual(1);
+      expect(levels[i] - levels[i - 1]).toBeLessThanOrEqual(1);
     }
   });
 
@@ -376,8 +443,10 @@ describe("accessibility basics", () => {
 
   it("marks a change's kind with a word, not only a colour", () => {
     render(<WebReport result={comparison([change({ kind: "added", category: "text", oldValue: null, newValue: "New clause" })])} url="https://example.com/x" />);
-    expect(screen.getByText("Text added")).toBeTruthy();
-    expect(screen.getByText("After")).toBeTruthy();
+    const card = screen.getByRole("article");
+    expect(within(card).getByText("Text added")).toBeTruthy();
+    expect(within(card).getByText("After")).toBeTruthy();
+    expect(within(navigator()).getByText("Added")).toBeTruthy();
   });
 
   it("names each change card for assistive technology", () => {

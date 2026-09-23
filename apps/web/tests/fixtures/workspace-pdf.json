@@ -1,0 +1,199 @@
+{
+ "changes": [
+  {
+   "category": "number",
+   "confidence": 0.609,
+   "delta": "+27 (+4.31%)",
+   "evidence": [
+    {
+     "bbox": {
+      "x0": 156.37,
+      "x1": 174.72,
+      "y0": 102.28,
+      "y1": 113.28
+     },
+     "excerpt": "Total Vacancies: 627",
+     "page": 2,
+     "side": "old",
+     "wordCount": 1
+    },
+    {
+     "bbox": {
+      "x0": 156.37,
+      "x1": 174.72,
+      "y0": 102.28,
+      "y1": 113.28
+     },
+     "excerpt": "Total Vacancies: 654",
+     "page": 2,
+     "side": "new",
+     "wordCount": 1
+    }
+   ],
+   "id": "c0",
+   "isNoise": false,
+   "kind": "modified",
+   "label": "Total Vacancies",
+   "newPages": [
+    2
+   ],
+   "newValue": "654",
+   "noiseReason": null,
+   "oldPages": [
+    2
+   ],
+   "oldValue": "627",
+   "seq": 0,
+   "type": "NUMBER_CHANGED"
+  },
+  {
+   "category": "number",
+   "confidence": 0.609,
+   "delta": "+2 (+6.67%)",
+   "evidence": [
+    {
+     "bbox": {
+      "x0": 147.19,
+      "x1": 159.42,
+      "y0": 125.28,
+      "y1": 136.28
+     },
+     "excerpt": "Maximum age: 30 years",
+     "page": 2,
+     "side": "old",
+     "wordCount": 1
+    },
+    {
+     "bbox": {
+      "x0": 147.19,
+      "x1": 159.42,
+      "y0": 125.28,
+      "y1": 136.28
+     },
+     "excerpt": "Maximum age: 32 years",
+     "page": 2,
+     "side": "new",
+     "wordCount": 1
+    }
+   ],
+   "id": "c1",
+   "isNoise": false,
+   "kind": "modified",
+   "label": "Maximum age",
+   "newPages": [
+    2
+   ],
+   "newValue": "32",
+   "noiseReason": null,
+   "oldPages": [
+    2
+   ],
+   "oldValue": "30",
+   "seq": 1,
+   "type": "NUMBER_CHANGED"
+  },
+  {
+   "category": "text",
+   "confidence": 0.609,
+   "delta": null,
+   "evidence": [
+    {
+     "bbox": {
+      "x0": 72,
+      "x1": 518.29,
+      "y0": 171.28,
+      "y1": 197.28
+     },
+     "excerpt": "Reservation for reserved categories will follow the rules issued by the state government and in force on the last date of application.",
+     "page": 2,
+     "side": "new",
+     "wordCount": 22
+    }
+   ],
+   "id": "c2",
+   "isNoise": false,
+   "kind": "added",
+   "label": null,
+   "newPages": [
+    2
+   ],
+   "newValue": "Reservation for reserved categories will follow the rules issued by the state government and in force on the last date of application.",
+   "noiseReason": null,
+   "oldPages": [],
+   "oldValue": null,
+   "seq": 2,
+   "type": "TEXT_ADDED"
+  },
+  {
+   "category": "date",
+   "confidence": 0.97,
+   "delta": "15 days later",
+   "evidence": [
+    {
+     "bbox": {
+      "x0": 164.95,
+      "x1": 261.56,
+      "y0": 102.28,
+      "y1": 113.28
+     },
+     "excerpt": "Last date to apply: 30 September 2026",
+     "page": 3,
+     "side": "old",
+     "wordCount": 3
+    },
+    {
+     "bbox": {
+      "x0": 164.95,
+      "x1": 246.89,
+      "y0": 102.28,
+      "y1": 113.28
+     },
+     "excerpt": "Last date to apply: 15 October 2026",
+     "page": 3,
+     "side": "new",
+     "wordCount": 3
+    }
+   ],
+   "id": "c3",
+   "isNoise": false,
+   "kind": "modified",
+   "label": "Last date to apply",
+   "newPages": [
+    3
+   ],
+   "newValue": "15 October 2026",
+   "noiseReason": null,
+   "oldPages": [
+    3
+   ],
+   "oldValue": "30 September 2026",
+   "seq": 3,
+   "type": "DATE_CHANGED"
+  }
+ ],
+ "counts": {
+  "meaningful": 4,
+  "noise": 0,
+  "total": 4
+ },
+ "diagnostics": {
+  "notes": [],
+  "ocrRequired": false,
+  "previousPagesWithoutText": [],
+  "previousScannedPages": [],
+  "revisedPagesWithoutText": [],
+  "revisedScannedPages": []
+ },
+ "documents": {
+  "previous": {
+   "pageCount": 3,
+   "sha256": "1aebd189e3fe6836b1236b9fb4b63d11eff75b1ab8c2135665d86a77073c3380"
+  },
+  "revised": {
+   "pageCount": 3,
+   "sha256": "4c215cb3736e005262840fdbf3a46872855df0a294a47b701d64294c1411be2f"
+  }
+ },
+ "engineVersion": "0.1.0",
+ "processingMs": 0
+}

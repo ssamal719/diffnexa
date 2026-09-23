@@ -12,6 +12,9 @@ This stage also introduces the **Comparison Workspace V2**, a reusable screen
 for comparing two versions of anything. Excel Compare is its first user. The
 six earlier tools are unchanged and do not use it yet.
 
+*Update:* since the Unified Comparison Workspace V2, every tool uses this
+screen — see [unified-workspace-v2.md](unified-workspace-v2.md).
+
 ---
 
 ## The workflow

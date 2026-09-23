@@ -21,6 +21,8 @@ import { DocxReport } from "@/components/docx/DocxReport";
 import type { DocxComparison } from "@/lib/docx-report";
 import { DOCX_ERROR_MESSAGES } from "@/lib/validation";
 
+import { choose as chooseChange, counter, evidence, listed, navigator } from "./helpers/workspace";
+
 const RESULT: DocxComparison = JSON.parse(
   readFileSync(join(import.meta.dirname, "fixtures", "docx-comparison.json"), "utf8"),
 );
@@ -215,12 +217,29 @@ describe("the report", () => {
 
   it("lists every change in exactly one group", () => {
     render(<DocxReport result={RESULT} {...FILES} />);
-    const cards = screen.getAllByRole("article");
-    expect(cards).toHaveLength(RESULT.changes.length);
-    for (const group of RESULT.groups.filter((item) => item.changeCount > 0)) {
-      const heading = screen.getByRole("heading", { name: new RegExp(`^${group.label} · ${group.changeCount} change`) });
-      expect(heading).toBeTruthy();
-    }
+    expect(screen.getAllByRole("article")).toHaveLength(RESULT.changes.length);
+    expect(listed()).toHaveLength(RESULT.changes.length);
+    // Each change carries exactly one group, and the groups add up to every change.
+    const labels = new Map(RESULT.groups.map((group) => [group.id, group.label]));
+    const entries = within(navigator()).getAllByRole("button").filter((button) => button.hasAttribute("aria-current") || button.getAttribute("aria-label")?.startsWith("Change "));
+    RESULT.changes.forEach((change, index) => {
+      expect(entries[index].textContent).toContain(labels.get(change.group)!);
+    });
+    expect(RESULT.groups.reduce((sum, group) => sum + group.changeCount, 0)).toBe(RESULT.changes.length);
+  });
+
+  it("places a change under the document's own headings, never on a made-up page", () => {
+    render(<DocxReport result={RESULT} {...FILES} />);
+    chooseChange(/Change 10:/);
+    const panel = evidence();
+    expect(panel.textContent).toContain("Supplier Agreement › Scope");
+    // Word's paragraph and table position is a labelled detail, not the headline location.
+    expect(panel.textContent).toContain("In Word: Revised: Table 1, row 2, column 2.");
+    expect(panel.textContent).toContain("Word files have no fixed page numbers");
+    expect(document.body.textContent).not.toMatch(/\bPage \d/);
+    // The navigator groups by heading, not by paragraph number.
+    expect(within(navigator()).getAllByText("Supplier Agreement").length).toBeGreaterThan(0);
+    expect(navigator().textContent).not.toMatch(/Paragraph \d/);
   });
 
   it("filters to one group and back", () => {
@@ -253,9 +272,14 @@ describe("the report", () => {
 
   it("moves between changes with previous and next", () => {
     render(<DocxReport result={RESULT} {...FILES} />);
-    expect(screen.getByText(/Change 1 of 11/)).toBeTruthy();
+    expect(counter()).toBe("Change 1 of 11");
     fireEvent.click(screen.getByRole("button", { name: "Next change" }));
-    expect(screen.getByText(/Change 2 of 11/)).toBeTruthy();
+    expect(counter()).toBe("Change 2 of 11");
+    // The navigator and the evidence panel follow the same change.
+    const current = within(navigator()).getByRole("button", { current: true });
+    expect(current.getAttribute("aria-label")).toMatch(/^Change 2: /);
+    const title = within(evidence()).getByRole("heading", { level: 3 }).textContent ?? "";
+    expect(current.textContent).toContain(title.replace(/^[+−±→]/, ""));
   });
 
   it("never ranks or judges a change", () => {

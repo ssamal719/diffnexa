@@ -300,8 +300,8 @@ export function WebsiteDesk() {
 
       {state.name === "compared" && (
         <ReportWithAnalyst tool="web" result={state.result} seal={state.seal}>
-          {({ analyst, focus }) => (
-            <WebReport result={state.result} url={state.url} analyst={analyst} focus={focus} />
+          {({ analyst, focus, analysis }) => (
+            <WebReport result={state.result} url={state.url} analyst={analyst} analysis={analysis} focus={focus} />
           )}
         </ReportWithAnalyst>
       )}

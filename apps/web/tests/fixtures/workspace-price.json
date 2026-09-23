@@ -1,0 +1,1417 @@
+{
+ "changes": [
+  {
+   "category": "text",
+   "confidence": 0.6,
+   "delta": null,
+   "evidence": [
+    {
+     "excerpt": "Team",
+     "field": null,
+     "nodeId": "n10",
+     "path": "main > section:nth-of-type(2) > div:nth-of-type(2) > h3",
+     "scope": "node",
+     "sectionPath": [
+      "Tasklane pricing",
+      "Plans"
+     ],
+     "side": "old"
+    },
+    {
+     "excerpt": "Growth",
+     "field": null,
+     "nodeId": "n10",
+     "path": "main > section:nth-of-type(2) > div:nth-of-type(2) > h3",
+     "scope": "node",
+     "sectionPath": [
+      "Tasklane pricing",
+      "Plans"
+     ],
+     "side": "new"
+    }
+   ],
+   "id": "c0",
+   "isNoise": false,
+   "kind": "modified",
+   "label": "Plans",
+   "newValue": "Growth",
+   "noiseReason": null,
+   "oldValue": "Team",
+   "priceCategory": {
+    "basis": "priced_heading",
+    "category": "product_plan",
+    "label": "Product / Plan",
+    "matchedText": "Growth plan",
+    "reason": "“Growth plan” is a heading with a price under it"
+   },
+   "sections": [
+    "Tasklane pricing › Plans"
+   ],
+   "seq": 0,
+   "subtype": "heading",
+   "type": "TEXT_MODIFIED"
+  },
+  {
+   "category": "number",
+   "confidence": 0.929,
+   "delta": "+5 (+50%)",
+   "evidence": [
+    {
+     "excerpt": "10",
+     "field": null,
+     "nodeId": "n6",
+     "path": "main > section:nth-of-type(2) > div:nth-of-type(1) > ul > li:nth-of-type(1)",
+     "scope": "node",
+     "sectionPath": [
+      "Tasklane pricing",
+      "Plans",
+      "Starter"
+     ],
+     "side": "old"
+    },
+    {
+     "excerpt": "15",
+     "field": null,
+     "nodeId": "n6",
+     "path": "main > section:nth-of-type(2) > div:nth-of-type(1) > ul > li:nth-of-type(1)",
+     "scope": "node",
+     "sectionPath": [
+      "Tasklane pricing",
+      "Plans",
+      "Starter"
+     ],
+     "side": "new"
+    }
+   ],
+   "id": "c1",
+   "isNoise": false,
+   "kind": "modified",
+   "label": "Starter",
+   "newValue": "15",
+   "noiseReason": null,
+   "oldValue": "10",
+   "priceCategory": {
+    "basis": "pricing_section",
+    "category": "pricing_details",
+    "label": "Pricing Details",
+    "matchedText": "Starter",
+    "reason": "it sits with prices on the page (“Starter”)"
+   },
+   "sections": [
+    "Tasklane pricing › Plans › Starter"
+   ],
+   "seq": 1,
+   "subtype": "list_item",
+   "type": "NUMBER_CHANGED"
+  },
+  {
+   "category": "number",
+   "confidence": 0.974,
+   "delta": "+3 (+20%)",
+   "evidence": [
+    {
+     "excerpt": "$15",
+     "field": null,
+     "nodeId": "n11",
+     "path": "main > section:nth-of-type(2) > div:nth-of-type(2) > p:nth-of-type(1)",
+     "scope": "node",
+     "sectionPath": [
+      "Tasklane pricing",
+      "Plans",
+      "Team plan"
+     ],
+     "side": "old"
+    },
+    {
+     "excerpt": "$18",
+     "field": null,
+     "nodeId": "n11",
+     "path": "main > section:nth-of-type(2) > div:nth-of-type(2) > p:nth-of-type(1)",
+     "scope": "node",
+     "sectionPath": [
+      "Tasklane pricing",
+      "Plans",
+      "Growth plan"
+     ],
+     "side": "new"
+    }
+   ],
+   "id": "c2",
+   "isNoise": false,
+   "kind": "modified",
+   "label": "Growth plan",
+   "newValue": "$18",
+   "noiseReason": null,
+   "oldValue": "$15",
+   "priceCategory": {
+    "basis": "money",
+    "category": "price",
+    "label": "Price",
+    "matchedText": "$18",
+    "reason": "“$18” is an amount with a currency"
+   },
+   "sections": [
+    "Tasklane pricing › Plans › Growth plan",
+    "Tasklane pricing › Plans › Team plan"
+   ],
+   "seq": 2,
+   "subtype": null,
+   "type": "NUMBER_CHANGED"
+  },
+  {
+   "category": "number",
+   "confidence": 0.971,
+   "delta": "-3 (-15.79%)",
+   "evidence": [
+    {
+     "excerpt": "$19",
+     "field": null,
+     "nodeId": "n12",
+     "path": "main > section:nth-of-type(2) > div:nth-of-type(2) > p:nth-of-type(2)",
+     "scope": "node",
+     "sectionPath": [
+      "Tasklane pricing",
+      "Plans",
+      "Team plan"
+     ],
+     "side": "old"
+    },
+    {
+     "excerpt": "$16",
+     "field": null,
+     "nodeId": "n12",
+     "path": "main > section:nth-of-type(2) > div:nth-of-type(2) > p:nth-of-type(2)",
+     "scope": "node",
+     "sectionPath": [
+      "Tasklane pricing",
+      "Plans",
+      "Growth plan"
+     ],
+     "side": "new"
+    }
+   ],
+   "id": "c3",
+   "isNoise": false,
+   "kind": "modified",
+   "label": "Growth plan",
+   "newValue": "$16",
+   "noiseReason": null,
+   "oldValue": "$19",
+   "priceCategory": {
+    "basis": "sale_wording",
+    "category": "discount_sale",
+    "label": "Discount / Sale Price",
+    "matchedText": "now",
+    "reason": "“now” is written beside it"
+   },
+   "sections": [
+    "Tasklane pricing › Plans › Growth plan",
+    "Tasklane pricing › Plans › Team plan"
+   ],
+   "seq": 3,
+   "subtype": null,
+   "type": "NUMBER_CHANGED"
+  },
+  {
+   "category": "text",
+   "confidence": 0.632,
+   "delta": null,
+   "evidence": [
+    {
+     "excerpt": "Available",
+     "field": null,
+     "nodeId": "n18",
+     "path": "main > section:nth-of-type(2) > div:nth-of-type(3) > p:nth-of-type(2)",
+     "scope": "node",
+     "sectionPath": [
+      "Tasklane pricing",
+      "Plans",
+      "Business"
+     ],
+     "side": "old"
+    },
+    {
+     "excerpt": "Contact sales",
+     "field": null,
+     "nodeId": "n18",
+     "path": "main > section:nth-of-type(2) > div:nth-of-type(3) > p:nth-of-type(2)",
+     "scope": "node",
+     "sectionPath": [
+      "Tasklane pricing",
+      "Plans",
+      "Business"
+     ],
+     "side": "new"
+    }
+   ],
+   "id": "c4",
+   "isNoise": false,
+   "kind": "modified",
+   "label": "Business",
+   "newValue": "Contact sales",
+   "noiseReason": null,
+   "oldValue": "Available",
+   "priceCategory": {
+    "basis": "availability_wording",
+    "category": "availability",
+    "label": "Availability",
+    "matchedText": "Contact sales",
+    "reason": "the wording includes “Contact sales”"
+   },
+   "sections": [
+    "Tasklane pricing › Plans › Business"
+   ],
+   "seq": 4,
+   "subtype": null,
+   "type": "TEXT_MODIFIED"
+  },
+  {
+   "category": "number",
+   "confidence": 0.982,
+   "delta": "+1000 (+8.33%)",
+   "evidence": [
+    {
+     "excerpt": "12,000",
+     "field": null,
+     "nodeId": "n35",
+     "path": "main > section:nth-of-type(5) > p:nth-of-type(1)",
+     "scope": "node",
+     "sectionPath": [
+      "Tasklane pricing",
+      "About Tasklane"
+     ],
+     "side": "old"
+    },
+    {
+     "excerpt": "13,000",
+     "field": null,
+     "nodeId": "n35",
+     "path": "main > section:nth-of-type(5) > p:nth-of-type(1)",
+     "scope": "node",
+     "sectionPath": [
+      "Tasklane pricing",
+      "About Tasklane"
+     ],
+     "side": "new"
+    }
+   ],
+   "id": "c5",
+   "isNoise": false,
+   "kind": "modified",
+   "label": "About Tasklane",
+   "newValue": "13,000",
+   "noiseReason": null,
+   "oldValue": "12,000",
+   "priceCategory": {
+    "basis": "none",
+    "category": "other",
+    "label": "Other Changes",
+    "matchedText": "",
+    "reason": "not a pricing change by these rules"
+   },
+   "sections": [
+    "Tasklane pricing › About Tasklane"
+   ],
+   "seq": 5,
+   "subtype": null,
+   "type": "NUMBER_CHANGED"
+  },
+  {
+   "category": "link",
+   "confidence": 1.0,
+   "delta": null,
+   "evidence": [
+    {
+     "excerpt": "Tasklane blog",
+     "field": null,
+     "nodeId": "n39",
+     "path": "main > section:nth-of-type(5) > p:nth-of-type(2) > a",
+     "scope": "node",
+     "sectionPath": [],
+     "side": "old"
+    },
+    {
+     "excerpt": "Tasklane blog",
+     "field": null,
+     "nodeId": "n39",
+     "path": "main > section:nth-of-type(5) > p:nth-of-type(2) > a",
+     "scope": "node",
+     "sectionPath": [],
+     "side": "new"
+    }
+   ],
+   "id": "c6",
+   "isNoise": false,
+   "kind": "modified",
+   "label": "Tasklane blog",
+   "newValue": "https://tasklane.example.com/news",
+   "noiseReason": null,
+   "oldValue": "https://tasklane.example.com/blog",
+   "priceCategory": {
+    "basis": "link",
+    "category": "other",
+    "label": "Other Changes",
+    "matchedText": "",
+    "reason": "a link changed"
+   },
+   "sections": [],
+   "seq": 6,
+   "subtype": null,
+   "type": "LINK_CHANGED"
+  }
+ ],
+ "counts": {
+  "meaningful": 7,
+  "noise": 0,
+  "total": 7
+ },
+ "diagnostics": {
+  "needsJavascript": false,
+  "notes": [],
+  "previousWarnings": [],
+  "revisedWarnings": []
+ },
+ "documents": {
+  "previous": {
+   "nodeCount": 40,
+   "sha256": "43e5215168e3a9642cbffa86ff6796680ccc9bb9e54d761202c4fba591c7b41b",
+   "url": "https://tasklane.example.com/pricing"
+  },
+  "revised": {
+   "nodeCount": 40,
+   "sha256": "4b95dc180c15078078cabbafe4df810e3f88e6e2b7a741a78286ec2b1c2575e0",
+   "url": "https://tasklane.example.com/pricing"
+  }
+ },
+ "engineVersion": "0.1.0",
+ "price": {
+  "categories": [
+   {
+    "blurb": "Amounts of money the page states, with a currency symbol or code, or in a price column.",
+    "changeCount": 1,
+    "changeIds": [
+     "c2"
+    ],
+    "id": "price",
+    "label": "Price"
+   },
+   {
+    "blurb": "Sale prices and discounts, where the page words them as such: now, sale, save, % off.",
+    "changeCount": 1,
+    "changeIds": [
+     "c3"
+    ],
+    "id": "discount_sale",
+    "label": "Discount / Sale Price"
+   },
+   {
+    "blurb": "Prices the page marks as the original or usual price: was, regular price, list price, MRP.",
+    "changeCount": 0,
+    "changeIds": [],
+    "id": "original_price",
+    "label": "Original / Compare-at Price"
+   },
+   {
+    "blurb": "The currency an amount is given in, or a currency named on its own.",
+    "changeCount": 0,
+    "changeIds": [],
+    "id": "currency",
+    "label": "Currency"
+   },
+   {
+    "blurb": "How often a price is charged: per month, per year, weekly, one-time.",
+    "changeCount": 0,
+    "changeIds": [],
+    "id": "billing_period",
+    "label": "Billing Period"
+   },
+   {
+    "blurb": "Names of products, plans and tiers: headings with a price under them, or that name a plan.",
+    "changeCount": 1,
+    "changeIds": [
+     "c0"
+    ],
+    "id": "product_plan",
+    "label": "Product / Plan"
+   },
+   {
+    "blurb": "Stock and availability wording: in stock, sold out, pre-order, contact sales.",
+    "changeCount": 1,
+    "changeIds": [
+     "c4"
+    ],
+    "id": "availability",
+    "label": "Availability"
+   },
+   {
+    "blurb": "Other content where prices are laid out, such as what a plan includes.",
+    "changeCount": 1,
+    "changeIds": [
+     "c1"
+    ],
+    "id": "pricing_details",
+    "label": "Pricing Details"
+   },
+   {
+    "blurb": "Every other change on the page. Shown in full; nothing is hidden.",
+    "changeCount": 2,
+    "changeIds": [
+     "c5",
+     "c6"
+    ],
+    "id": "other",
+    "label": "Other Changes"
+   }
+  ],
+  "changedCategories": [
+   "price",
+   "discount_sale",
+   "product_plan",
+   "availability",
+   "pricing_details",
+   "other"
+  ],
+  "rulesVersion": "2026.09.1"
+ },
+ "processingMs": 0,
+ "view": {
+  "marks": [
+   {
+    "change": "c0",
+    "end": 4,
+    "node": "n10",
+    "side": "original",
+    "start": 0
+   },
+   {
+    "change": "c0",
+    "end": 6,
+    "node": "n10",
+    "side": "revised",
+    "start": 0
+   },
+   {
+    "change": "c1",
+    "end": 8,
+    "node": "n6",
+    "side": "original",
+    "start": 6
+   },
+   {
+    "change": "c1",
+    "end": 8,
+    "node": "n6",
+    "side": "revised",
+    "start": 6
+   },
+   {
+    "change": "c2",
+    "end": 3,
+    "node": "n11",
+    "side": "original",
+    "start": 0
+   },
+   {
+    "change": "c2",
+    "end": 3,
+    "node": "n11",
+    "side": "revised",
+    "start": 0
+   },
+   {
+    "change": "c3",
+    "end": 16,
+    "node": "n12",
+    "side": "original",
+    "start": 13
+   },
+   {
+    "change": "c3",
+    "end": 16,
+    "node": "n12",
+    "side": "revised",
+    "start": 13
+   },
+   {
+    "change": "c4",
+    "end": 17,
+    "node": "n18",
+    "side": "original",
+    "start": 8
+   },
+   {
+    "change": "c4",
+    "end": 21,
+    "node": "n18",
+    "side": "revised",
+    "start": 8
+   },
+   {
+    "change": "c5",
+    "end": 32,
+    "node": "n35",
+    "side": "original",
+    "start": 26
+   },
+   {
+    "change": "c5",
+    "end": 32,
+    "node": "n35",
+    "side": "revised",
+    "start": 26
+   },
+   {
+    "change": "c6",
+    "end": 13,
+    "node": "n39",
+    "side": "original",
+    "start": 0
+   },
+   {
+    "change": "c6",
+    "end": 13,
+    "node": "n39",
+    "side": "revised",
+    "start": 0
+   }
+  ],
+  "original": {
+   "fields": {
+    "metadata.canonical": "https://tasklane.example.com/pricing",
+    "metadata.description": "Simple per-user pricing for Tasklane, the project planner for small teams.",
+    "metadata.title": "Pricing - Tasklane"
+   },
+   "nodes": [
+    {
+     "id": "n0",
+     "level": 1,
+     "role": "heading",
+     "text": "Tasklane pricing"
+    },
+    {
+     "id": "n1",
+     "role": "paragraph",
+     "section": [
+      "Tasklane pricing"
+     ],
+     "text": "Pick the plan that fits your team. You can change plans at any time."
+    },
+    {
+     "id": "n2",
+     "role": "paragraph",
+     "section": [
+      "Tasklane pricing"
+     ],
+     "text": "All prices in USD."
+    },
+    {
+     "id": "n3",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Tasklane pricing"
+     ],
+     "text": "Plans"
+    },
+    {
+     "id": "n4",
+     "level": 3,
+     "role": "heading",
+     "section": [
+      "Tasklane pricing",
+      "Plans"
+     ],
+     "text": "Starter"
+    },
+    {
+     "id": "n5",
+     "role": "paragraph",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Starter"
+     ],
+     "text": "$8 per user per month"
+    },
+    {
+     "id": "n6",
+     "role": "list_item",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Starter"
+     ],
+     "text": "Up to 10 users"
+    },
+    {
+     "id": "n7",
+     "role": "list_item",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Starter"
+     ],
+     "text": "14-day free trial"
+    },
+    {
+     "id": "n8",
+     "role": "list_item",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Starter"
+     ],
+     "text": "Email support"
+    },
+    {
+     "id": "n9",
+     "role": "paragraph",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Starter"
+     ],
+     "text": "Start free trial"
+    },
+    {
+     "id": "n10",
+     "level": 3,
+     "role": "heading",
+     "section": [
+      "Tasklane pricing",
+      "Plans"
+     ],
+     "text": "Team plan"
+    },
+    {
+     "id": "n11",
+     "role": "paragraph",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Team plan"
+     ],
+     "text": "$15 per user per month, billed annually"
+    },
+    {
+     "id": "n12",
+     "role": "paragraph",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Team plan"
+     ],
+     "text": "Was $24, now $19 for the first year"
+    },
+    {
+     "id": "n13",
+     "role": "list_item",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Team plan"
+     ],
+     "text": "Unlimited projects"
+    },
+    {
+     "id": "n14",
+     "role": "list_item",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Team plan"
+     ],
+     "text": "Timeline view"
+    },
+    {
+     "id": "n15",
+     "role": "paragraph",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Team plan"
+     ],
+     "text": "Start free trial"
+    },
+    {
+     "id": "n16",
+     "level": 3,
+     "role": "heading",
+     "section": [
+      "Tasklane pricing",
+      "Plans"
+     ],
+     "text": "Business"
+    },
+    {
+     "id": "n17",
+     "role": "paragraph",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Business"
+     ],
+     "text": "$24 per user per month"
+    },
+    {
+     "id": "n18",
+     "role": "paragraph",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Business"
+     ],
+     "text": "Status: Available"
+    },
+    {
+     "id": "n19",
+     "role": "list_item",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Business"
+     ],
+     "text": "Single sign-on"
+    },
+    {
+     "id": "n20",
+     "role": "list_item",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Business"
+     ],
+     "text": "Audit log"
+    },
+    {
+     "id": "n21",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Tasklane pricing"
+     ],
+     "text": "Compare plans"
+    },
+    {
+     "id": "n22",
+     "role": "table_cell",
+     "section": [
+      "Tasklane pricing",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      0,
+      0
+     ],
+     "text": "Plan"
+    },
+    {
+     "id": "n23",
+     "role": "table_cell",
+     "section": [
+      "Tasklane pricing",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      0,
+      1
+     ],
+     "text": "Price per user (USD)"
+    },
+    {
+     "id": "n24",
+     "role": "table_cell",
+     "section": [
+      "Tasklane pricing",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      0,
+      2
+     ],
+     "text": "Storage"
+    },
+    {
+     "id": "n25",
+     "role": "table_cell",
+     "section": [
+      "Tasklane pricing",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      1,
+      0
+     ],
+     "text": "Starter"
+    },
+    {
+     "id": "n26",
+     "role": "table_cell",
+     "section": [
+      "Tasklane pricing",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      1,
+      1
+     ],
+     "text": "8"
+    },
+    {
+     "id": "n27",
+     "role": "table_cell",
+     "section": [
+      "Tasklane pricing",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      1,
+      2
+     ],
+     "text": "5 GB"
+    },
+    {
+     "id": "n28",
+     "role": "table_cell",
+     "section": [
+      "Tasklane pricing",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      2,
+      0
+     ],
+     "text": "Business"
+    },
+    {
+     "id": "n29",
+     "role": "table_cell",
+     "section": [
+      "Tasklane pricing",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      2,
+      1
+     ],
+     "text": "24"
+    },
+    {
+     "id": "n30",
+     "role": "table_cell",
+     "section": [
+      "Tasklane pricing",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      2,
+      2
+     ],
+     "text": "1 TB"
+    },
+    {
+     "id": "n31",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Tasklane pricing"
+     ],
+     "text": "Frequently asked questions"
+    },
+    {
+     "id": "n32",
+     "level": 3,
+     "role": "heading",
+     "section": [
+      "Tasklane pricing",
+      "Frequently asked questions"
+     ],
+     "text": "Can I cancel?"
+    },
+    {
+     "id": "n33",
+     "role": "paragraph",
+     "section": [
+      "Tasklane pricing",
+      "Frequently asked questions",
+      "Can I cancel?"
+     ],
+     "text": "Yes. You can cancel at any time from your account settings."
+    },
+    {
+     "id": "n34",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Tasklane pricing"
+     ],
+     "text": "About Tasklane"
+    },
+    {
+     "id": "n35",
+     "role": "paragraph",
+     "section": [
+      "Tasklane pricing",
+      "About Tasklane"
+     ],
+     "text": "Tasklane serves more than 12,000 teams with 99.9% uptime."
+    },
+    {
+     "id": "n36",
+     "role": "paragraph",
+     "section": [
+      "Tasklane pricing",
+      "About Tasklane"
+     ],
+     "text": "Read the Tasklane blog for product news."
+    },
+    {
+     "href": "https://tasklane.example.com/signup?plan=starter",
+     "id": "n37",
+     "role": "link",
+     "text": "Start free trial"
+    },
+    {
+     "href": "https://tasklane.example.com/signup?plan=team",
+     "id": "n38",
+     "role": "link",
+     "text": "Start free trial"
+    },
+    {
+     "href": "https://tasklane.example.com/blog",
+     "id": "n39",
+     "role": "link",
+     "text": "Tasklane blog"
+    }
+   ]
+  },
+  "revised": {
+   "fields": {
+    "metadata.canonical": "https://tasklane.example.com/pricing",
+    "metadata.description": "Simple per-user pricing for Tasklane, the project planner for small teams.",
+    "metadata.title": "Pricing - Tasklane"
+   },
+   "nodes": [
+    {
+     "id": "n0",
+     "level": 1,
+     "role": "heading",
+     "text": "Tasklane pricing"
+    },
+    {
+     "id": "n1",
+     "role": "paragraph",
+     "section": [
+      "Tasklane pricing"
+     ],
+     "text": "Pick the plan that fits your team. You can change plans at any time."
+    },
+    {
+     "id": "n2",
+     "role": "paragraph",
+     "section": [
+      "Tasklane pricing"
+     ],
+     "text": "All prices in USD."
+    },
+    {
+     "id": "n3",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Tasklane pricing"
+     ],
+     "text": "Plans"
+    },
+    {
+     "id": "n4",
+     "level": 3,
+     "role": "heading",
+     "section": [
+      "Tasklane pricing",
+      "Plans"
+     ],
+     "text": "Starter"
+    },
+    {
+     "id": "n5",
+     "role": "paragraph",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Starter"
+     ],
+     "text": "$8 per user per month"
+    },
+    {
+     "id": "n6",
+     "role": "list_item",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Starter"
+     ],
+     "text": "Up to 15 users"
+    },
+    {
+     "id": "n7",
+     "role": "list_item",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Starter"
+     ],
+     "text": "14-day free trial"
+    },
+    {
+     "id": "n8",
+     "role": "list_item",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Starter"
+     ],
+     "text": "Email support"
+    },
+    {
+     "id": "n9",
+     "role": "paragraph",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Starter"
+     ],
+     "text": "Start free trial"
+    },
+    {
+     "id": "n10",
+     "level": 3,
+     "role": "heading",
+     "section": [
+      "Tasklane pricing",
+      "Plans"
+     ],
+     "text": "Growth plan"
+    },
+    {
+     "id": "n11",
+     "role": "paragraph",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Growth plan"
+     ],
+     "text": "$18 per user per month, billed annually"
+    },
+    {
+     "id": "n12",
+     "role": "paragraph",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Growth plan"
+     ],
+     "text": "Was $24, now $16 for the first year"
+    },
+    {
+     "id": "n13",
+     "role": "list_item",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Growth plan"
+     ],
+     "text": "Unlimited projects"
+    },
+    {
+     "id": "n14",
+     "role": "list_item",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Growth plan"
+     ],
+     "text": "Timeline view"
+    },
+    {
+     "id": "n15",
+     "role": "paragraph",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Growth plan"
+     ],
+     "text": "Start free trial"
+    },
+    {
+     "id": "n16",
+     "level": 3,
+     "role": "heading",
+     "section": [
+      "Tasklane pricing",
+      "Plans"
+     ],
+     "text": "Business"
+    },
+    {
+     "id": "n17",
+     "role": "paragraph",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Business"
+     ],
+     "text": "$24 per user per month"
+    },
+    {
+     "id": "n18",
+     "role": "paragraph",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Business"
+     ],
+     "text": "Status: Contact sales"
+    },
+    {
+     "id": "n19",
+     "role": "list_item",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Business"
+     ],
+     "text": "Single sign-on"
+    },
+    {
+     "id": "n20",
+     "role": "list_item",
+     "section": [
+      "Tasklane pricing",
+      "Plans",
+      "Business"
+     ],
+     "text": "Audit log"
+    },
+    {
+     "id": "n21",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Tasklane pricing"
+     ],
+     "text": "Compare plans"
+    },
+    {
+     "id": "n22",
+     "role": "table_cell",
+     "section": [
+      "Tasklane pricing",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      0,
+      0
+     ],
+     "text": "Plan"
+    },
+    {
+     "id": "n23",
+     "role": "table_cell",
+     "section": [
+      "Tasklane pricing",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      0,
+      1
+     ],
+     "text": "Price per user (USD)"
+    },
+    {
+     "id": "n24",
+     "role": "table_cell",
+     "section": [
+      "Tasklane pricing",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      0,
+      2
+     ],
+     "text": "Storage"
+    },
+    {
+     "id": "n25",
+     "role": "table_cell",
+     "section": [
+      "Tasklane pricing",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      1,
+      0
+     ],
+     "text": "Starter"
+    },
+    {
+     "id": "n26",
+     "role": "table_cell",
+     "section": [
+      "Tasklane pricing",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      1,
+      1
+     ],
+     "text": "8"
+    },
+    {
+     "id": "n27",
+     "role": "table_cell",
+     "section": [
+      "Tasklane pricing",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      1,
+      2
+     ],
+     "text": "5 GB"
+    },
+    {
+     "id": "n28",
+     "role": "table_cell",
+     "section": [
+      "Tasklane pricing",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      2,
+      0
+     ],
+     "text": "Business"
+    },
+    {
+     "id": "n29",
+     "role": "table_cell",
+     "section": [
+      "Tasklane pricing",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      2,
+      1
+     ],
+     "text": "24"
+    },
+    {
+     "id": "n30",
+     "role": "table_cell",
+     "section": [
+      "Tasklane pricing",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      2,
+      2
+     ],
+     "text": "1 TB"
+    },
+    {
+     "id": "n31",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Tasklane pricing"
+     ],
+     "text": "Frequently asked questions"
+    },
+    {
+     "id": "n32",
+     "level": 3,
+     "role": "heading",
+     "section": [
+      "Tasklane pricing",
+      "Frequently asked questions"
+     ],
+     "text": "Can I cancel?"
+    },
+    {
+     "id": "n33",
+     "role": "paragraph",
+     "section": [
+      "Tasklane pricing",
+      "Frequently asked questions",
+      "Can I cancel?"
+     ],
+     "text": "Yes. You can cancel at any time from your account settings."
+    },
+    {
+     "id": "n34",
+     "level": 2,
+     "role": "heading",
+     "section": [
+      "Tasklane pricing"
+     ],
+     "text": "About Tasklane"
+    },
+    {
+     "id": "n35",
+     "role": "paragraph",
+     "section": [
+      "Tasklane pricing",
+      "About Tasklane"
+     ],
+     "text": "Tasklane serves more than 13,000 teams with 99.9% uptime."
+    },
+    {
+     "id": "n36",
+     "role": "paragraph",
+     "section": [
+      "Tasklane pricing",
+      "About Tasklane"
+     ],
+     "text": "Read the Tasklane blog for product news."
+    },
+    {
+     "href": "https://tasklane.example.com/signup?plan=starter",
+     "id": "n37",
+     "role": "link",
+     "text": "Start free trial"
+    },
+    {
+     "href": "https://tasklane.example.com/signup?plan=team",
+     "id": "n38",
+     "role": "link",
+     "text": "Start free trial"
+    },
+    {
+     "href": "https://tasklane.example.com/news",
+     "id": "n39",
+     "role": "link",
+     "text": "Tasklane blog"
+    }
+   ]
+  }
+ }
+}

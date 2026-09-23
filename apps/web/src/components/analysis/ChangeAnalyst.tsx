@@ -55,6 +55,7 @@ export function ChangeAnalyst({
   seal,
   changeCount,
   onViewChange,
+  onAnalysis,
 }: {
   tool: AnalysisTool;
   result: unknown;
@@ -62,6 +63,8 @@ export function ChangeAnalyst({
   /** Changes the person can see in the report; with none, there is nothing to analyse. */
   changeCount: number;
   onViewChange: (changeId: string) => void;
+  /** Called with the analysis once it arrives, so the workspace can show each explanation beside its evidence. */
+  onAnalysis?: (analysis: ChangeAnalysis) => void;
 }) {
   const id = useId();
   const [phase, setPhase] = useState<Phase>(seal ? { name: "checking" } : { name: "unavailable" });
@@ -100,6 +103,7 @@ export function ChangeAnalyst({
       if (response.ok && body && Array.isArray(body.changes)) {
         setPhase({ name: "done", analysis: body as ChangeAnalysis });
         setOpen(true);
+        onAnalysis?.(body as ChangeAnalysis);
       } else {
         const code: string = body?.error?.code ?? "ai_failed";
         const message = body?.error?.message ?? aiErrorMessage("ai_failed")!;

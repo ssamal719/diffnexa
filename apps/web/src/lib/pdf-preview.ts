@@ -28,7 +28,7 @@ type PdfJs = typeof import("pdfjs-dist/legacy/build/pdf.mjs");
 
 let pdfjsPromise: Promise<PdfJs> | null = null;
 
-async function loadPdfJs(): Promise<PdfJs> {
+export async function loadPdfJs(): Promise<PdfJs> {
   if (!pdfjsPromise) {
     // The "legacy" build is deliberate: the default build requires very recent
     // JavaScript features (such as Promise.try) and fails outright on browsers

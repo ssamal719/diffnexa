@@ -15,6 +15,8 @@ import { PolicyDesk } from "@/components/policy/PolicyDesk";
 import { PolicyReport } from "@/components/policy/PolicyReport";
 import { POLICY_TYPES, type PolicyChange, type PolicyComparison } from "@/lib/policy-report";
 
+import { counter, evidence, listed, navigator } from "./helpers/workspace";
+
 afterEach(cleanup);
 
 beforeEach(() => {
@@ -285,14 +287,19 @@ describe("the report", () => {
 
   it("shows the change exactly as the engine returned it", () => {
     render(<PolicyReport result={comparison([change()])} {...props} />);
-    expect(screen.getByText("12")).toBeTruthy();
-    expect(screen.getByText("24")).toBeTruthy();
-    expect(screen.getByText("+12 (+100%)")).toBeTruthy();
+    const card = screen.getByRole("article");
+    expect(within(card).getByText("12")).toBeTruthy();
+    expect(within(card).getByText("24")).toBeTruthy();
+    expect(within(card).getByText("+12 (+100%)")).toBeTruthy();
+    expect(within(evidence()).getByText("+12 (+100%)")).toBeTruthy();
   });
 
   it("shows the topic as additional information, with its phrase", () => {
     render(<PolicyReport result={comparison([change()])} {...props} />);
-    expect(screen.getByText("Touches Data retention")).toBeTruthy();
+    expect(within(screen.getByRole("article")).getByText("Touches Data retention")).toBeTruthy();
+    expect(within(evidence()).getByText("Touches Data retention")).toBeTruthy();
+    // The topic is also the change's category in the navigator.
+    expect(within(navigator()).getByText("Data retention")).toBeTruthy();
     expect(document.body.textContent).toContain("the section heading contains");
     expect(document.body.textContent).toContain("data retention");
   });
@@ -300,7 +307,7 @@ describe("the report", () => {
   it("keeps an unclassified change visible like any other", () => {
     render(<PolicyReport result={comparison([change(), UNCLASSIFIED])} {...props} />);
     expect(screen.getAllByRole("article")).toHaveLength(2);
-    expect(screen.getByText("520")).toBeTruthy();
+    expect(listed()).toHaveLength(2);
     const cards = screen.getAllByRole("article");
     const plain = cards.find((card) => card.textContent?.includes("520"))!;
     expect(within(plain).queryByText(/^Touches /)).toBeNull();
@@ -320,31 +327,37 @@ describe("the report", () => {
     const topics = screen.getByRole("region", { name: "Parts of this document" });
     fireEvent.click(within(topics).getByRole("button", { name: /Data retention/ }));
 
-    expect(screen.getByText("24")).toBeTruthy();
-    expect(screen.queryByText("520")).toBeNull();
+    expect(listed()).toHaveLength(1);
+    expect(listed()[0]).toContain("24");
+    expect(screen.getAllByRole("article")).toHaveLength(1);
   });
 
   it("opens the evidence for a change", async () => {
     render(<PolicyReport result={comparison([change()])} {...props} />);
-    expect(screen.queryByText(/We retain your information for 12 months/)).toBeNull();
+    // Beside the chosen change, in the evidence panel.
+    expect(within(evidence()).getByText(/We retain your information for 12 months/)).toBeTruthy();
+    expect(within(evidence()).getByText(/We retain your information for 24 months/)).toBeTruthy();
 
-    fireEvent.click(screen.getByRole("button", { name: "View evidence" }));
-    expect(await screen.findByText(/We retain your information for 12 months/)).toBeTruthy();
-    expect(screen.getByText(/We retain your information for 24 months/)).toBeTruthy();
+    // And one click away on its card.
+    const card = screen.getByRole("article");
+    expect(within(card).queryByText(/We retain your information for 12 months/)).toBeNull();
+    fireEvent.click(within(card).getByRole("button", { name: "View evidence" }));
+    expect(await within(card).findByText(/We retain your information for 12 months/)).toBeTruthy();
+    expect(within(card).getByText(/We retain your information for 24 months/)).toBeTruthy();
   });
 
   it("searches the changes", () => {
     render(<PolicyReport result={comparison([change(), UNCLASSIFIED])} {...props} />);
     fireEvent.change(screen.getByRole("searchbox"), { target: { value: "520" } });
-    expect(screen.getByText("520")).toBeTruthy();
-    expect(screen.queryByText("+12 (+100%)")).toBeNull();
+    expect(listed()).toHaveLength(1);
+    expect(listed()[0]).toContain("520");
   });
 
   it("steps between changes", () => {
     render(<PolicyReport result={comparison([change(), UNCLASSIFIED])} {...props} />);
-    expect(screen.getByRole("status").textContent).toContain("Change 1 of 2");
+    expect(counter()).toContain("Change 1 of 2");
     fireEvent.click(screen.getByRole("button", { name: "Next change" }));
-    expect(screen.getByRole("status").textContent).toContain("Change 2 of 2");
+    expect(counter()).toContain("Change 2 of 2");
   });
 
   it("never judges a change or offers legal advice", () => {

@@ -196,12 +196,13 @@ export function DocxDesk() {
       {phase.name === "failed" && <DocxError error={phase.error} onRetry={runComparison} />}
       {phase.name === "done" && (
         <ReportWithAnalyst tool="docx" result={phase.result} seal={phase.seal}>
-          {({ analyst, focus }) => (
+          {({ analyst, focus, analysis }) => (
             <DocxReport
               result={phase.result}
               original={{ name: phase.original.displayName, sizeBytes: phase.original.sizeBytes }}
               revised={{ name: phase.revised.displayName, sizeBytes: phase.revised.sizeBytes }}
               analyst={analyst}
+              analysis={analysis}
               focus={focus}
             />
           )}

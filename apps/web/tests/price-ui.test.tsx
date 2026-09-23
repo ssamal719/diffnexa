@@ -15,6 +15,8 @@ import { PriceDesk } from "@/components/price/PriceDesk";
 import { PriceReport } from "@/components/price/PriceReport";
 import { buildBaselineFile, type PriceChange, type PriceComparison } from "@/lib/price-report";
 
+import { counter } from "./helpers/workspace";
+
 afterEach(cleanup);
 
 beforeEach(() => {
@@ -366,9 +368,9 @@ describe("the report", () => {
 
   it("steps between changes across the groups", () => {
     renderReport(comparison([PRICE, SALE, AVAILABILITY]));
-    expect(screen.getByText(/Change 1 of 3/)).toBeTruthy();
+    expect(counter()).toBe("Change 1 of 3");
     fireEvent.click(screen.getByRole("button", { name: "Next change" }));
-    expect(screen.getByText(/Change 2 of 3/)).toBeTruthy();
+    expect(counter()).toBe("Change 2 of 3");
   });
 
   it("opens the evidence for a change", () => {

@@ -24,124 +24,128 @@ export const metadata: Metadata = {
 
 export default function CompetitorMonitorPage() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 md:py-10">
-      {/* One H1, and it says what the tool does rather than implying it watches
-          the page on your behalf. */}
-      <h1 className="text-[1.75rem] font-semibold tracking-tight md:text-[2rem]">
-        See what changed on a competitor&apos;s webpage
-      </h1>
-      <p className="mt-2 max-w-[62ch] text-ink-soft">
-        Capture a competitor&apos;s pricing, product or features page as it reads today. Check it
-        whenever you choose and DiffNexa shows exactly what changed — prices, plans, features,
-        buttons and wording — with the evidence behind every change.
-      </p>
+    <div className="mx-auto max-w-[92rem] px-4 py-8 md:py-10">
+      <div className="mx-auto max-w-5xl">
+        {/* One H1, and it says what the tool does rather than implying it watches
+            the page on your behalf. */}
+        <h1 className="text-[1.75rem] font-semibold tracking-tight md:text-[2rem]">
+          See what changed on a competitor&apos;s webpage
+        </h1>
+        <p className="mt-2 max-w-[62ch] text-ink-soft">
+          Capture a competitor&apos;s pricing, product or features page as it reads today. Check it
+          whenever you choose and DiffNexa shows exactly what changed — prices, plans, features,
+          buttons and wording — with the evidence behind every change.
+        </p>
+      </div>
 
-      <div className="mt-6">
+      <div className="mt-6 *:mx-auto *:max-w-5xl">
         <CompetitorDesk />
       </div>
 
-      <section className="mt-10" aria-labelledby="how-it-works">
-        <h2 id="how-it-works" className="text-[1.15rem] font-semibold">
-          How it works
-        </h2>
-        <ol className="mt-3 grid gap-3 md:grid-cols-3">
-          {STEPS.map((step, index) => (
-            <li
-              key={step.title}
-              className="rounded-[var(--radius-panel)] border border-rule bg-paper p-4"
-            >
-              <span className="tabular text-[0.8rem] font-semibold text-ink-soft">
-                Step {index + 1}
-              </span>
-              <h3 className="mt-1 font-medium">{step.title}</h3>
-              <p className="mt-1 text-[0.9rem] text-ink-soft">{step.detail}</p>
+      <div className="mx-auto max-w-5xl">
+        <section className="mt-10" aria-labelledby="how-it-works">
+          <h2 id="how-it-works" className="text-[1.15rem] font-semibold">
+            How it works
+          </h2>
+          <ol className="mt-3 grid gap-3 md:grid-cols-3">
+            {STEPS.map((step, index) => (
+              <li
+                key={step.title}
+                className="rounded-[var(--radius-panel)] border border-rule bg-paper p-4"
+              >
+                <span className="tabular text-[0.8rem] font-semibold text-ink-soft">
+                  Step {index + 1}
+                </span>
+                <h3 className="mt-1 font-medium">{step.title}</h3>
+                <p className="mt-1 text-[0.9rem] text-ink-soft">{step.detail}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section className="mt-10" aria-labelledby="what-it-groups">
+          <h2 id="what-it-groups" className="text-[1.15rem] font-semibold">
+            How changes are grouped
+          </h2>
+          <p className="mt-2 max-w-[70ch] text-[0.95rem] text-ink-soft">
+            Each change goes in exactly one group, decided by fixed rules that read the page&apos;s
+            own structure — its headings, tables, links and values. Every change keeps its evidence,
+            and each group says why the change was placed there.
+          </p>
+          <dl className="mt-3 grid gap-3 md:grid-cols-2">
+            {GROUPS.map((group) => (
+              <div
+                key={group.title}
+                className="rounded-[var(--radius-panel)] border border-rule bg-paper p-4"
+              >
+                <dt className="font-medium">{group.title}</dt>
+                <dd className="mt-1 text-[0.9rem] text-ink-soft">{group.detail}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+
+        <section className="mt-10" aria-labelledby="which-tool">
+          <h2 id="which-tool" className="text-[1.15rem] font-semibold">
+            Competitor Monitor or Website Change Detector?
+          </h2>
+          <div className="mt-3 grid max-w-[70ch] gap-4 md:grid-cols-2">
+            <div>
+              <h3 className="font-medium">Competitor Monitor</h3>
+              <p className="mt-1 text-[0.95rem] text-ink-soft">
+                For a competitor&apos;s pricing, plans, product, features or changelog pages. The
+                same comparison, with each change grouped by the kind of content it touches, and a
+                label for the competitor and the page.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-medium">Website Change Detector</h3>
+              <p className="mt-1 text-[0.95rem] text-ink-soft">
+                For any public page, when you want every change in page order, grouped by section,
+                without the competitor-specific grouping.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-10" aria-labelledby="limits">
+          <h2 id="limits" className="text-[1.15rem] font-semibold">
+            What this does not do
+          </h2>
+          <ul className="mt-3 max-w-[70ch] space-y-2 text-[0.95rem] text-ink-soft">
+            <li>
+              It does not watch pages for you. There is no scheduled checking, no alerts and no
+              saved history — you check when you choose to.
             </li>
-          ))}
-        </ol>
-      </section>
+            <li>
+              It reads one public page at a time. It does not follow links to other pages, read
+              pages behind a login, or read pages that build their content in the browser.
+            </li>
+            <li>
+              It compares the words, values, links and structure of a page. It does not compare
+              screenshots, images or visual design.
+            </li>
+            <li>
+              It does not interpret. DiffNexa shows what changed and where it sits on the page. What
+              the change means for you is your judgement.
+            </li>
+          </ul>
+        </section>
 
-      <section className="mt-10" aria-labelledby="what-it-groups">
-        <h2 id="what-it-groups" className="text-[1.15rem] font-semibold">
-          How changes are grouped
-        </h2>
-        <p className="mt-2 max-w-[70ch] text-[0.95rem] text-ink-soft">
-          Each change goes in exactly one group, decided by fixed rules that read the page&apos;s
-          own structure — its headings, tables, links and values. Every change keeps its evidence,
-          and each group says why the change was placed there.
-        </p>
-        <dl className="mt-3 grid gap-3 md:grid-cols-2">
-          {GROUPS.map((group) => (
-            <div
-              key={group.title}
-              className="rounded-[var(--radius-panel)] border border-rule bg-paper p-4"
-            >
-              <dt className="font-medium">{group.title}</dt>
-              <dd className="mt-1 text-[0.9rem] text-ink-soft">{group.detail}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
-
-      <section className="mt-10" aria-labelledby="which-tool">
-        <h2 id="which-tool" className="text-[1.15rem] font-semibold">
-          Competitor Monitor or Website Change Detector?
-        </h2>
-        <div className="mt-3 grid max-w-[70ch] gap-4 md:grid-cols-2">
-          <div>
-            <h3 className="font-medium">Competitor Monitor</h3>
-            <p className="mt-1 text-[0.95rem] text-ink-soft">
-              For a competitor&apos;s pricing, plans, product, features or changelog pages. The
-              same comparison, with each change grouped by the kind of content it touches, and a
-              label for the competitor and the page.
-            </p>
-          </div>
-          <div>
-            <h3 className="font-medium">Website Change Detector</h3>
-            <p className="mt-1 text-[0.95rem] text-ink-soft">
-              For any public page, when you want every change in page order, grouped by section,
-              without the competitor-specific grouping.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="mt-10" aria-labelledby="limits">
-        <h2 id="limits" className="text-[1.15rem] font-semibold">
-          What this does not do
-        </h2>
-        <ul className="mt-3 max-w-[70ch] space-y-2 text-[0.95rem] text-ink-soft">
-          <li>
-            It does not watch pages for you. There is no scheduled checking, no alerts and no
-            saved history — you check when you choose to.
-          </li>
-          <li>
-            It reads one public page at a time. It does not follow links to other pages, read
-            pages behind a login, or read pages that build their content in the browser.
-          </li>
-          <li>
-            It compares the words, values, links and structure of a page. It does not compare
-            screenshots, images or visual design.
-          </li>
-          <li>
-            It does not interpret. DiffNexa shows what changed and where it sits on the page. What
-            the change means for you is your judgement.
-          </li>
-        </ul>
-      </section>
-
-      <section className="mt-10" aria-labelledby="questions">
-        <h2 id="questions" className="text-[1.15rem] font-semibold">
-          Questions
-        </h2>
-        <dl className="mt-3 max-w-[65ch] space-y-4 text-[0.95rem]">
-          {FAQ.map((item) => (
-            <div key={item.question}>
-              <dt className="font-medium">{item.question}</dt>
-              <dd className="mt-1 text-ink-soft">{item.answer}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
+        <section className="mt-10" aria-labelledby="questions">
+          <h2 id="questions" className="text-[1.15rem] font-semibold">
+            Questions
+          </h2>
+          <dl className="mt-3 max-w-[65ch] space-y-4 text-[0.95rem]">
+            {FAQ.map((item) => (
+              <div key={item.question}>
+                <dt className="font-medium">{item.question}</dt>
+                <dd className="mt-1 text-ink-soft">{item.answer}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      </div>
     </div>
   );
 }

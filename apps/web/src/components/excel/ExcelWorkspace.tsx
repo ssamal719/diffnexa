@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 
 import { SheetGrid, type GridTarget } from "@/components/excel/SheetGrid";
 import { Alert } from "@/components/ui/Alert";
 import { ComparisonWorkspace, type WorkspaceContext } from "@/components/workspace/ComparisonWorkspace";
+import type { ChangeAnalysis } from "@/lib/analysis";
 import {
   NO_CHANGES_NOTE,
   activeArea,
@@ -26,6 +27,7 @@ import {
 } from "@/lib/excel-report";
 import type { FocusRequest } from "@/lib/use-change-focus";
 import { formatFileSize } from "@/lib/validation";
+import { filterGroup, kindFilter } from "@/lib/workspace";
 
 type FileSummary = { name: string; sizeBytes: number };
 
@@ -48,15 +50,35 @@ export function ExcelWorkspace({
   result,
   original,
   revised,
+  analyst,
+  analysis = null,
   focus = null,
 }: {
   result: ExcelComparison;
   original: FileSummary;
   revised: FileSummary;
+  /** AI Change Analyst, shown under the workspace. */
+  analyst?: ReactNode;
+  analysis?: ChangeAnalysis | null;
   /** A change to show, asked for from outside (AI Change Analyst's "View change"). */
   focus?: FocusRequest;
 }) {
   const changes = useMemo(() => toWorkspaceChanges(result), [result]);
+  const filters = useMemo(
+    () => [
+      kindFilter(changes),
+      filterGroup("category", "What changed", changes, [
+        ...["Number", "Date", "Text", "Formula", "Result", "Link", "Row", "Column", "Sheet"].map((label) => ({ id: label, label })),
+      ]),
+      filterGroup(
+        "sheet",
+        "Sheet",
+        changes,
+        [...new Set(changes.map((change) => change.group))].map((sheet) => ({ id: sheet, label: sheet })),
+      ),
+    ],
+    [changes],
+  );
   const byId = useMemo(() => new Map(result.changes.map((change) => [change.id, change])), [result]);
   const total = result.changes.length;
   const warnings = [
@@ -67,15 +89,22 @@ export function ExcelWorkspace({
 
   return (
     <ComparisonWorkspace
-      title="Excel Compare"
+      tool="Excel Compare"
       headline={headline(total)}
       summary={overview(result)}
       emptyNote={NO_CHANGES_NOTE}
-      files={{ original: original.name, revised: revised.name }}
+      facts={[
+        { label: "Original", value: original.name },
+        { label: "Revised", value: revised.name },
+      ]}
       changes={changes}
       modes={MODES}
       initialMode="grid"
+      filters={filters}
+      showMainWhenEmpty
       focus={focus}
+      analyst={analyst}
+      analysis={analysis}
       notes={
         warnings.length > 0 ? (
           <div className="space-y-1 border-b border-rule px-3 py-2">
@@ -87,6 +116,7 @@ export function ExcelWorkspace({
           </div>
         ) : null
       }
+      footer="Every change was found by reading both workbooks directly; every cell listed was checked against the files before the result was shown. No AI was used in the comparison."
       renderMain={(context) =>
         context.mode === "diff" ? (
           <DiffView context={context} byId={byId} />
@@ -96,13 +126,12 @@ export function ExcelWorkspace({
           <GridView result={result} context={context} byId={byId} original={original} revised={revised} />
         )
       }
-      renderDetails={(context) =>
-        total > 0 ? (
+      renderEvidence={(context) =>
+        context.active ? (
           <ChangeDetails
-            key={context.active?.id ?? "none"}
-            change={context.active ? (byId.get(context.active.id) ?? null) : null}
+            key={context.active.id}
+            change={byId.get(context.active.id) ?? null}
             context={context}
-            total={total}
           />
         ) : null
       }
@@ -495,28 +524,15 @@ function DetailsView({
 
 // ---------------------------------------------------------------- the active change
 
-function ChangeDetails({
-  change,
-  context,
-  total,
-}: {
-  change: ExcelChange | null;
-  context: WorkspaceContext;
-  total: number;
-}) {
+function ChangeDetails({ change, context }: { change: ExcelChange | null; context: WorkspaceContext }) {
   const [showEvidence, setShowEvidence] = useState(false);
-  if (!change) {
-    return <p className="p-3 text-[0.85rem] text-ink-soft">Choose a change to see its details.</p>;
-  }
+  if (!change) return null;
   return (
-    <section aria-labelledby="change-details" className="p-3" aria-live="polite">
-      <p className="tabular text-[0.75rem] text-ink-soft">
-        Change {change.number} of {total}
+    <div aria-live="polite">
+      <p className="text-[0.8rem] text-ink-soft">
+        {headlineFor(change)} · {locationFor(change)}
       </p>
-      <h3 id="change-details" className="text-[1rem] font-semibold">
-        {headlineFor(change)} <span className="font-normal text-ink-soft">· {locationFor(change)}</span>
-      </h3>
-      <div className="mt-2 grid gap-3 md:grid-cols-2">
+      <div className="mt-2 grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
         <PlaceCard title="Original" place={change.original} value={change.oldValue} tone="removed" />
         <PlaceCard title="Revised" place={change.revised} value={change.newValue} tone="added" />
       </div>
@@ -538,7 +554,7 @@ function ChangeDetails({
         {showEvidence && (
           <ul className="mt-1 space-y-0.5 text-[0.82rem]">
             {change.evidence.map((item, index) => (
-              <li key={`${item.side}-${item.cell}-${index}`}>
+              <li key={`${item.side}-${item.cell}-${index}`} className="break-words">
                 <span className="text-ink-soft">
                   {item.side === "old" ? "Original" : "Revised"} · {item.sheet}
                   {item.cell ? ` · ${item.cell}` : " (sheet)"}:{" "}
@@ -565,7 +581,7 @@ function ChangeDetails({
           Show this change in the grid
         </button>
       )}
-    </section>
+    </div>
   );
 }
 

@@ -23,116 +23,120 @@ export const metadata: Metadata = {
 
 export default function PolicyMonitorPage() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 md:py-10">
-      {/* One H1, and it says what the tool does rather than implying it watches
-          the page on your behalf. */}
-      <h1 className="text-[1.75rem] font-semibold tracking-tight md:text-[2rem]">
-        See what changed in a policy or terms page
-      </h1>
-      <p className="mt-2 max-w-[62ch] text-ink-soft">
-        Capture a supplier&apos;s terms, a privacy policy or a subprocessor list as it reads today.
-        Check it whenever you choose and DiffNexa shows exactly what changed, which part of the
-        document it sits in, and the wording behind it.
-      </p>
+    <div className="mx-auto max-w-[92rem] px-4 py-8 md:py-10">
+      <div className="mx-auto max-w-5xl">
+        {/* One H1, and it says what the tool does rather than implying it watches
+            the page on your behalf. */}
+        <h1 className="text-[1.75rem] font-semibold tracking-tight md:text-[2rem]">
+          See what changed in a policy or terms page
+        </h1>
+        <p className="mt-2 max-w-[62ch] text-ink-soft">
+          Capture a supplier&apos;s terms, a privacy policy or a subprocessor list as it reads today.
+          Check it whenever you choose and DiffNexa shows exactly what changed, which part of the
+          document it sits in, and the wording behind it.
+        </p>
+      </div>
 
-      <div className="mt-6">
+      <div className="mt-6 *:mx-auto *:max-w-5xl">
         <PolicyDesk />
       </div>
 
-      <section className="mt-10" aria-labelledby="how-it-works">
-        <h2 id="how-it-works" className="text-[1.15rem] font-semibold">
-          How it works
-        </h2>
-        <ol className="mt-3 grid gap-3 md:grid-cols-3">
-          {STEPS.map((step, index) => (
-            <li
-              key={step.title}
-              className="rounded-[var(--radius-panel)] border border-rule bg-paper p-4"
-            >
-              <span className="tabular text-[0.8rem] font-semibold text-ink-soft">
-                Step {index + 1}
-              </span>
-              <h3 className="mt-1 font-medium">{step.title}</h3>
-              <p className="mt-1 text-[0.9rem] text-ink-soft">{step.detail}</p>
+      <div className="mx-auto max-w-5xl">
+        <section className="mt-10" aria-labelledby="how-it-works">
+          <h2 id="how-it-works" className="text-[1.15rem] font-semibold">
+            How it works
+          </h2>
+          <ol className="mt-3 grid gap-3 md:grid-cols-3">
+            {STEPS.map((step, index) => (
+              <li
+                key={step.title}
+                className="rounded-[var(--radius-panel)] border border-rule bg-paper p-4"
+              >
+                <span className="tabular text-[0.8rem] font-semibold text-ink-soft">
+                  Step {index + 1}
+                </span>
+                <h3 className="mt-1 font-medium">{step.title}</h3>
+                <p className="mt-1 text-[0.9rem] text-ink-soft">{step.detail}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section className="mt-10" aria-labelledby="what-it-shows">
+          <h2 id="what-it-shows" className="text-[1.15rem] font-semibold">
+            What DiffNexa shows you
+          </h2>
+          <div className="mt-3 grid gap-3 md:grid-cols-2">
+            {SHOWS.map((item) => (
+              <div
+                key={item.title}
+                className="rounded-[var(--radius-panel)] border border-rule bg-paper p-4"
+              >
+                <h3 className="font-medium">{item.title}</h3>
+                <p className="mt-1 text-[0.9rem] text-ink-soft">{item.detail}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-10" aria-labelledby="which-tool">
+          <h2 id="which-tool" className="text-[1.15rem] font-semibold">
+            Policy Monitor or Website Change Detector?
+          </h2>
+          <div className="mt-3 grid max-w-[70ch] gap-4 md:grid-cols-2">
+            <div>
+              <h3 className="font-medium">Policy &amp; Terms Monitor</h3>
+              <p className="mt-1 text-[0.95rem] text-ink-soft">
+                For agreements: privacy policies, terms of service, data processing agreements,
+                subprocessor lists, cookie and refund policies. Alongside each change it names the
+                part of the document it sits in, such as data retention, cancellation, fees or
+                governing law.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-medium">Website Change Detector</h3>
+              <p className="mt-1 text-[0.95rem] text-ink-soft">
+                For any public page — pricing, documentation, product pages. The same comparison,
+                without the document-specific grouping.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-10" aria-labelledby="limits">
+          <h2 id="limits" className="text-[1.15rem] font-semibold">
+            What this does not do
+          </h2>
+          <ul className="mt-3 max-w-[70ch] space-y-2 text-[0.95rem] text-ink-soft">
+            <li>
+              It does not watch pages for you. There is no scheduled checking, no alerts and no
+              saved history — you check when you choose to.
             </li>
-          ))}
-        </ol>
-      </section>
+            <li>
+              It does not judge changes. DiffNexa shows what changed and where it sits. Whether that
+              matters for your situation is a judgement for you or your lawyer.
+            </li>
+            <li>
+              It does not read pages behind a login, pages that build their content in the browser,
+              or PDF documents. For a PDF policy, use PDF Compare.
+            </li>
+          </ul>
+        </section>
 
-      <section className="mt-10" aria-labelledby="what-it-shows">
-        <h2 id="what-it-shows" className="text-[1.15rem] font-semibold">
-          What DiffNexa shows you
-        </h2>
-        <div className="mt-3 grid gap-3 md:grid-cols-2">
-          {SHOWS.map((item) => (
-            <div
-              key={item.title}
-              className="rounded-[var(--radius-panel)] border border-rule bg-paper p-4"
-            >
-              <h3 className="font-medium">{item.title}</h3>
-              <p className="mt-1 text-[0.9rem] text-ink-soft">{item.detail}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="mt-10" aria-labelledby="which-tool">
-        <h2 id="which-tool" className="text-[1.15rem] font-semibold">
-          Policy Monitor or Website Change Detector?
-        </h2>
-        <div className="mt-3 grid max-w-[70ch] gap-4 md:grid-cols-2">
-          <div>
-            <h3 className="font-medium">Policy &amp; Terms Monitor</h3>
-            <p className="mt-1 text-[0.95rem] text-ink-soft">
-              For agreements: privacy policies, terms of service, data processing agreements,
-              subprocessor lists, cookie and refund policies. Alongside each change it names the
-              part of the document it sits in, such as data retention, cancellation, fees or
-              governing law.
-            </p>
-          </div>
-          <div>
-            <h3 className="font-medium">Website Change Detector</h3>
-            <p className="mt-1 text-[0.95rem] text-ink-soft">
-              For any public page — pricing, documentation, product pages. The same comparison,
-              without the document-specific grouping.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="mt-10" aria-labelledby="limits">
-        <h2 id="limits" className="text-[1.15rem] font-semibold">
-          What this does not do
-        </h2>
-        <ul className="mt-3 max-w-[70ch] space-y-2 text-[0.95rem] text-ink-soft">
-          <li>
-            It does not watch pages for you. There is no scheduled checking, no alerts and no
-            saved history — you check when you choose to.
-          </li>
-          <li>
-            It does not judge changes. DiffNexa shows what changed and where it sits. Whether that
-            matters for your situation is a judgement for you or your lawyer.
-          </li>
-          <li>
-            It does not read pages behind a login, pages that build their content in the browser,
-            or PDF documents. For a PDF policy, use PDF Compare.
-          </li>
-        </ul>
-      </section>
-
-      <section className="mt-10" aria-labelledby="questions">
-        <h2 id="questions" className="text-[1.15rem] font-semibold">
-          Questions
-        </h2>
-        <dl className="mt-3 max-w-[65ch] space-y-4 text-[0.95rem]">
-          {FAQ.map((item) => (
-            <div key={item.question}>
-              <dt className="font-medium">{item.question}</dt>
-              <dd className="mt-1 text-ink-soft">{item.answer}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
+        <section className="mt-10" aria-labelledby="questions">
+          <h2 id="questions" className="text-[1.15rem] font-semibold">
+            Questions
+          </h2>
+          <dl className="mt-3 max-w-[65ch] space-y-4 text-[0.95rem]">
+            {FAQ.map((item) => (
+              <div key={item.question}>
+                <dt className="font-medium">{item.question}</dt>
+                <dd className="mt-1 text-ink-soft">{item.answer}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      </div>
     </div>
   );
 }

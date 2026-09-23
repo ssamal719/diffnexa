@@ -23,72 +23,76 @@ export const metadata: Metadata = {
  */
 export default function WebsiteComparePage() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 md:py-10">
-      <h1 className="text-[1.75rem] font-semibold tracking-tight md:text-[2rem]">
-        Find out what changed on a web page
-      </h1>
-      <p className="mt-2 max-w-[60ch] text-ink-soft">
-        Capture a page today — a supplier&apos;s terms, a competitor&apos;s pricing, a policy you
-        rely on. Come back whenever you like and DiffNexa shows you exactly what is different.
-      </p>
+    <div className="mx-auto max-w-[92rem] px-4 py-8 md:py-10">
+      <div className="mx-auto max-w-5xl">
+        <h1 className="text-[1.75rem] font-semibold tracking-tight md:text-[2rem]">
+          Find out what changed on a web page
+        </h1>
+        <p className="mt-2 max-w-[60ch] text-ink-soft">
+          Capture a page today — a supplier&apos;s terms, a competitor&apos;s pricing, a policy you
+          rely on. Come back whenever you like and DiffNexa shows you exactly what is different.
+        </p>
+      </div>
 
-      <div className="mt-6">
+      <div className="mt-6 *:mx-auto *:max-w-5xl">
         <WebsiteDesk />
       </div>
 
-      <section className="mt-10" aria-labelledby="how-it-works">
-        <h2 id="how-it-works" className="text-[1.15rem] font-semibold">
-          How it works
-        </h2>
-        <ol className="mt-3 grid gap-3 md:grid-cols-3">
-          {STEPS.map((step, index) => (
-            <li key={step.title} className="rounded-[var(--radius-panel)] border border-rule bg-paper p-4">
-              <span className="tabular text-[0.8rem] font-semibold text-ink-soft">
-                Step {index + 1}
-              </span>
-              <h3 className="mt-1 font-medium">{step.title}</h3>
-              <p className="mt-1 text-[0.9rem] text-ink-soft">{step.detail}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section className="mt-10" aria-labelledby="what-it-finds">
-        <h2 id="what-it-finds" className="text-[1.15rem] font-semibold">
-          What DiffNexa finds
-        </h2>
-        <div className="mt-3 grid gap-3 md:grid-cols-2">
-          {CAPABILITIES.map((item) => (
-            <div key={item.title} className="rounded-[var(--radius-panel)] border border-rule bg-paper p-4">
-              <div className="flex items-baseline justify-between gap-3">
-                <h3 className="font-medium">{item.title}</h3>
-                <span
-                  className={`shrink-0 text-[0.75rem] font-medium ${
-                    item.status === "working" ? "text-added" : "text-caution"
-                  }`}
-                >
-                  {item.status === "working" ? "Working now" : "Planned"}
+      <div className="mx-auto max-w-5xl">
+        <section className="mt-10" aria-labelledby="how-it-works">
+          <h2 id="how-it-works" className="text-[1.15rem] font-semibold">
+            How it works
+          </h2>
+          <ol className="mt-3 grid gap-3 md:grid-cols-3">
+            {STEPS.map((step, index) => (
+              <li key={step.title} className="rounded-[var(--radius-panel)] border border-rule bg-paper p-4">
+                <span className="tabular text-[0.8rem] font-semibold text-ink-soft">
+                  Step {index + 1}
                 </span>
-              </div>
-              <p className="mt-1 text-[0.9rem] text-ink-soft">{item.detail}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+                <h3 className="mt-1 font-medium">{step.title}</h3>
+                <p className="mt-1 text-[0.9rem] text-ink-soft">{step.detail}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
 
-      <section className="mt-10" aria-labelledby="questions">
-        <h2 id="questions" className="text-[1.15rem] font-semibold">
-          Questions
-        </h2>
-        <dl className="mt-3 max-w-[65ch] space-y-4 text-[0.95rem]">
-          {FAQ.map((item) => (
-            <div key={item.question}>
-              <dt className="font-medium">{item.question}</dt>
-              <dd className="mt-1 text-ink-soft">{item.answer}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
+        <section className="mt-10" aria-labelledby="what-it-finds">
+          <h2 id="what-it-finds" className="text-[1.15rem] font-semibold">
+            What DiffNexa finds
+          </h2>
+          <div className="mt-3 grid gap-3 md:grid-cols-2">
+            {CAPABILITIES.map((item) => (
+              <div key={item.title} className="rounded-[var(--radius-panel)] border border-rule bg-paper p-4">
+                <div className="flex items-baseline justify-between gap-3">
+                  <h3 className="font-medium">{item.title}</h3>
+                  <span
+                    className={`shrink-0 text-[0.75rem] font-medium ${
+                      item.status === "working" ? "text-added" : "text-caution"
+                    }`}
+                  >
+                    {item.status === "working" ? "Working now" : "Planned"}
+                  </span>
+                </div>
+                <p className="mt-1 text-[0.9rem] text-ink-soft">{item.detail}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-10" aria-labelledby="questions">
+          <h2 id="questions" className="text-[1.15rem] font-semibold">
+            Questions
+          </h2>
+          <dl className="mt-3 max-w-[65ch] space-y-4 text-[0.95rem]">
+            {FAQ.map((item) => (
+              <div key={item.question}>
+                <dt className="font-medium">{item.question}</dt>
+                <dd className="mt-1 text-ink-soft">{item.answer}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      </div>
     </div>
   );
 }

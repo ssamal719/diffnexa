@@ -27,6 +27,11 @@ import {
   type Baseline,
   type WebChange,
   type WebComparison,
+  inWorkspaceOrder,
+  sectionTags,
+  webFilters,
+  webPlace,
+  webWorkspaceChanges,
 } from "@/lib/web-report";
 
 function change(overrides: Partial<WebChange> = {}): WebChange {
@@ -304,5 +309,60 @@ describe("baselines", () => {
   it("shows the capture time in readable form", () => {
     expect(formatCapturedAt("2026-03-12T09:30:00+00:00")).toMatch(/2026/);
     expect(formatCapturedAt("not a date")).toBe("not a date");
+  });
+});
+
+describe("in the comparison workspace", () => {
+  it("places a change by the page's own headings, and never by a page number", () => {
+    expect(webPlace(change({ sections: ["Pricing › Starter"] }))).toBe("Pricing › Starter");
+    expect(webPlace(change({ sections: [], category: "metadata", subtype: "title" }))).toBe("Whole page");
+    expect(webPlace(change({ sections: [] }))).toBe("Before the first heading");
+    expect(webPlace(change({ sections: [], subtype: "heading", category: "text" }))).toBe("A top-level heading");
+  });
+
+  it("lets a parent section include everything beneath it", () => {
+    expect(sectionTags(change({ sections: ["Pricing › Plans › Team"] }))).toEqual([
+      "Pricing",
+      "Pricing › Plans",
+      "Pricing › Plans › Team",
+    ]);
+  });
+
+  it("keeps reading order, with unimportant differences after the rest", () => {
+    const ordered = inWorkspaceOrder([
+      change({ id: "b", seq: 2 }),
+      change({ id: "n", seq: 0, isNoise: true }),
+      change({ id: "a", seq: 1 }),
+    ]);
+    expect(ordered.map((item) => item.id)).toEqual(["a", "b", "n"]);
+    const items = webWorkspaceChanges(ordered);
+    expect(items.map((item) => [item.number, Boolean(item.minor)])).toEqual([
+      [1, false],
+      [2, false],
+      [3, true],
+    ]);
+  });
+
+  it("groups by the top-level heading unless the tool groups otherwise", () => {
+    const [plain] = webWorkspaceChanges([change({ sections: ["Pricing › Starter"] })]);
+    expect([plain.groupLabel, plain.place]).toEqual(["Pricing", "Pricing › Starter"]);
+    const [grouped] = webWorkspaceChanges([change()], {
+      groupOf: () => ({ key: "signal:pricing", label: "Pricing & Commercial" }),
+      tags: () => ({ signal: ["pricing_commercial"] }),
+      searchWords: () => ["Pricing & Commercial"],
+    });
+    expect(grouped.groupLabel).toBe("Pricing & Commercial");
+    expect(grouped.tags?.signal).toEqual(["pricing_commercial"]);
+    expect(grouped.searchText).toContain("Pricing & Commercial");
+  });
+
+  it("offers kind and category filters for what was found; sections come from the section map", () => {
+    const filters = webFilters(webWorkspaceChanges([change(), change({ id: "l", seq: 1, category: "link" })]));
+    expect(filters.map((group) => [group.id, group.inBar !== false])).toEqual([
+      ["kind", true],
+      ["category", true],
+      ["section", false],
+    ]);
+    expect(filters[1].options.map((option) => option.id)).toEqual(["content", "links"]);
   });
 });

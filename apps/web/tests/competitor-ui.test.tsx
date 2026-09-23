@@ -20,6 +20,8 @@ import {
   type CompetitorComparison,
 } from "@/lib/competitor-report";
 
+import { counter, navigator } from "./helpers/workspace";
+
 afterEach(cleanup);
 
 beforeEach(() => {
@@ -420,19 +422,21 @@ describe("the report", () => {
     fireEvent.change(screen.getByRole("searchbox"), { target: { value: "calls to action" } });
     expect(screen.getAllByRole("article")).toHaveLength(1);
     fireEvent.change(screen.getByRole("searchbox"), { target: { value: "nothing like this" } });
-    expect(document.body.textContent).toContain("Nothing matches these filters");
+    expect(document.body.textContent).toContain("No change matches this search or filter");
   });
 
   it("steps between changes across the groups", () => {
     renderReport(comparison([PRICE, FEATURE, CTA]));
-    expect(screen.getByText(/Change 1 of 3/)).toBeTruthy();
+    expect(counter()).toBe("Change 1 of 3");
     fireEvent.click(screen.getByRole("button", { name: "Next change" }));
-    expect(screen.getByText(/Change 2 of 3/)).toBeTruthy();
+    expect(counter()).toBe("Change 2 of 3");
     fireEvent.click(screen.getByRole("button", { name: "Next change" }));
-    expect(screen.getByText(/Change 3 of 3/)).toBeTruthy();
+    expect(counter()).toBe("Change 3 of 3");
     expect((screen.getByRole("button", { name: "Next change" }) as HTMLButtonElement).disabled).toBe(true);
     fireEvent.click(screen.getByRole("button", { name: "Previous change" }));
-    expect(screen.getByText(/Change 2 of 3/)).toBeTruthy();
+    expect(counter()).toBe("Change 2 of 3");
+    // The navigator lists them in the same order, grouped by signal.
+    expect(within(navigator()).getByText("Pricing & Commercial")).toBeTruthy();
   });
 
   it("opens the evidence for a change", () => {
@@ -446,7 +450,9 @@ describe("the report", () => {
     const noise = change("c9", "content_sections", { isNoise: true, noiseReason: "A timestamp." });
     renderReport(comparison([], [noise]));
     expect(screen.getByRole("heading", { name: "No changes found" })).toBeTruthy();
-    expect(document.body.textContent).toContain("1 difference such as timestamps were ignored");
+    expect(document.body.textContent).toContain("1 unimportant difference was set aside");
+    // Set aside, not thrown away: it can still be shown.
+    expect(screen.getByRole("button", { name: "Show it" })).toBeTruthy();
   });
 
   it("never judges a change or a competitor", () => {

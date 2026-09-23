@@ -359,7 +359,7 @@ export function CompetitorDesk() {
 
       {state.name === "checked" && (
         <ReportWithAnalyst tool="competitor" result={state.result} seal={state.seal}>
-          {({ analyst, focus }) => (
+          {({ analyst, focus, analysis }) => (
             <CompetitorReport
               result={state.result}
               url={state.url}
@@ -367,6 +367,7 @@ export function CompetitorDesk() {
               pageType={state.pageType}
               baselineCapturedAt={state.baselineCapturedAt}
               analyst={analyst}
+              analysis={analysis}
               focus={focus}
             />
           )}

@@ -24,83 +24,87 @@ export const metadata: Metadata = {
  */
 export default function PdfComparePage() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 md:py-10">
-      <h1 className="text-[1.75rem] font-semibold tracking-tight md:text-[2rem]">
-        Compare two documents and see exactly what changed
-      </h1>
-      <p className="mt-2 max-w-[60ch] text-ink-soft">
-        Upload two versions of a contract, report, policy or proposal. DiffNexa shows you what
-        changed, where it changed, and the exact wording behind every difference.
-      </p>
+    <div className="mx-auto max-w-[92rem] px-4 py-8 md:py-10">
+      <div className="mx-auto max-w-5xl">
+        <h1 className="text-[1.75rem] font-semibold tracking-tight md:text-[2rem]">
+          Compare two documents and see exactly what changed
+        </h1>
+        <p className="mt-2 max-w-[60ch] text-ink-soft">
+          Upload two versions of a contract, report, policy or proposal. DiffNexa shows you what
+          changed, where it changed, and the exact wording behind every difference.
+        </p>
+      </div>
 
-      <div className="mt-6">
+      <div className="mt-6 *:mx-auto *:max-w-5xl">
         <CompareDesk />
       </div>
 
-      <section className="mt-10" aria-labelledby="what-it-finds">
-        <h2 id="what-it-finds" className="text-[1.15rem] font-semibold">
-          What DiffNexa finds
-        </h2>
-        <p className="mt-1 max-w-[65ch] text-[0.95rem] text-ink-soft">
-          Each capability is listed with its honest status, so nothing on this page claims more
-          than the product currently does.
-        </p>
-        <div className="mt-4 grid gap-3 md:grid-cols-2">
-          {CAPABILITIES.map((item) => (
-            <Panel key={item.title} className="p-4">
-              <div className="flex items-baseline justify-between gap-3">
-                <h3 className="font-medium">{item.title}</h3>
-                <span
-                  className={`shrink-0 text-[0.75rem] font-medium ${
-                    item.status === "working" ? "text-added" : "text-caution"
-                  }`}
-                >
-                  {item.status === "working" ? "Working now" : "Planned"}
-                </span>
+      <div className="mx-auto max-w-5xl">
+        <section className="mt-10" aria-labelledby="what-it-finds">
+          <h2 id="what-it-finds" className="text-[1.15rem] font-semibold">
+            What DiffNexa finds
+          </h2>
+          <p className="mt-1 max-w-[65ch] text-[0.95rem] text-ink-soft">
+            Each capability is listed with its honest status, so nothing on this page claims more
+            than the product currently does.
+          </p>
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
+            {CAPABILITIES.map((item) => (
+              <Panel key={item.title} className="p-4">
+                <div className="flex items-baseline justify-between gap-3">
+                  <h3 className="font-medium">{item.title}</h3>
+                  <span
+                    className={`shrink-0 text-[0.75rem] font-medium ${
+                      item.status === "working" ? "text-added" : "text-caution"
+                    }`}
+                  >
+                    {item.status === "working" ? "Working now" : "Planned"}
+                  </span>
+                </div>
+                <p className="mt-1 text-[0.9rem] text-ink-soft">{item.detail}</p>
+              </Panel>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-10" aria-labelledby="privacy">
+          <h2 id="privacy" className="text-[1.15rem] font-semibold">
+            What happens to your files
+          </h2>
+          <div className="mt-3 max-w-[65ch] space-y-2 text-[0.95rem]">
+            <p>
+              <strong>Today:</strong> the PDFs you choose above never leave your device. Your browser
+              opens them locally to confirm they are readable and to count their pages.
+            </p>
+            <p>
+              <strong>When comparison arrives:</strong> files will be uploaded over an encrypted
+              connection into private storage that only your session can read, processed, and then
+              deleted automatically according to a published retention period. You will be able to
+              delete them yourself at any time.
+            </p>
+            <p>
+              <strong>On AI:</strong> the comparison itself never uses AI. Where this site offers AI
+              Change Analyst, you can ask it, after a comparison, to explain the changes already
+              found. Only those changes and their short evidence excerpts are sent to the AI
+              provider—never your whole document—and nothing is sent unless you ask.
+            </p>
+          </div>
+        </section>
+
+        <section className="mt-10" aria-labelledby="faq">
+          <h2 id="faq" className="text-[1.15rem] font-semibold">
+            Questions
+          </h2>
+          <dl className="mt-3 max-w-[65ch] space-y-4 text-[0.95rem]">
+            {FAQ.map((item) => (
+              <div key={item.question}>
+                <dt className="font-medium">{item.question}</dt>
+                <dd className="mt-1 text-ink-soft">{item.answer}</dd>
               </div>
-              <p className="mt-1 text-[0.9rem] text-ink-soft">{item.detail}</p>
-            </Panel>
-          ))}
-        </div>
-      </section>
-
-      <section className="mt-10" aria-labelledby="privacy">
-        <h2 id="privacy" className="text-[1.15rem] font-semibold">
-          What happens to your files
-        </h2>
-        <div className="mt-3 max-w-[65ch] space-y-2 text-[0.95rem]">
-          <p>
-            <strong>Today:</strong> the PDFs you choose above never leave your device. Your browser
-            opens them locally to confirm they are readable and to count their pages.
-          </p>
-          <p>
-            <strong>When comparison arrives:</strong> files will be uploaded over an encrypted
-            connection into private storage that only your session can read, processed, and then
-            deleted automatically according to a published retention period. You will be able to
-            delete them yourself at any time.
-          </p>
-          <p>
-            <strong>On AI:</strong> the comparison itself never uses AI. Where this site offers AI
-            Change Analyst, you can ask it, after a comparison, to explain the changes already
-            found. Only those changes and their short evidence excerpts are sent to the AI
-            provider—never your whole document—and nothing is sent unless you ask.
-          </p>
-        </div>
-      </section>
-
-      <section className="mt-10" aria-labelledby="faq">
-        <h2 id="faq" className="text-[1.15rem] font-semibold">
-          Questions
-        </h2>
-        <dl className="mt-3 max-w-[65ch] space-y-4 text-[0.95rem]">
-          {FAQ.map((item) => (
-            <div key={item.question}>
-              <dt className="font-medium">{item.question}</dt>
-              <dd className="mt-1 text-ink-soft">{item.answer}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
+            ))}
+          </dl>
+        </section>
+      </div>
     </div>
   );
 }

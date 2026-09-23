@@ -13,6 +13,7 @@
  */
 
 import type { Change, ComparisonResponse } from "@/lib/comparison";
+import { filterGroup, kindFilter, shorten, type FilterGroup, type WorkspaceChange } from "@/lib/workspace";
 
 // ---------------------------------------------------------------- vocabulary
 
@@ -438,4 +439,75 @@ export function describeLocation(change: Change): string {
 
 export function formatDuration(ms: number): string {
   return ms < 1000 ? "under a second" : `${(ms / 1000).toFixed(1)} seconds`;
+}
+
+// ---------------------------------------------------------------- the comparison workspace
+
+/**
+ * Every change, in the workspace's shared shape.
+ *
+ * Meaningful changes come first, numbered 1…N in document order; minor ones
+ * (page furniture, pure moves) follow with their own numbers, so the numbers a
+ * reader sees run without gaps. The place is always a page the engine
+ * recorded — never estimated — and says which version when only the original
+ * has it.
+ */
+export function toWorkspaceChanges(result: ComparisonResponse): WorkspaceChange[] {
+  const ordered = [
+    ...result.changes.filter((change) => !change.isNoise).sort(inDocumentOrder),
+    ...result.changes.filter((change) => change.isNoise).sort(inDocumentOrder),
+  ];
+  return ordered.map((change, index) => {
+    const anchor = primaryPage(change);
+    const category = categoryOf(change);
+    const categoryLabel = CATEGORIES.find((item) => item.id === category)?.label ?? "Content";
+    const title = headlineFor(change);
+    const place = describeLocation(change);
+    const values = category === "values" || category === "dates";
+    const before = values ? change.oldValue : shorten(change.oldValue, 70);
+    const after = values ? change.newValue : shorten(change.newValue, 70);
+    const excerpt =
+      change.evidence.find((item) => item.side === "new" && item.excerpt)?.excerpt ??
+      change.evidence.find((item) => item.excerpt)?.excerpt ??
+      null;
+    const said = [change.oldValue && `from ${shorten(change.oldValue, 60)}`, change.newValue && `to ${shorten(change.newValue, 60)}`]
+      .filter(Boolean)
+      .join(" ");
+    return {
+      id: change.id,
+      number: index + 1,
+      group: anchor ? `${anchor.side}-${anchor.page}` : "unplaced",
+      groupLabel: anchor ? (anchor.side === "new" ? `Page ${anchor.page}` : `Page ${anchor.page} (original)`) : "No page recorded",
+      title,
+      place,
+      category: categoryLabel,
+      kind: editKindOf(change),
+      before,
+      after,
+      context: before || after ? null : shorten(excerpt, 80),
+      description: `Change ${index + 1}: ${title}, ${place}${said ? `, ${said}` : ""}.`,
+      searchText: [title, place, categoryLabel, change.label, change.oldValue, change.newValue, change.delta, ...change.evidence.map((item) => item.excerpt)]
+        .filter(Boolean)
+        .join(" "),
+      tags: { category: [category], page: anchor && anchor.side === "new" ? [String(anchor.page)] : [] },
+      minor: change.isNoise,
+    };
+  });
+}
+
+/** The filters PDF Compare offers: kind of change, and what changed. Pages are chosen from the page map. */
+export function workspaceFilters(changes: WorkspaceChange[]): FilterGroup[] {
+  return [
+    kindFilter(changes),
+    filterGroup("category", "What changed", changes, CATEGORIES.map(({ id, label }) => ({ id, label }))),
+    filterGroup(
+      "page",
+      "Page",
+      changes,
+      [...new Set(changes.flatMap((change) => change.tags?.page ?? []))]
+        .sort((a, b) => Number(a) - Number(b))
+        .map((page) => ({ id: page, label: `Page ${page}` })),
+      { inBar: false },
+    ),
+  ];
 }

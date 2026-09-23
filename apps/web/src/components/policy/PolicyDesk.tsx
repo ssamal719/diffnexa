@@ -336,13 +336,14 @@ export function PolicyDesk() {
 
       {state.name === "checked" && (
         <ReportWithAnalyst tool="policy" result={state.result} seal={state.seal}>
-          {({ analyst, focus }) => (
+          {({ analyst, focus, analysis }) => (
             <PolicyReport
               result={state.result}
               url={state.url}
               policyType={state.policyType}
               baselineCapturedAt={state.baselineCapturedAt}
               analyst={analyst}
+              analysis={analysis}
               focus={focus}
             />
           )}

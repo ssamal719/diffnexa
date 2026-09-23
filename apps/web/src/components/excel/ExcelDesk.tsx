@@ -211,16 +211,15 @@ export function ExcelDesk() {
       {phase.name === "done" && (
         <div ref={resultRef} className="scroll-mt-4">
           <ReportWithAnalyst tool="excel" result={phase.result} seal={phase.seal}>
-            {({ analyst, focus }) => (
-              <>
-                <ExcelWorkspace
-                  result={phase.result}
-                  original={{ name: phase.original.displayName, sizeBytes: phase.original.sizeBytes }}
-                  revised={{ name: phase.revised.displayName, sizeBytes: phase.revised.sizeBytes }}
-                  focus={focus}
-                />
-                <div className="mx-auto mt-4 max-w-5xl">{analyst}</div>
-              </>
+            {({ analyst, focus, analysis }) => (
+              <ExcelWorkspace
+                result={phase.result}
+                original={{ name: phase.original.displayName, sizeBytes: phase.original.sizeBytes }}
+                revised={{ name: phase.revised.displayName, sizeBytes: phase.revised.sizeBytes }}
+                analyst={analyst}
+                analysis={analysis}
+                focus={focus}
+              />
             )}
           </ReportWithAnalyst>
         </div>

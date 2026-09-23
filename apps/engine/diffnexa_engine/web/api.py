@@ -21,12 +21,13 @@ from typing import Any
 from pydantic import ValidationError
 
 from diffnexa_engine.contracts.changes import Side, SnapshotRef
-from diffnexa_engine.web.compare import WebComparisonOutcome, compare_snapshots_verbose
+from diffnexa_engine.web.compare import METADATA_FIELDS, WebComparisonOutcome, compare_snapshots_verbose
 from diffnexa_engine.web.errors import WebErrorCode, WebRequestError
 from diffnexa_engine.web.extract import extract_snapshot
 from diffnexa_engine.web.fetcher import FetchError, FetchFailure, FetchPolicy, fetch
 from diffnexa_engine.web.snapshot import RenderNote, Snapshot
 from diffnexa_engine.web.urls import UnsafeUrl
+from diffnexa_engine.web.view import content_view
 
 # A capture of a long page is a few hundred kilobytes; this is generous.
 MAX_SNAPSHOT_BYTES = 10 * 1024 * 1024
@@ -249,7 +250,7 @@ def serialize_web_comparison(outcome: WebComparisonOutcome, processing_ms: int) 
         for change in result.changes
     ]
 
-    return {
+    payload: dict[str, Any] = {
         "engineVersion": result.engine_version,
         "processingMs": processing_ms,
         "documents": {
@@ -269,6 +270,19 @@ def serialize_web_comparison(outcome: WebComparisonOutcome, processing_ms: int) 
             "needsJavascript": diagnostics.needs_javascript,
         },
     }
+    if outcome.previous is not None and outcome.current is not None:
+        # Read-only content of both pages, for the workspace to show each change
+        # in context. Nothing above depends on it.
+        payload["view"] = content_view(
+            outcome.previous.nodes,
+            outcome.current.nodes,
+            result.changes,
+            fields=tuple(
+                {name: getattr(snapshot.metadata, attribute) for name, attribute, _ in METADATA_FIELDS}
+                for snapshot in (outcome.previous, outcome.current)
+            ),
+        )
+    return payload
 
 
 __all__ = [

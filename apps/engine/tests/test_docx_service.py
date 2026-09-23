@@ -71,9 +71,18 @@ def test_two_documents_are_compared(client):
         "counts",
         "changes",
         "groups",
+        "view",
         "diagnostics",
     }
     assert set(payload["documents"]) == {"previous", "revised"}
+    # The read-only view of both documents, for the workspace: the cell the
+    # evidence cites is marked on each side.
+    view = payload["view"]
+    assert set(view) == {"original", "revised", "marks"}
+    assert {(m["change"], m["side"]) for m in view["marks"]} == {
+        (change["id"], "original"),
+        (change["id"], "revised"),
+    }
 
 
 def test_identical_documents_report_no_changes(client):

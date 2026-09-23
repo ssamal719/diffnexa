@@ -1,0 +1,198 @@
+{
+ "changes": [
+  {
+   "category": "text",
+   "competitorSignal": {
+    "basis": "none",
+    "label": "Other",
+    "matchedText": "",
+    "reason": "no category clearly describes this change",
+    "signal": "other",
+    "summary": "Touches Other"
+   },
+   "confidence": 0.927,
+   "delta": null,
+   "evidence": [
+    {
+     "excerpt": "Leeds.",
+     "field": null,
+     "nodeId": "n0",
+     "path": "main > p:nth-of-type(1)",
+     "scope": "node",
+     "sectionPath": [],
+     "side": "old"
+    },
+    {
+     "excerpt": "York.",
+     "field": null,
+     "nodeId": "n0",
+     "path": "main > p:nth-of-type(1)",
+     "scope": "node",
+     "sectionPath": [],
+     "side": "new"
+    }
+   ],
+   "id": "c0",
+   "isNoise": false,
+   "kind": "modified",
+   "label": null,
+   "newValue": "York.",
+   "noiseReason": null,
+   "oldValue": "Leeds.",
+   "sections": [],
+   "seq": 0,
+   "subtype": null,
+   "type": "TEXT_MODIFIED"
+  }
+ ],
+ "competitor": {
+  "changedSignals": [
+   "other"
+  ],
+  "signals": [
+   {
+    "blurb": "Prices, amounts of money, billing periods, trials and other commercial wording.",
+    "changeCount": 0,
+    "changeIds": [],
+    "id": "pricing_commercial",
+    "label": "Pricing & Commercial"
+   },
+   {
+    "blurb": "Content in sections the page itself calls features, integrations, products or what's new.",
+    "changeCount": 0,
+    "changeIds": [],
+    "id": "product_features",
+    "label": "Product & Features"
+   },
+   {
+    "blurb": "The page's main heading and the opening text directly beneath it.",
+    "changeCount": 0,
+    "changeIds": [],
+    "id": "messaging_positioning",
+    "label": "Messaging & Positioning"
+   },
+   {
+    "blurb": "Plans and tiers named in the page's headings and tables, and what is listed under them.",
+    "changeCount": 0,
+    "changeIds": [],
+    "id": "plans_packaging",
+    "label": "Plans & Packaging"
+   },
+   {
+    "blurb": "Links whose words ask the visitor to act, such as Start free, Sign up or Book a demo.",
+    "changeCount": 0,
+    "changeIds": [],
+    "id": "calls_to_action",
+    "label": "Calls to Action"
+   },
+   {
+    "blurb": "Other headings and wording in the named sections of the page.",
+    "changeCount": 0,
+    "changeIds": [],
+    "id": "content_sections",
+    "label": "Content & Sections"
+   },
+   {
+    "blurb": "Links that were added, removed or now point somewhere else.",
+    "changeCount": 0,
+    "changeIds": [],
+    "id": "links_destinations",
+    "label": "Links & Destinations"
+   },
+   {
+    "blurb": "The page title, meta description and canonical link that search engines read.",
+    "changeCount": 0,
+    "changeIds": [],
+    "id": "seo_metadata",
+    "label": "SEO & Metadata"
+   },
+   {
+    "blurb": "Changes that none of the categories above clearly describes.",
+    "changeCount": 1,
+    "changeIds": [
+     "c0"
+    ],
+    "id": "other",
+    "label": "Other"
+   }
+  ],
+  "signalsVersion": "2026.09.1"
+ },
+ "counts": {
+  "meaningful": 1,
+  "noise": 0,
+  "total": 1
+ },
+ "diagnostics": {
+  "needsJavascript": false,
+  "notes": [],
+  "previousWarnings": [],
+  "revisedWarnings": []
+ },
+ "documents": {
+  "previous": {
+   "nodeCount": 2,
+   "sha256": "1fa03f8dfdd5c807e47d9839c1525d45b1c5e441bd73d601f12b04eda0d8d1f4",
+   "url": "https://competitor.example.com/pricing"
+  },
+  "revised": {
+   "nodeCount": 2,
+   "sha256": "407199691a714322d2e0fdd3e590078572c90ada1465751cea5556444d479ca6",
+   "url": "https://competitor.example.com/pricing"
+  }
+ },
+ "engineVersion": "0.1.0",
+ "processingMs": 0,
+ "view": {
+  "marks": [
+   {
+    "change": "c0",
+    "end": 62,
+    "node": "n0",
+    "side": "original",
+    "start": 56
+   },
+   {
+    "change": "c0",
+    "end": 61,
+    "node": "n0",
+    "side": "revised",
+    "start": 56
+   }
+  ],
+  "original": {
+   "fields": {
+    "metadata.title": "Northwind"
+   },
+   "nodes": [
+    {
+     "id": "n0",
+     "role": "paragraph",
+     "text": "Welcome. Northwind is a small software company based in Leeds."
+    },
+    {
+     "id": "n1",
+     "role": "paragraph",
+     "text": "Office hours are Monday to Friday."
+    }
+   ]
+  },
+  "revised": {
+   "fields": {
+    "metadata.title": "Northwind"
+   },
+   "nodes": [
+    {
+     "id": "n0",
+     "role": "paragraph",
+     "text": "Welcome. Northwind is a small software company based in York."
+    },
+    {
+     "id": "n1",
+     "role": "paragraph",
+     "text": "Office hours are Monday to Friday."
+    }
+   ]
+  }
+ }
+}

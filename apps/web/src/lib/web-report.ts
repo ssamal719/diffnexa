@@ -10,6 +10,9 @@
  * the headings a reader can see: Pricing › Enterprise, not page 7.
  */
 
+import { citedText, type ContentView } from "@/lib/content-view";
+import { filterGroup, kindFilter, shorten, type FilterGroup, type WorkspaceChange } from "@/lib/workspace";
+
 // ---------------------------------------------------------------- the API shape
 
 export type WebEvidence = {
@@ -55,6 +58,8 @@ export type WebComparison = {
     revisedWarnings: string[];
     needsJavascript: boolean;
   };
+  /** Both captures' content with every change's evidence marked, for the side-by-side view (see content-view.ts). */
+  view?: unknown;
 };
 
 export type Baseline = {
@@ -422,4 +427,122 @@ export function checkUrl(raw: string): UrlCheck {
   }
 
   return { ok: true, url: parsed.toString() };
+}
+
+// ---------------------------------------------------------------- the comparison workspace
+
+/** Every heading path a section sits under, so choosing a parent section includes its children. */
+export function sectionTags(change: WebChange): string[] {
+  const section = change.sections[0];
+  if (!section) return [];
+  const parts = section.split(" › ");
+  return parts.map((_, index) => parts.slice(0, index + 1).join(" › "));
+}
+
+/**
+ * Where a webpage change is, in the page's own terms: its heading path, "Whole
+ * page" for the title and other page details, or — for text above the first
+ * heading — saying exactly that. A webpage has no page numbers, so none are
+ * ever shown.
+ */
+export function webPlace(change: WebChange, view: ContentView | null = null): string {
+  if (categoryOf(change) === "details") return "Whole page";
+  const path = change.sections[0] ? change.sections[0].split(" › ") : [];
+  if (change.subtype === "heading") {
+    // A heading's own place is the heading itself, under whatever headings are above it.
+    const name = citedText(view, change.evidence);
+    const parts = [...path, name ? `“${name}”` : null].filter(Boolean);
+    return parts.length > 0 ? parts.join(" › ") : "A top-level heading";
+  }
+  if (path.length > 0) return path.join(" › ");
+  return "Before the first heading";
+}
+
+export type WebWorkspaceOptions = {
+  /** Both captures' content, when the result carries it, for naming changed headings. */
+  view?: ContentView | null;
+  /** How the navigator groups changes. Default: the top-level heading. */
+  groupOf?: (change: WebChange) => { key: string; label: string };
+  /** A short category for the navigator. Default: what changed (Wording, Numbers…). */
+  categoryLabel?: (change: WebChange) => string;
+  /** Extra filter tags, such as policy topics or competitor signals. */
+  tags?: (change: WebChange) => Record<string, string[]>;
+  /** Extra words a search should find, such as a signal's name. */
+  searchWords?: (change: WebChange) => (string | null | undefined)[];
+};
+
+/**
+ * Webpage changes in the workspace's shared shape, in the order given — the
+ * caller decides the order (reading order, or grouped by signal) and the
+ * numbers follow it. Minor differences keep their place in the list but are
+ * only shown when asked for.
+ */
+export function webWorkspaceChanges(changes: WebChange[], options: WebWorkspaceOptions = {}): WorkspaceChange[] {
+  return changes.map((change, index) => {
+    const title = headlineFor(change);
+    const place = webPlace(change, options.view ?? null);
+    const category = categoryOf(change);
+    const group = options.groupOf?.(change) ?? defaultGroup(change);
+    const inline = category === "values" || category === "dates" || category === "tables" || category === "details";
+    const before = inline ? change.oldValue : shorten(change.oldValue, 70);
+    const after = inline ? change.newValue : shorten(change.newValue, 70);
+    const excerpt = change.evidence.find((item) => item.side === "new" && item.excerpt)?.excerpt ?? change.evidence.find((item) => item.excerpt)?.excerpt;
+    const said = [change.oldValue && `from ${shorten(change.oldValue, 60)}`, change.newValue && `to ${shorten(change.newValue, 60)}`]
+      .filter(Boolean)
+      .join(" ");
+    const categoryLabel = options.categoryLabel?.(change) ?? WEB_CATEGORIES.find((item) => item.id === category)?.label ?? "Wording";
+    return {
+      id: change.id,
+      number: index + 1,
+      group: group.key,
+      groupLabel: group.label,
+      title,
+      place,
+      category: categoryLabel,
+      kind: editKindOf(change),
+      before,
+      after,
+      context: before || after ? null : shorten(excerpt, 80),
+      description: `Change ${index + 1}: ${title}, ${place}${said ? `, ${said}` : ""}.`,
+      searchText: [
+        title,
+        place,
+        categoryLabel,
+        change.label,
+        change.oldValue,
+        change.newValue,
+        change.delta,
+        ...change.sections,
+        ...change.evidence.map((item) => item.excerpt),
+        ...(options.searchWords?.(change) ?? []),
+      ]
+        .filter(Boolean)
+        .join(" "),
+      tags: { category: [category], section: sectionTags(change), ...options.tags?.(change) },
+      minor: change.isNoise,
+    };
+  });
+}
+
+function defaultGroup(change: WebChange): { key: string; label: string } {
+  const top = change.sections[0]?.split(" › ")[0];
+  if (top) return { key: `s:${top}`, label: top };
+  if (categoryOf(change) === "details") return { key: "details", label: "Page details" };
+  return { key: "top", label: "Before the first heading" };
+}
+
+/** Meaningful changes in reading order, then the minor ones, as the workspace numbers them. */
+export function inWorkspaceOrder<T extends WebChange>(changes: T[]): T[] {
+  return [...changes.filter((change) => !change.isNoise), ...changes.filter((change) => change.isNoise)].sort(
+    (a, b) => Number(a.isNoise) - Number(b.isNoise) || a.seq - b.seq,
+  );
+}
+
+/** The filters every webpage tool offers: kind of change and what changed. Sections come from the section map. */
+export function webFilters(changes: WorkspaceChange[]): FilterGroup[] {
+  return [
+    kindFilter(changes),
+    filterGroup("category", "What changed", changes, WEB_CATEGORIES.map(({ id, label }) => ({ id, label }))),
+    filterGroup("section", "Section", changes, [], { inBar: false }),
+  ];
 }

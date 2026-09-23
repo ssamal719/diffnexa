@@ -355,7 +355,7 @@ export function PriceDesk() {
 
       {state.name === "checked" && (
         <ReportWithAnalyst tool="price" result={state.result} seal={state.seal}>
-          {({ analyst, focus }) => (
+          {({ analyst, focus, analysis }) => (
             <PriceReport
               result={state.result}
               url={state.url}
@@ -363,6 +363,7 @@ export function PriceDesk() {
               pageType={state.pageType}
               baselineCapturedAt={state.baselineCapturedAt}
               analyst={analyst}
+              analysis={analysis}
               focus={focus}
             />
           )}

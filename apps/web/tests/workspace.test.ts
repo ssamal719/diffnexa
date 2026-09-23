@@ -7,7 +7,19 @@
 
 import { describe, expect, it } from "vitest";
 
-import { counterText, navigatorGroups, searchChanges, stepChange, type WorkspaceChange } from "@/lib/workspace";
+import {
+  counterText,
+  filterChanges,
+  filterGroup,
+  hasFilters,
+  kindFilter,
+  navigatorGroups,
+  searchChanges,
+  shorten,
+  stepChange,
+  toggleFilter,
+  type WorkspaceChange,
+} from "@/lib/workspace";
 
 function change(number: number, group: string, place: string, text = ""): WorkspaceChange {
   return {
@@ -15,6 +27,7 @@ function change(number: number, group: string, place: string, text = ""): Worksp
     number,
     group,
     groupLabel: `Sheet: ${group}`,
+    title: "Value changed",
     place,
     category: "Number",
     kind: "changed",
@@ -71,5 +84,52 @@ describe("previous and next", () => {
     expect(counterText(searchChanges(CHANGES, "pricing"), 4, "c2")).toBe("Change 2 of 2 shown · 4 in total");
     expect(counterText(searchChanges(CHANGES, "pricing"), 4, "c3")).toBe("Change – of 2 shown · 4 in total");
     expect(counterText([], 0, null)).toBe("No changes");
+  });
+});
+
+describe("filters", () => {
+  const tagged: WorkspaceChange[] = [
+    { ...change(1, "A", "B3"), kind: "changed", tags: { category: ["values"], page: ["1"] } },
+    { ...change(2, "A", "B4"), kind: "added", tags: { category: ["content"], page: ["1"] } },
+    { ...change(3, "B", "C1"), kind: "removed", tags: { category: ["values"], page: ["2"] } },
+    { ...change(4, "B", "C2"), kind: "changed", tags: { category: ["content"], page: ["2"] }, minor: true },
+  ];
+
+  it("offers only options some change has, with their counts, and never counts minor differences", () => {
+    const group = filterGroup("category", "What changed", tagged, [
+      { id: "values", label: "Values" },
+      { id: "tables", label: "Tables" },
+      { id: "content", label: "Content" },
+    ]);
+    expect(group.options).toEqual([
+      { id: "values", label: "Values", count: 2 },
+      { id: "content", label: "Content", count: 1 },
+    ]);
+    expect(kindFilter(tagged).options.map((option) => option.id)).toEqual(["added", "removed", "changed"]);
+  });
+
+  it("matches any choice within a group and every group chosen", () => {
+    const numbers = (list: WorkspaceChange[]) => list.map((item) => item.number);
+    expect(numbers(filterChanges(tagged, {}, false))).toEqual([1, 2, 3]);
+    expect(numbers(filterChanges(tagged, { category: ["values", "content"] }, false))).toEqual([1, 2, 3]);
+    expect(numbers(filterChanges(tagged, { category: ["values"], page: ["2"] }, false))).toEqual([3]);
+    expect(numbers(filterChanges(tagged, { kind: ["changed"] }, false))).toEqual([1]);
+    expect(numbers(filterChanges(tagged, { kind: ["changed"] }, true))).toEqual([1, 4]);
+  });
+
+  it("turns a choice off when it is chosen again, and knows when nothing is chosen", () => {
+    const once = toggleFilter({}, "page", "2");
+    expect(once).toEqual({ page: ["2"] });
+    expect(hasFilters(once)).toBe(true);
+    expect(hasFilters(toggleFilter(once, "page", "2"))).toBe(false);
+  });
+
+  it("shortens a passage for the navigator without changing its words", () => {
+    expect(shorten("  one   two three ")).toBe("one two three");
+    const long = "word ".repeat(40).trim();
+    const short = shorten(long, 30)!;
+    expect(short.endsWith("…")).toBe(true);
+    expect(long.startsWith(short.slice(0, -1))).toBe(true);
+    expect(shorten(null)).toBeNull();
   });
 });

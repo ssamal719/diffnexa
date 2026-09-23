@@ -13,7 +13,9 @@ import { useEffect, useState } from "react";
  */
 export type ProcessingStage = "sending" | "comparing" | "preparing";
 
-const STAGES: { id: ProcessingStage; label: string; detail: string }[] = [
+export type StageText = { id: ProcessingStage; label: string; detail: string };
+
+const STAGES: StageText[] = [
   { id: "sending", label: "Sending your documents", detail: "Transferring both files securely" },
   { id: "comparing", label: "Reading and comparing", detail: "Extracting text, then matching pages and wording" },
   { id: "preparing", label: "Preparing your report", detail: "Organising the changes and their evidence" },
@@ -22,9 +24,12 @@ const STAGES: { id: ProcessingStage; label: string; detail: string }[] = [
 export function ProcessingState({
   stage,
   uploadPercent,
+  stages = STAGES,
 }: {
   stage: ProcessingStage;
   uploadPercent: number | null;
+  /** The same three real stages in another tool's words. PDF Compare passes nothing. */
+  stages?: StageText[];
 }) {
   const [seconds, setSeconds] = useState(0);
 
@@ -34,7 +39,7 @@ export function ProcessingState({
     return () => clearInterval(timer);
   }, []);
 
-  const activeIndex = STAGES.findIndex((item) => item.id === stage);
+  const activeIndex = stages.findIndex((item) => item.id === stage);
 
   return (
     <section
@@ -48,7 +53,7 @@ export function ProcessingState({
       </p>
 
       <ol className="mt-4 space-y-3">
-        {STAGES.map((item, index) => {
+        {stages.map((item, index) => {
           const done = index < activeIndex;
           const active = index === activeIndex;
           return (

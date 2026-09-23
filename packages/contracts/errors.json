@@ -21,5 +21,16 @@
     "fetch_timeout": "That page took too long to respond. It may be slow right now, so try again in a moment.",
     "engine_unavailable": "The service that reads web pages isn't responding right now. Nothing is wrong with the address you entered.",
     "bad_request": "Something was missing from that request. Enter a web address and try again."
+  },
+  "docx_messages": {
+    "docx_not_docx": "That file isn't a Word .docx document. DOCX Compare reads .docx files only.",
+    "docx_legacy_doc": "That looks like an older Word .doc file. Open it in Word, save it as .docx, then compare again.",
+    "docx_macro_enabled": "That is a macro-enabled Word file (.docm). For safety, DOCX Compare reads plain .docx files only. Save it as a .docx without macros, then compare again.",
+    "docx_encrypted": "This document is password protected. Remove the password in Word, then compare again.",
+    "docx_unreadable": "That file couldn't be read as a Word document. It may be damaged, or not a real .docx file.",
+    "docx_too_large": "That document is too large to compare. Try a smaller document, or one without large images.",
+    "docx_too_complex": "That document has more content than DOCX Compare can compare at once. Try comparing a shorter document.",
+    "docx_tracked_changes": "This document contains tracked changes that haven't been accepted or rejected. Accept or reject them in Word, save, then compare again.",
+    "docx_empty_file": "That file is empty. Choose the Word document you want to compare."
   }
 }

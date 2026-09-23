@@ -182,6 +182,24 @@ def _build_date(text: str, day: int, month: int, year: int, *, ambiguous: bool) 
     return TypedValue(kind=ValueKind.DATE, text=text, day=day, month=month, year=year, ambiguous=ambiguous)
 
 
+_DATE_EDGE = " .,;:!?()[]{}\"'“”‘’"
+
+
+def parse_whole_date(text: str) -> TypedValue | None:
+    """A date that is the whole of `text`, give or take surrounding punctuation.
+
+    `parse_date` finds a date anywhere in its input, so "30 years. Deadline:
+    30 September 2026" parses as a date. When working out which words spell a
+    date, only a run of words that is the date itself will do; otherwise the
+    neighbouring words ("30 years") are swallowed into the date and their own
+    change is lost.
+    """
+    parsed = parse_date(text)
+    if parsed is None:
+        return None
+    return parsed if normalize(text).strip(_DATE_EDGE) == parsed.text.strip(_DATE_EDGE) else None
+
+
 def parse_value(text: str) -> TypedValue | None:
     """Parse a fragment into a typed value, trying the most specific form first."""
     cleaned = normalize(text)

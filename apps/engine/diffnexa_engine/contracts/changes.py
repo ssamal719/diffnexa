@@ -309,7 +309,21 @@ class SnapshotRef(_Frozen):
     node_count: int = Field(ge=0)
 
 
-SourceRef = Annotated[DocumentRef | SnapshotRef, Field(discriminator="kind")]
+class DocxRef(_Frozen):
+    """One side of a comparison, when that side is a Word (.docx) document.
+
+    A Word document has no fixed pages — pagination depends on the printer, the
+    fonts and the window it is opened in — so, as for a webpage, no page count
+    is recorded. The fingerprint is of the document's content, and it is what
+    every piece of evidence from that document cites.
+    """
+
+    kind: Literal["docx"] = "docx"
+    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    node_count: int = Field(ge=0)
+
+
+SourceRef = Annotated[DocumentRef | SnapshotRef | DocxRef, Field(discriminator="kind")]
 
 
 class ComparisonResult(_Frozen):
@@ -337,17 +351,19 @@ class ComparisonResult(_Frozen):
                     if not isinstance(source, DocumentRef):
                         raise ValueError(
                             f"change {change.id} cites a page of the {ev.side.value} side, "
-                            "which is a webpage and has none"
+                            "which is a webpage or Word document and has none"
                         )
                     if ev.page > source.page_count:
                         raise ValueError(
                             f"change {change.id} cites page {ev.page} of the {ev.side.value} PDF, "
                             f"which has only {source.page_count} pages"
                         )
-                if ev.scope == "node" and not isinstance(source, SnapshotRef):
+                # Content nodes exist in webpages and Word documents, never in a
+                # paginated PDF.
+                if ev.scope == "node" and not isinstance(source, SnapshotRef | DocxRef):
                     raise ValueError(
-                        f"change {change.id} cites a webpage node on the {ev.side.value} side, "
-                        "which is a document"
+                        f"change {change.id} cites a content node on the {ev.side.value} side, "
+                        "which is a paginated document"
                     )
 
         known = set(ids)

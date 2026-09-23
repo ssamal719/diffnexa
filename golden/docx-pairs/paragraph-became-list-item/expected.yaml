@@ -1,0 +1,13 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: paragraph-became-list-item
+description: The medical certificate paragraph becomes a bullet point; its words are unchanged.
+expected_changes:
+- group: structure
+  kind: modified
+  category: layout
+  subtype: block_type
+  old: Paragraph
+  new: Bulleted list item, level 1
+  match: exact
+  locations: ['Paragraph 8', 'Bulleted list item (level 1), paragraph 8']

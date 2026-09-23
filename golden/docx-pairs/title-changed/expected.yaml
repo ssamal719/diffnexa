@@ -1,0 +1,13 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: title-changed
+description: The document title property changes. It is reported as a document property, apart from the body text.
+expected_changes:
+- group: other
+  kind: modified
+  category: metadata
+  subtype: title
+  old: Master Services Agreement
+  new: Master Services Agreement (Revised)
+  match: exact
+  locations: ['Document properties']

@@ -1,0 +1,16 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: table-removed
+description: The important dates table is removed and replaced by a sentence saying dates will be announced.
+expected_changes:
+- group: tables
+  kind: removed
+  category: table
+  subtype: table
+  old: Last date to apply
+  locations: ['Table 2, row 1, column 1']
+- group: text
+  kind: added
+  new: Dates will be announced on the recruitment portal.
+  match: exact
+  locations: ['Paragraph 10']

@@ -1,0 +1,11 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: table-row-added
+description: A Stenographer row is added to the vacancies table.
+expected_changes:
+- group: tables
+  kind: added
+  subtype: row
+  new: Stenographer · 40 · Level 4
+  match: exact
+  locations: ['Table 1, row 5, column 1']

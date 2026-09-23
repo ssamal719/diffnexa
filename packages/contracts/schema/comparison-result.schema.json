@@ -310,6 +310,34 @@
       "title": "DocumentRef",
       "type": "object"
     },
+    "DocxRef": {
+      "additionalProperties": false,
+      "description": "One side of a comparison, when that side is a Word (.docx) document.\n\nA Word document has no fixed pages \u2014 pagination depends on the printer, the\nfonts and the window it is opened in \u2014 so, as for a webpage, no page count\nis recorded. The fingerprint is of the document's content, and it is what\nevery piece of evidence from that document cites.",
+      "properties": {
+        "kind": {
+          "const": "docx",
+          "default": "docx",
+          "title": "Kind",
+          "type": "string"
+        },
+        "node_count": {
+          "minimum": 0,
+          "title": "Node Count",
+          "type": "integer"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sha256",
+        "node_count"
+      ],
+      "title": "DocxRef",
+      "type": "object"
+    },
     "Evidence": {
       "additionalProperties": false,
       "description": "Where a change came from, in terms the source format can actually answer.\n\nThree scopes, and a piece of evidence uses exactly one of them:\n\n* ``page`` \u2014 a place on a page of a document: a page number, plus the words\n  or the area on it. This is what PDFs can prove.\n* ``document`` \u2014 a property of the file as a whole, such as its title. Only\n  metadata changes may use it.\n* ``node`` \u2014 a place in a captured webpage: the snapshot it came from, the\n  content node, and the words cited within that node. A webpage has no pages\n  and no coordinates, so inventing them would be inventing evidence.\n\nThe fields of one scope are forbidden on the others, checked below, so page\nevidence can never quietly become node evidence or the reverse.",
@@ -550,6 +578,7 @@
       "discriminator": {
         "mapping": {
           "document": "#/$defs/DocumentRef",
+          "docx": "#/$defs/DocxRef",
           "snapshot": "#/$defs/SnapshotRef"
         },
         "propertyName": "kind"
@@ -560,6 +589,9 @@
         },
         {
           "$ref": "#/$defs/SnapshotRef"
+        },
+        {
+          "$ref": "#/$defs/DocxRef"
         }
       ],
       "title": "New Document"
@@ -568,6 +600,7 @@
       "discriminator": {
         "mapping": {
           "document": "#/$defs/DocumentRef",
+          "docx": "#/$defs/DocxRef",
           "snapshot": "#/$defs/SnapshotRef"
         },
         "propertyName": "kind"
@@ -578,6 +611,9 @@
         },
         {
           "$ref": "#/$defs/SnapshotRef"
+        },
+        {
+          "$ref": "#/$defs/DocxRef"
         }
       ],
       "title": "Old Document"

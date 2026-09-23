@@ -23,6 +23,15 @@ export function webErrorMessage(code: string): string | null {
   return code in WEB_ERROR_MESSAGES ? WEB_ERROR_MESSAGES[code as WebErrorCode] : null;
 }
 
+/** Word document errors, from the same shared source as the engine's. */
+export type DocxErrorCode = keyof typeof errorsContract.docx_messages;
+
+export const DOCX_ERROR_MESSAGES: Record<DocxErrorCode, string> = errorsContract.docx_messages;
+
+export function docxErrorMessage(code: string): string | null {
+  return code in DOCX_ERROR_MESSAGES ? DOCX_ERROR_MESSAGES[code as DocxErrorCode] : null;
+}
+
 export function errorMessage(code: ErrorCode): string {
   return ERROR_MESSAGES[code];
 }
@@ -100,4 +109,43 @@ export function sanitizeFilename(name: string, maxLength = 80): string {
   const extensionMatch = cleaned.match(/\.[A-Za-z0-9]{1,8}$/);
   const extension = extensionMatch ? extensionMatch[0] : "";
   return `${cleaned.slice(0, maxLength - extension.length - 1)}…${extension}`;
+}
+
+// ---------------------------------------------------------------- Word documents
+
+/** The first-pass ceiling in the browser. The server re-checks on the real bytes. */
+export const DOCX_MAX_FILE_BYTES = 20 * 1024 * 1024;
+
+const ZIP_SIGNATURE = [0x50, 0x4b, 0x03, 0x04];
+/** Older Word files and password-protected .docx files are both this container. */
+const OLE_SIGNATURE = [0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1];
+
+export type DocxCheck = { ok: true } | { ok: false; code: DocxErrorCode };
+
+/**
+ * A first look at a Word file's bytes, so an obvious mismatch is reported at
+ * once instead of after an upload. Mirrors the engine's own first check, which
+ * is the one that counts: a file that passes here is still fully validated on
+ * the server, and nothing here trusts the file's name or declared type.
+ */
+export function checkDocxBytes(bytes: Uint8Array): DocxCheck {
+  if (bytes.length === 0) return { ok: false, code: "docx_empty_file" };
+  if (bytes.length > DOCX_MAX_FILE_BYTES) return { ok: false, code: "docx_too_large" };
+  const startsWith = (signature: number[]) => signature.every((byte, index) => bytes[index] === byte);
+  if (startsWith(ZIP_SIGNATURE)) return { ok: true };
+  if (startsWith(OLE_SIGNATURE)) {
+    return { ok: false, code: containsUtf16(bytes, "EncryptedPackage") ? "docx_encrypted" : "docx_legacy_doc" };
+  }
+  return { ok: false, code: "docx_not_docx" };
+}
+
+function containsUtf16(bytes: Uint8Array, text: string): boolean {
+  const needle = Array.from(text).flatMap((char) => [char.charCodeAt(0), 0]);
+  outer: for (let start = 0; start <= bytes.length - needle.length; start += 1) {
+    for (let offset = 0; offset < needle.length; offset += 1) {
+      if (bytes[start + offset] !== needle[offset]) continue outer;
+    }
+    return true;
+  }
+  return false;
 }

@@ -1,0 +1,13 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: heading-level-changed
+description: The Important dates heading moves from Heading 1 to Heading 2; its words are unchanged.
+expected_changes:
+- group: structure
+  kind: modified
+  category: layout
+  subtype: heading_level
+  old: Heading 1
+  new: Heading 2
+  match: exact
+  locations: ['Heading 1, paragraph 9', 'Heading 2, paragraph 9']

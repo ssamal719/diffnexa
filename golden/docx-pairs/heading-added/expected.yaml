@@ -1,0 +1,16 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: heading-added
+description: A new Bereavement leave section is added, with a heading and one paragraph.
+expected_changes:
+- group: headings
+  kind: added
+  subtype: heading
+  new: Bereavement leave
+  match: exact
+  locations: ['Heading 1, paragraph 14']
+- group: text
+  kind: added
+  new: Employees may take up to 5 days of paid bereavement leave.
+  match: exact
+  locations: ['Paragraph 15']

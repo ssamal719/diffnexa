@@ -1,0 +1,13 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: numeric-change
+description: The termination notice period goes from 60 days to 90 days.
+expected_changes:
+- group: numbers
+  kind: modified
+  category: number
+  old: '60'
+  new: '90'
+  delta: +30 (+50%)
+  match: exact
+  locations: ['Paragraph 12']

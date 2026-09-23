@@ -27,6 +27,7 @@ describe("the limits themselves", () => {
     expect(Object.keys(LIMITS).sort()).toEqual([
       "competitor-capture",
       "competitor-compare",
+      "docx-compare",
       "pdf-compare",
       "policy-capture",
       "policy-compare",

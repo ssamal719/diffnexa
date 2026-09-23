@@ -45,8 +45,8 @@ from diffnexa_engine.compare.values import (
     TypedValue,
     ValueKind,
     compare_values,
-    parse_date,
     parse_value,
+    parse_whole_date,
 )
 from diffnexa_engine.contracts.changes import (
     Change,
@@ -590,7 +590,7 @@ def _date_span(block: Block, word_ids: tuple[str, ...]) -> tuple[TypedValue, lis
             run = words[start:end]
             if not changed & {w.id for w in run}:
                 continue
-            parsed = parse_date(" ".join(w.text for w in run))
+            parsed = parse_whole_date(" ".join(w.text for w in run))
             if parsed is None:
                 continue
             if best is None or len(parsed.text) > len(best[0].text):

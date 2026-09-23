@@ -1,0 +1,12 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: mixed-revision
+description: A revised recruitment notice - vacancies 627 to 654, a Stenographer row added, the Eligibility heading extended, a bullet removed, the last date moved, a new application step, and the fee raised from 500 to 600 rupees.
+expected_changes:
+- {group: tables, category: number, subtype: table_cell, old: '627', new: '654', match: exact, locations: ['Table 1, row 2, column 2']}
+- {group: tables, kind: added, subtype: row, new: Stenographer · 40 · Level 4, match: exact, locations: ['Table 1, row 5, column 1']}
+- {group: headings, subtype: heading, new: criteria, locations: ['Heading 1, paragraph 4']}
+- {group: lists, kind: removed, old: Working knowledge of the state language, match: exact, locations: ['Bulleted list item (level 1), paragraph 7']}
+- {group: tables, category: date, subtype: table_cell, old: 30 September 2026, new: 15 October 2026, delta: 15 days later, match: exact, locations: ['Table 2, row 3, column 2']}
+- {group: lists, kind: added, new: Upload a recent photograph and signature, match: exact, locations: ['Numbered list item (level 1), paragraph 13']}
+- {group: lists, category: number, old: '500', new: '600', delta: +100 (+20%), match: exact, locations: ['Numbered list item (level 1), paragraph 13', 'Numbered list item (level 1), paragraph 12']}

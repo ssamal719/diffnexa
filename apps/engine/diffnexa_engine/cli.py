@@ -85,6 +85,7 @@ def cmd_golden_run(args: argparse.Namespace) -> int:
     from diffnexa_engine.compare import compare_documents
     from diffnexa_engine.golden.baseline import find_regressions, load_baseline, write_baseline
     from diffnexa_engine.golden.competitor import discover_competitor_pairs, score_competitor_pair
+    from diffnexa_engine.golden.docx import discover_docx_pairs, score_docx_pair
     from diffnexa_engine.golden.loader import discover_pairs
     from diffnexa_engine.golden.policy import discover_policy_pairs, score_policy_pair
     from diffnexa_engine.golden.price import discover_price_pairs, score_price_pair
@@ -189,6 +190,25 @@ def cmd_golden_run(args: argparse.Namespace) -> int:
                 extraction_failures=[],
                 comparison_status="scored",
                 score=score,
+            )
+        )
+
+    # Word document pairs score the same four metrics, plus group and location checks.
+    try:
+        docx_pairs = discover_docx_pairs(root / "golden" / "docx-pairs")
+    except Exception as exc:
+        print(f"DOCX golden spec error: {exc}")
+        return 1
+    for docx_pair in docx_pairs:
+        docx_score, _payload = score_docx_pair(docx_pair)
+        suite.pairs.append(
+            PairOutcome(
+                name=f"docx:{docx_pair.name}",
+                source="docx",
+                description=docx_pair.spec.description,
+                extraction_failures=[],
+                comparison_status="scored",
+                score=docx_score,
             )
         )
     baseline_path = root / "golden" / "baseline.json"

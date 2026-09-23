@@ -1,0 +1,11 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: list-item-added
+description: A fourth deliverable is added to the bulleted list in section 1.
+expected_changes:
+- group: lists
+  kind: added
+  subtype: list_item
+  new: Emergency response within 4 hours
+  match: exact
+  locations: ['Bulleted list item (level 1), paragraph 7']

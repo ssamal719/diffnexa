@@ -17,7 +17,12 @@ def isolated_engine_environment(monkeypatch: pytest.MonkeyPatch) -> None:
     shell happens to export ENGINE_SHARED_SECRET (or a limit) would otherwise
     see different results from CI. Tests that need a value set it explicitly.
     """
-    for name in ("ENGINE_SHARED_SECRET", "DIFFNEXA_MAX_FILE_MB", "DIFFNEXA_MAX_PAGES"):
+    for name in (
+        "ENGINE_SHARED_SECRET",
+        "DIFFNEXA_MAX_FILE_MB",
+        "DIFFNEXA_MAX_PAGES",
+        "DIFFNEXA_DOCX_MAX_FILE_MB",
+    ):
         monkeypatch.delenv(name, raising=False)
 
 

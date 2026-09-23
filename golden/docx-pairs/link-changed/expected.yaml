@@ -1,0 +1,12 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: link-changed
+description: The Apply online link keeps its words but now points to a different address.
+expected_changes:
+- group: other
+  kind: modified
+  category: link
+  old: https://recruit.example.gov/apply
+  new: https://recruit.example.gov/apply-2026
+  match: exact
+  locations: ['Link in paragraph 15']

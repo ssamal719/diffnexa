@@ -33,3 +33,7 @@ Tool 4 Competitor Monitor: add 21 competitor golden pairs (pricing, plans, featu
 ## 2026-09-23
 
 Tool 5 Price Monitor: add 28 price golden pairs (prices in $, €, £, ₹ and INR code; currency, billing period, sale, original/MRP, plan, product, availability and price-table changes; negative pairs proving that user limits, trial lengths, uptime, customer counts and warranty years are never labelled as prices; no-change, Cloudflare token and mixed cases). Every pair scores recall 100%, 0 false positives, 0 noise leakage, 100% evidence; no existing pair changed.
+
+## 2026-09-23
+
+Tool 6 DOCX Compare: add 27 DOCX golden pairs (real Word documents: paragraphs added/removed/reworded, headings added/renamed/re-levelled, bulleted and numbered list items added/removed/edited, a numbered-list insertion Word renumbers itself, a paragraph that became a list item, tables added/removed, rows added/removed, a cell amount, a cell date, an added column, numbers, dates, three values in one paragraph, a link, the title property, a moved paragraph, formatting-only and no-change). Every pair scores recall 100%, 0 false positives, 0 noise leakage, 100% evidence, with each change in its expected group and its evidence at its expected location. No existing pair changed its score.

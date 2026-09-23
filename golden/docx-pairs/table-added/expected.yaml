@@ -1,0 +1,11 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: table-added
+description: A table of annual leave by years of service is added to the Annual leave section.
+expected_changes:
+- group: tables
+  kind: added
+  category: table
+  subtype: table
+  new: Years of service
+  locations: ['Table 1, row 1, column 1']

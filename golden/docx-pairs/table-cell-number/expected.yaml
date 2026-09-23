@@ -1,0 +1,14 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: table-cell-number
+description: Junior Assistant vacancies change from 627 to 654 in the vacancies table.
+expected_changes:
+- group: tables
+  kind: modified
+  category: number
+  subtype: table_cell
+  old: '627'
+  new: '654'
+  delta: +27 (+4.31%)
+  match: exact
+  locations: ['Table 1, row 2, column 2']

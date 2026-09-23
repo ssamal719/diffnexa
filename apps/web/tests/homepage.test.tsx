@@ -52,12 +52,13 @@ describe("the homepage", () => {
     expect(hrefs).toContain("/policy-monitor");
     expect(hrefs).toContain("/competitor-monitor");
     expect(hrefs).toContain("/price-monitor");
+    expect(hrefs).toContain("/docx-compare");
   });
 
   it("shows a card for every tool, each linking to its own page", () => {
     render(<HomePage />);
     const cards = screen.getAllByRole("article");
-    expect(cards).toHaveLength(5);
+    expect(cards).toHaveLength(6);
 
     for (const tool of TOOLS) {
       const card = cards.find((element) => element.textContent?.includes(tool.name));
@@ -340,5 +341,26 @@ describe("the price monitor page", () => {
     for (let i = 1; i < levels.length; i += 1) {
       expect(levels[i] - levels[i - 1], `jump at heading ${i}`).toBeLessThanOrEqual(1);
     }
+  });
+});
+
+describe("the docx compare card", () => {
+  it("has the agreed words and an Open DOCX Compare button", () => {
+    render(<HomePage />);
+    const cards = screen.getAllByRole("article").filter((element) =>
+      element.textContent?.includes("DOCX Compare"),
+    );
+    expect(cards).toHaveLength(1);
+    expect(cards[0].textContent).toContain(
+      "Compare two Word documents and find changes in text, numbers, dates, lists, and tables.",
+    );
+    const button = within(cards[0]).getByRole("link", { name: "Open DOCX Compare" });
+    expect(button.getAttribute("href")).toBe("/docx-compare");
+  });
+
+  it("is in the header exactly once", () => {
+    const { container } = render(<SiteHeader />);
+    const hrefs = Array.from(container.querySelectorAll("a")).map((a) => a.getAttribute("href"));
+    expect(hrefs.filter((href) => href === "/docx-compare")).toHaveLength(1);
   });
 });

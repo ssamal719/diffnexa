@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: paragraph-removed
+description: The carry-over paragraph is removed from the Annual leave section.
+expected_changes:
+- group: text
+  kind: removed
+  old: Up to 5 unused days may be carried over to the next year.
+  match: exact
+  locations: ['Paragraph 5']

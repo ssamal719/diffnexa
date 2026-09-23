@@ -1,0 +1,12 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: heading-renamed
+description: Section 2 heading "Fees and Payment" is renamed "Fees, Payment and Invoicing"; it differs in two places, so it is reported whole.
+expected_changes:
+- group: headings
+  kind: modified
+  subtype: heading
+  old: 2. Fees and Payment
+  new: 2. Fees, Payment and Invoicing
+  match: exact
+  locations: ['Heading 1, paragraph 7']

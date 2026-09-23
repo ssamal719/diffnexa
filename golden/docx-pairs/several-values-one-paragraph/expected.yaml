@@ -1,0 +1,8 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: several-values-one-paragraph
+description: One paragraph changes three values at once - maximum age 30 to 32, last date 30 September to 15 October 2026, and total vacancies 934 to 961. Each must be reported exactly once.
+expected_changes:
+- {group: numbers, category: number, old: '30', new: '32', delta: +2 (+6.67%), match: exact, locations: ['Paragraph 8']}
+- {group: dates, category: date, old: 30 September 2026, new: 15 October 2026, delta: 15 days later, match: exact, locations: ['Paragraph 8']}
+- {group: numbers, category: number, old: '934', new: '961', delta: +27 (+2.89%), match: exact, locations: ['Paragraph 8']}

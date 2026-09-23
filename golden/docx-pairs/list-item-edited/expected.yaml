@@ -1,0 +1,14 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: list-item-edited
+description: Secondary carers' parental leave goes from 4 weeks to 6 weeks.
+expected_changes:
+- group: lists
+  kind: modified
+  category: number
+  subtype: list_item
+  old: '4'
+  new: '6'
+  delta: +2 (+50%)
+  match: exact
+  locations: ['Bulleted list item (level 1), paragraph 12']

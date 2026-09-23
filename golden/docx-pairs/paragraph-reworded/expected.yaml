@@ -1,0 +1,11 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: paragraph-reworded
+description: The governing law changes from Delaware to New York.
+expected_changes:
+- group: text
+  kind: modified
+  category: text
+  old: Delaware
+  new: New York
+  locations: ['Paragraph 18']

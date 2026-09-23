@@ -11,6 +11,7 @@ import { describe, expect, it, vi } from "vitest";
 import { metadata as rootMetadata, TOOLS } from "@/app/layout";
 import { metadata as homeMetadata } from "@/app/page";
 import { metadata as competitorMetadata } from "@/app/competitor-monitor/page";
+import { metadata as docxMetadata } from "@/app/docx-compare/page";
 import { metadata as pdfMetadata } from "@/app/pdf-compare/page";
 import { metadata as policyMetadata } from "@/app/policy-monitor/page";
 import { metadata as priceMetadata } from "@/app/price-monitor/page";
@@ -25,6 +26,7 @@ const PAGES = [
   { name: "policy-monitor", metadata: policyMetadata, path: "/policy-monitor" },
   { name: "competitor-monitor", metadata: competitorMetadata, path: "/competitor-monitor" },
   { name: "price-monitor", metadata: priceMetadata, path: "/price-monitor" },
+  { name: "docx-compare", metadata: docxMetadata, path: "/docx-compare" },
 ];
 
 function titleOf(metadata: (typeof PAGES)[number]["metadata"]): string {
@@ -42,6 +44,7 @@ describe("the tools", () => {
       "/policy-monitor",
       "/competitor-monitor",
       "/price-monitor",
+      "/docx-compare",
     ]);
     expect(TOOLS.map((tool) => tool.name)).toEqual([
       "PDF Compare",
@@ -49,6 +52,7 @@ describe("the tools", () => {
       "Policy & Terms Monitor",
       "Competitor Monitor",
       "Price Monitor",
+      "DOCX Compare",
     ]);
     for (const tool of TOOLS) expect(tool.summary.length).toBeGreaterThan(30);
     expect(TOOLS.find((tool) => tool.href === "/competitor-monitor")?.summary).toBe(
@@ -258,12 +262,57 @@ describe("the price monitor page", () => {
   });
 });
 
+describe("the docx compare page", () => {
+  it("has the agreed title, with the site name added once by the template", async () => {
+    expect(titleOf(docxMetadata)).toBe("DOCX Compare — Compare Word Documents and Find Changes");
+    const openGraph = docxMetadata.openGraph as Record<string, unknown>;
+    expect(openGraph.title).toBe("DOCX Compare — Compare Word Documents and Find Changes | DiffNexa");
+    const { metadata: root } = await import("@/app/layout");
+    const template = (root.title as { template: string }).template;
+    expect(template.replace("%s", titleOf(docxMetadata))).toBe(
+      "DOCX Compare — Compare Word Documents and Find Changes | DiffNexa",
+    );
+  });
+
+  it("has the agreed description, canonical and Open Graph address", () => {
+    expect(docxMetadata.description).toBe(
+      "Compare two DOCX documents and see exactly what changed, with evidence you can verify.",
+    );
+    expect(docxMetadata.alternates?.canonical).toBe("/docx-compare");
+    expect((docxMetadata.openGraph as Record<string, unknown>).url).toBe("/docx-compare");
+  });
+
+  it("claims no capability the product does not have", () => {
+    const openGraph = docxMetadata.openGraph as Record<string, unknown>;
+    const wording = `${titleOf(docxMetadata)} ${docxMetadata.description} ${openGraph.title} ${openGraph.description}`.toLowerCase();
+    for (const claim of [
+      "ai", "automatic", "visual", "images?", "formatting", "\\.doc\\b", "legacy", "pdf", "important",
+    ]) {
+      expect(wording, `claims ${claim}`).not.toMatch(new RegExp(`\\b${claim}\\b`));
+    }
+  });
+
+  it("describes the tool card in the agreed words", () => {
+    const tool = TOOLS.find((item) => item.href === "/docx-compare");
+    expect(tool?.name).toBe("DOCX Compare");
+    expect(tool?.summary).toBe(
+      "Compare two Word documents and find changes in text, numbers, dates, lists, and tables.",
+    );
+  });
+
+  it("is in the sitemap once", () => {
+    const urls = sitemap().map((entry) => entry.url);
+    expect(urls.filter((url) => url.endsWith("/docx-compare"))).toHaveLength(1);
+  });
+});
+
 describe("the sitemap", () => {
   it("lists exactly the public pages", () => {
     const paths = sitemap().map((entry) => new URL(entry.url).pathname);
     expect(paths.sort()).toEqual([
       "/",
       "/competitor-monitor",
+      "/docx-compare",
       "/pdf-compare",
       "/policy-monitor",
       "/price-monitor",

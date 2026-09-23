@@ -1,0 +1,12 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: table-column-added
+description: A Notes column is added to the fee table. Each new cell is reported once; no existing cell is reported as changed.
+expected_changes:
+- {group: tables, kind: added, subtype: table_cell, new: Notes, match: exact, locations: ['Table 1, row 1, column 4']}
+- {group: tables, kind: added, subtype: table_cell, new: Includes parts, match: exact, locations: ['Table 1, row 2, column 4']}
+- {group: tables, kind: added, subtype: table_cell, new: Business hours, match: exact, locations: ['Table 1, row 3, column 4']}
+- {group: tables, kind: added, subtype: table_cell, new: On site, match: exact, locations: ['Table 1, row 4, column 4']}
+must_not_report:
+- text: $4,500
+  reason: an existing cell whose value did not change

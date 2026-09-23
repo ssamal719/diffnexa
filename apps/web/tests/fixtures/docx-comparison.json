@@ -1,0 +1,585 @@
+{
+  "engineVersion": "0.1.0",
+  "processingMs": 42,
+  "documents": {
+    "previous": {
+      "sha256": "8f2edbfd6ae127cb64f4a7f9b3235296ce4751e137abbdc2c7a1788dd408bfd6",
+      "nodeCount": 16
+    },
+    "revised": {
+      "sha256": "cc41e0f3f6650a5e8a84a646426654250aaf0ce2934fd7140847723821e12802",
+      "nodeCount": 20
+    }
+  },
+  "counts": {
+    "total": 11,
+    "meaningful": 11,
+    "noise": 0
+  },
+  "changes": [
+    {
+      "id": "c0",
+      "seq": 0,
+      "type": "METADATA_CHANGED",
+      "kind": "modified",
+      "category": "metadata",
+      "subtype": "title",
+      "label": "Document title",
+      "oldValue": "Supplier Agreement",
+      "newValue": "Supplier Agreement v2",
+      "delta": null,
+      "confidence": 1.0,
+      "isNoise": false,
+      "noiseReason": null,
+      "sections": [],
+      "group": "other",
+      "withinBlock": false,
+      "evidence": [
+        {
+          "side": "old",
+          "scope": "document",
+          "nodeId": null,
+          "path": null,
+          "sectionPath": [],
+          "field": "properties.title",
+          "excerpt": "Supplier Agreement",
+          "location": "Document properties"
+        },
+        {
+          "side": "new",
+          "scope": "document",
+          "nodeId": null,
+          "path": null,
+          "sectionPath": [],
+          "field": "properties.title",
+          "excerpt": "Supplier Agreement v2",
+          "location": "Document properties"
+        }
+      ]
+    },
+    {
+      "id": "c1",
+      "seq": 1,
+      "type": "TEXT_ADDED",
+      "kind": "added",
+      "category": "text",
+      "subtype": "heading",
+      "label": "Supplier Agreement",
+      "oldValue": null,
+      "newValue": "and Refund",
+      "delta": null,
+      "confidence": 0.703,
+      "isNoise": false,
+      "noiseReason": null,
+      "sections": [
+        "Supplier Agreement"
+      ],
+      "group": "headings",
+      "withinBlock": true,
+      "evidence": [
+        {
+          "side": "new",
+          "scope": "node",
+          "nodeId": "n1",
+          "path": "body/p[2]",
+          "sectionPath": [
+            "Supplier Agreement"
+          ],
+          "field": null,
+          "excerpt": "and Refund",
+          "location": "Heading 2, paragraph 2"
+        }
+      ]
+    },
+    {
+      "id": "c2",
+      "seq": 2,
+      "type": "NUMBER_CHANGED",
+      "kind": "modified",
+      "category": "number",
+      "subtype": null,
+      "label": "Payment and Refund Terms",
+      "oldValue": "30",
+      "newValue": "45",
+      "delta": "+15 (+50%)",
+      "confidence": 0.944,
+      "isNoise": false,
+      "noiseReason": null,
+      "sections": [
+        "Supplier Agreement › Payment Terms",
+        "Supplier Agreement › Payment and Refund Terms"
+      ],
+      "group": "numbers",
+      "withinBlock": false,
+      "evidence": [
+        {
+          "side": "old",
+          "scope": "node",
+          "nodeId": "n2",
+          "path": "body/p[3]",
+          "sectionPath": [
+            "Supplier Agreement",
+            "Payment Terms"
+          ],
+          "field": null,
+          "excerpt": "30",
+          "location": "Paragraph 3"
+        },
+        {
+          "side": "new",
+          "scope": "node",
+          "nodeId": "n2",
+          "path": "body/p[3]",
+          "sectionPath": [
+            "Supplier Agreement",
+            "Payment and Refund Terms"
+          ],
+          "field": null,
+          "excerpt": "45",
+          "location": "Paragraph 3"
+        }
+      ]
+    },
+    {
+      "id": "c3",
+      "seq": 3,
+      "type": "DATE_CHANGED",
+      "kind": "modified",
+      "category": "date",
+      "subtype": null,
+      "label": "Payment and Refund Terms",
+      "oldValue": "15 March 2026",
+      "newValue": "30 March 2026",
+      "delta": "15 days later",
+      "confidence": 0.941,
+      "isNoise": false,
+      "noiseReason": null,
+      "sections": [
+        "Supplier Agreement › Payment Terms",
+        "Supplier Agreement › Payment and Refund Terms"
+      ],
+      "group": "dates",
+      "withinBlock": false,
+      "evidence": [
+        {
+          "side": "old",
+          "scope": "node",
+          "nodeId": "n3",
+          "path": "body/p[4]",
+          "sectionPath": [
+            "Supplier Agreement",
+            "Payment Terms"
+          ],
+          "field": null,
+          "excerpt": "15 March 2026.",
+          "location": "Paragraph 4"
+        },
+        {
+          "side": "new",
+          "scope": "node",
+          "nodeId": "n3",
+          "path": "body/p[4]",
+          "sectionPath": [
+            "Supplier Agreement",
+            "Payment and Refund Terms"
+          ],
+          "field": null,
+          "excerpt": "30 March 2026.",
+          "location": "Paragraph 4"
+        }
+      ]
+    },
+    {
+      "id": "c4",
+      "seq": 4,
+      "type": "TEXT_MODIFIED",
+      "kind": "modified",
+      "category": "text",
+      "subtype": null,
+      "label": "Payment and Refund Terms",
+      "oldValue": "monthly",
+      "newValue": "weekly",
+      "delta": null,
+      "confidence": 0.88,
+      "isNoise": false,
+      "noiseReason": null,
+      "sections": [
+        "Supplier Agreement › Payment Terms",
+        "Supplier Agreement › Payment and Refund Terms"
+      ],
+      "group": "text",
+      "withinBlock": false,
+      "evidence": [
+        {
+          "side": "old",
+          "scope": "node",
+          "nodeId": "n4",
+          "path": "body/p[5]",
+          "sectionPath": [
+            "Supplier Agreement",
+            "Payment Terms"
+          ],
+          "field": null,
+          "excerpt": "monthly",
+          "location": "Paragraph 5"
+        },
+        {
+          "side": "new",
+          "scope": "node",
+          "nodeId": "n4",
+          "path": "body/p[5]",
+          "sectionPath": [
+            "Supplier Agreement",
+            "Payment and Refund Terms"
+          ],
+          "field": null,
+          "excerpt": "weekly",
+          "location": "Paragraph 5"
+        }
+      ]
+    },
+    {
+      "id": "c5",
+      "seq": 5,
+      "type": "TEXT_ADDED",
+      "kind": "added",
+      "category": "text",
+      "subtype": null,
+      "label": "Payment and Refund Terms",
+      "oldValue": null,
+      "newValue": "Disputes go to mediation first.",
+      "delta": null,
+      "confidence": 1.0,
+      "isNoise": false,
+      "noiseReason": null,
+      "sections": [
+        "Supplier Agreement › Payment and Refund Terms"
+      ],
+      "group": "text",
+      "withinBlock": false,
+      "evidence": [
+        {
+          "side": "new",
+          "scope": "node",
+          "nodeId": "n5",
+          "path": "body/p[6]",
+          "sectionPath": [
+            "Supplier Agreement",
+            "Payment and Refund Terms"
+          ],
+          "field": null,
+          "excerpt": "Disputes go to mediation first.",
+          "location": "Paragraph 6"
+        }
+      ]
+    },
+    {
+      "id": "c6",
+      "seq": 6,
+      "type": "TEXT_ADDED",
+      "kind": "added",
+      "category": "text",
+      "subtype": "list_item",
+      "label": "Payment and Refund Terms",
+      "oldValue": null,
+      "newValue": "Annual audit",
+      "delta": null,
+      "confidence": 1.0,
+      "isNoise": false,
+      "noiseReason": null,
+      "sections": [
+        "Supplier Agreement › Payment and Refund Terms"
+      ],
+      "group": "lists",
+      "withinBlock": false,
+      "evidence": [
+        {
+          "side": "new",
+          "scope": "node",
+          "nodeId": "n8",
+          "path": "body/p[9]",
+          "sectionPath": [
+            "Supplier Agreement",
+            "Payment and Refund Terms"
+          ],
+          "field": null,
+          "excerpt": "Annual audit",
+          "location": "Bulleted list item (level 1), paragraph 9"
+        }
+      ]
+    },
+    {
+      "id": "c7",
+      "seq": 7,
+      "type": "LAYOUT_CHANGED",
+      "kind": "modified",
+      "category": "layout",
+      "subtype": "heading_level",
+      "label": "Scope",
+      "oldValue": "Heading 2",
+      "newValue": "Heading 3",
+      "delta": null,
+      "confidence": 1.0,
+      "isNoise": false,
+      "noiseReason": null,
+      "sections": [
+        "Supplier Agreement",
+        "Supplier Agreement › Payment and Refund Terms"
+      ],
+      "group": "structure",
+      "withinBlock": false,
+      "evidence": [
+        {
+          "side": "old",
+          "scope": "node",
+          "nodeId": "n7",
+          "path": "body/p[8]",
+          "sectionPath": [
+            "Supplier Agreement"
+          ],
+          "field": null,
+          "excerpt": "Scope",
+          "location": "Heading 2, paragraph 8"
+        },
+        {
+          "side": "new",
+          "scope": "node",
+          "nodeId": "n9",
+          "path": "body/p[10]",
+          "sectionPath": [
+            "Supplier Agreement",
+            "Payment and Refund Terms"
+          ],
+          "field": null,
+          "excerpt": "Scope",
+          "location": "Heading 3, paragraph 10"
+        }
+      ]
+    },
+    {
+      "id": "c8",
+      "seq": 8,
+      "type": "LINK_CHANGED",
+      "kind": "modified",
+      "category": "link",
+      "subtype": null,
+      "label": "the terms",
+      "oldValue": "https://example.com/terms",
+      "newValue": "https://example.org/terms-2026",
+      "delta": null,
+      "confidence": 1.0,
+      "isNoise": false,
+      "noiseReason": null,
+      "sections": [
+        "Supplier Agreement › Payment and Refund Terms › Scope",
+        "Supplier Agreement › Scope"
+      ],
+      "group": "other",
+      "withinBlock": false,
+      "evidence": [
+        {
+          "side": "old",
+          "scope": "node",
+          "nodeId": "n15",
+          "path": "body/p[9]/hyperlink[1]",
+          "sectionPath": [
+            "Supplier Agreement",
+            "Scope"
+          ],
+          "field": null,
+          "excerpt": "the terms",
+          "location": "Link in paragraph 9"
+        },
+        {
+          "side": "new",
+          "scope": "node",
+          "nodeId": "n19",
+          "path": "body/p[11]/hyperlink[1]",
+          "sectionPath": [
+            "Supplier Agreement",
+            "Payment and Refund Terms",
+            "Scope"
+          ],
+          "field": null,
+          "excerpt": "the terms",
+          "location": "Link in paragraph 11"
+        }
+      ]
+    },
+    {
+      "id": "c9",
+      "seq": 9,
+      "type": "NUMBER_CHANGED",
+      "kind": "modified",
+      "category": "number",
+      "subtype": "table_cell",
+      "label": "Setup · Fee",
+      "oldValue": "$10,000",
+      "newValue": "$12,000",
+      "delta": "+2000 (+20%)",
+      "confidence": 1.0,
+      "isNoise": false,
+      "noiseReason": null,
+      "sections": [
+        "Supplier Agreement › Payment and Refund Terms › Scope",
+        "Supplier Agreement › Scope"
+      ],
+      "group": "tables",
+      "withinBlock": false,
+      "evidence": [
+        {
+          "side": "old",
+          "scope": "node",
+          "nodeId": "n12",
+          "path": "body/tbl[1]/tr[2]/tc[2]",
+          "sectionPath": [
+            "Supplier Agreement",
+            "Scope"
+          ],
+          "field": null,
+          "excerpt": "$10,000",
+          "location": "Table 1, row 2, column 2"
+        },
+        {
+          "side": "new",
+          "scope": "node",
+          "nodeId": "n14",
+          "path": "body/tbl[1]/tr[2]/tc[2]",
+          "sectionPath": [
+            "Supplier Agreement",
+            "Payment and Refund Terms",
+            "Scope"
+          ],
+          "field": null,
+          "excerpt": "$12,000",
+          "location": "Table 1, row 2, column 2"
+        }
+      ]
+    },
+    {
+      "id": "c10",
+      "seq": 10,
+      "type": "TABLE_CHANGED",
+      "kind": "added",
+      "category": "table",
+      "subtype": "row",
+      "label": "Training",
+      "oldValue": null,
+      "newValue": "Training · $500",
+      "delta": null,
+      "confidence": 1.0,
+      "isNoise": false,
+      "noiseReason": null,
+      "sections": [
+        "Supplier Agreement › Payment and Refund Terms › Scope"
+      ],
+      "group": "tables",
+      "withinBlock": false,
+      "evidence": [
+        {
+          "side": "new",
+          "scope": "node",
+          "nodeId": "n17",
+          "path": "body/tbl[1]/tr[4]/tc[1]",
+          "sectionPath": [
+            "Supplier Agreement",
+            "Payment and Refund Terms",
+            "Scope"
+          ],
+          "field": null,
+          "excerpt": "Training",
+          "location": "Table 1, row 4, column 1"
+        },
+        {
+          "side": "new",
+          "scope": "node",
+          "nodeId": "n18",
+          "path": "body/tbl[1]/tr[4]/tc[2]",
+          "sectionPath": [
+            "Supplier Agreement",
+            "Payment and Refund Terms",
+            "Scope"
+          ],
+          "field": null,
+          "excerpt": "$500",
+          "location": "Table 1, row 4, column 2"
+        }
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "text",
+      "label": "Text changes",
+      "changeCount": 2,
+      "changeIds": [
+        "c4",
+        "c5"
+      ]
+    },
+    {
+      "id": "headings",
+      "label": "Headings",
+      "changeCount": 1,
+      "changeIds": [
+        "c1"
+      ]
+    },
+    {
+      "id": "lists",
+      "label": "Lists",
+      "changeCount": 1,
+      "changeIds": [
+        "c6"
+      ]
+    },
+    {
+      "id": "tables",
+      "label": "Tables",
+      "changeCount": 2,
+      "changeIds": [
+        "c9",
+        "c10"
+      ]
+    },
+    {
+      "id": "numbers",
+      "label": "Numbers",
+      "changeCount": 1,
+      "changeIds": [
+        "c2"
+      ]
+    },
+    {
+      "id": "dates",
+      "label": "Dates",
+      "changeCount": 1,
+      "changeIds": [
+        "c3"
+      ]
+    },
+    {
+      "id": "structure",
+      "label": "Structure",
+      "changeCount": 1,
+      "changeIds": [
+        "c7"
+      ]
+    },
+    {
+      "id": "other",
+      "label": "Other",
+      "changeCount": 2,
+      "changeIds": [
+        "c0",
+        "c8"
+      ]
+    }
+  ],
+  "diagnostics": {
+    "notes": [],
+    "previousWarnings": [],
+    "revisedWarnings": [],
+    "droppedUntraceable": 0
+  }
+}

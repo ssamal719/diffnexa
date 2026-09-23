@@ -1,0 +1,11 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: table-row-removed
+description: The reactive call-out row is removed from the fee table.
+expected_changes:
+- group: tables
+  kind: removed
+  subtype: row
+  old: Reactive call-out · $250 · Per visit
+  match: exact
+  locations: ['Table 1, row 3, column 1']

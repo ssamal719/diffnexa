@@ -1,0 +1,8 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: formatting-only
+description: Every body paragraph of the leave policy is made bold and larger. The words are identical, and visual formatting is not compared in V1, so nothing is reported.
+expected_changes: []
+must_not_report:
+- text: Employees receive 20 days of paid annual leave each year.
+  reason: formatting only

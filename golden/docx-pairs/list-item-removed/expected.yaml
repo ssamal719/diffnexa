@@ -1,0 +1,11 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: list-item-removed
+description: The state language requirement is removed from the eligibility bullets.
+expected_changes:
+- group: lists
+  kind: removed
+  subtype: list_item
+  old: Working knowledge of the state language
+  match: exact
+  locations: ['Bulleted list item (level 1), paragraph 7']

@@ -1,0 +1,16 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: numbered-list-insert
+description: A new step is inserted into the numbered How to apply list. Word renumbers the later steps itself, so only the new step is a change.
+expected_changes:
+- group: lists
+  kind: added
+  subtype: list_item
+  new: Upload a recent photograph and signature
+  match: exact
+  locations: ['Numbered list item (level 1), paragraph 13']
+must_not_report:
+- text: Download the confirmation page
+  reason: renumbered by Word, words unchanged
+- text: Pay the application fee of 500 rupees
+  reason: renumbered by Word, words unchanged

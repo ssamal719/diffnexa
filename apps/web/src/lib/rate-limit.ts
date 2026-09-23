@@ -81,6 +81,12 @@ export const LIMITS: Record<string, RateLimit[]> = {
     { limit: 10, windowMs: 60_000 },
     { limit: 100, windowMs: 60 * 60_000 },
   ],
+  // Comparing two Word documents occupies a worker the way comparing two PDFs
+  // does, so it carries the PDF limits, in a bucket of its own.
+  "docx-compare": [
+    { limit: 10, windowMs: 60_000 },
+    { limit: 60, windowMs: 60 * 60_000 },
+  ],
 };
 
 type Hit = { at: number };

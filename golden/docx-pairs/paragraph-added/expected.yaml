@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: paragraph-added
+description: A renewal paragraph is added to section 3 of the services agreement.
+expected_changes:
+- group: text
+  kind: added
+  new: Either party may renew this agreement for a further 12 months by written agreement.
+  match: exact
+  locations: ['Paragraph 13']

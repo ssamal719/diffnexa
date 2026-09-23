@@ -1,0 +1,14 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: table-cell-date
+description: The last date to apply changes from 30 September 2026 to 15 October 2026 in the important dates table.
+expected_changes:
+- group: tables
+  kind: modified
+  category: date
+  subtype: table_cell
+  old: 30 September 2026
+  new: 15 October 2026
+  delta: 15 days later
+  match: exact
+  locations: ['Table 2, row 3, column 2']

@@ -1,0 +1,11 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: paragraph-moved
+description: The late payment paragraph moves from section 2 to section 4 with its words unchanged.
+expected_changes:
+- group: structure
+  kind: moved
+  old: Late payments incur interest of 1.5% per month.
+  new: Late payments incur interest of 1.5% per month.
+  match: exact
+  locations: ['Paragraph 9', 'Paragraph 18']

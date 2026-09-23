@@ -33,4 +33,10 @@ export const TOOLS = [
     name: "Price Monitor",
     summary: "Track changes on public pricing and product pages and see exactly what changed.",
   },
+  {
+    href: "/docx-compare",
+    name: "DOCX Compare",
+    summary:
+      "Compare two Word documents and find changes in text, numbers, dates, lists, and tables.",
+  },
 ] as const;

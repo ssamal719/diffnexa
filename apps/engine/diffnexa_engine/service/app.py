@@ -30,6 +30,11 @@ from diffnexa_engine.competitor.api import serialize_competitor_comparison
 from diffnexa_engine.competitor.classify import classify_changes as classify_competitor_changes
 from diffnexa_engine.config import EngineLimits
 from diffnexa_engine.contracts import Side
+from diffnexa_engine.docx.api import serialize_docx_comparison
+from diffnexa_engine.docx.compare import compare_docx
+from diffnexa_engine.docx.errors import DocxError, DocxErrorCode
+from diffnexa_engine.docx.extract import extract_docx
+from diffnexa_engine.docx.package import DocxLimits
 from diffnexa_engine.errors import USER_MESSAGES, DocumentError, ErrorCode
 from diffnexa_engine.policy.api import serialize_policy_comparison
 from diffnexa_engine.policy.classify import classify_changes
@@ -235,6 +240,39 @@ def build_app():  # noqa: C901 - a single route with explicit error handling
         )
         elapsed_ms = int((time.perf_counter() - started) * 1000)
         return JSONResponse(content=serialize_price_comparison(outcome, classification, elapsed_ms))
+
+    docx_limits = DocxLimits.from_env()
+
+    @app.post("/v1/docx/compare")
+    async def docx_compare(
+        original: UploadFile = File(...),
+        revised: UploadFile = File(...),
+    ) -> Any:
+        """Compare two Word (.docx) documents.
+
+        Both files are read into memory with a hard size ceiling, validated as
+        genuine .docx packages from their bytes (never their names or declared
+        types), and read without executing, fetching or extracting anything.
+        Nothing is written anywhere or kept after the response.
+        """
+        started = time.perf_counter()
+        documents = {}
+        for side, upload in (("original", original), ("revised", revised)):
+            data = await upload.read(docx_limits.max_file_bytes + 1)
+            try:
+                if len(data) > docx_limits.max_file_bytes:
+                    raise DocxError(DocxErrorCode.TOO_LARGE, f"{len(data)}+ bytes")
+                documents[side] = extract_docx(data, docx_limits)
+            except DocxError as exc:
+                # exc.detail stays in the server log; it never holds document text.
+                return JSONResponse(
+                    status_code=413 if exc.code is DocxErrorCode.TOO_LARGE else 400,
+                    content={"error": {"code": exc.code.value, "message": exc.user_message, "side": side}},
+                )
+
+        outcome = compare_docx(documents["original"], documents["revised"])
+        elapsed_ms = int((time.perf_counter() - started) * 1000)
+        return JSONResponse(content=serialize_docx_comparison(outcome, elapsed_ms))
 
     @app.post("/v1/compare")
     async def compare_endpoint(

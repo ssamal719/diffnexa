@@ -1,0 +1,11 @@
+# Written by hand: what really changed between these two versions of a
+# pricing or product page, and the one category each change must receive.
+pair: plan-renamed
+url: https://tasklane.example.com/pricing
+description: The Team plan is renamed Growth plan; its price and contents are unchanged.
+expected_changes:
+- old: Team
+  new: Growth
+  subtype: heading
+  price_category: product_plan
+forbidden_categories: [price, other]

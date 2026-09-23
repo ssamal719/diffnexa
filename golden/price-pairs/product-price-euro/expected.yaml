@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two versions of a
+# pricing or product page, and the one category each change must receive.
+pair: product-price-euro
+url: https://shop.example.com/kettlewell-classic-kettle
+description: The kettle's price, in euros, changes from €59.99 to €54.99.
+expected_changes:
+- old: €59.99
+  new: €54.99
+  price_category: price
+forbidden_categories: [discount_sale, original_price, currency, other]

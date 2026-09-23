@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two versions of a
+# pricing or product page, and the one category each change must receive.
+pair: rupee-mrp-changed
+url: https://shaktiware.example.in/mixer-grinder
+description: The MRP changes from ₹4,999 to ₹5,499; the offer price is unchanged.
+expected_changes:
+- old: ₹4,999
+  new: ₹5,499
+  price_category: original_price
+forbidden_categories: [price, discount_sale, other]

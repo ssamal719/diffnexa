@@ -1,0 +1,12 @@
+# Written by hand: what really changed between these two versions of a
+# pricing or product page, and the one category each change must receive.
+pair: saas-price-changed
+url: https://tasklane.example.com/pricing
+description: The Team plan's per-user monthly price changes from $15 to $18.
+expected_changes:
+- old: $15
+  new: $18
+  category: number
+  delta: +3 (+20%)
+  price_category: price
+forbidden_categories: [discount_sale, original_price, currency, other]

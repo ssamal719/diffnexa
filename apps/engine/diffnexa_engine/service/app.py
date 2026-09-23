@@ -33,6 +33,8 @@ from diffnexa_engine.contracts import Side
 from diffnexa_engine.errors import USER_MESSAGES, DocumentError, ErrorCode
 from diffnexa_engine.policy.api import serialize_policy_comparison
 from diffnexa_engine.policy.classify import classify_changes
+from diffnexa_engine.price.api import serialize_price_comparison
+from diffnexa_engine.price.classify import classify_changes as classify_price_changes
 from diffnexa_engine.service.auth import check_credentials, configured_secret
 from diffnexa_engine.web.api import (
     MAX_SNAPSHOT_BYTES,
@@ -207,6 +209,32 @@ def build_app():  # noqa: C901 - a single route with explicit error handling
         )
         elapsed_ms = int((time.perf_counter() - started) * 1000)
         return JSONResponse(content=serialize_competitor_comparison(outcome, classification, elapsed_ms))
+
+    @app.post("/v1/price/compare")
+    async def price_compare(request: Request) -> Any:
+        """Compare a pricing page with a baseline, and say which kind of pricing change each is.
+
+        The same deterministic comparison Website Change Detector runs, with the
+        same address rules, fetch limits and evidence checks. Added is one
+        category per change: price, sale price, currency, billing period and so
+        on. Capturing needs no endpoint of its own; /v1/web/snapshot serves it.
+        The product name and page type are the reader's labels and never sent here.
+        """
+        started = time.perf_counter()
+        try:
+            payload = await _read_json(request)
+            previous = read_snapshot(payload.get("previous_snapshot"))
+            outcome = compare_against(payload.get("url", ""), previous)
+        except WebRequestError as exc:
+            return web_error(exc)
+
+        classification = classify_price_changes(
+            outcome.result.changes,
+            current_snapshot=outcome.current,
+            baseline_snapshot=previous,
+        )
+        elapsed_ms = int((time.perf_counter() - started) * 1000)
+        return JSONResponse(content=serialize_price_comparison(outcome, classification, elapsed_ms))
 
     @app.post("/v1/compare")
     async def compare_endpoint(

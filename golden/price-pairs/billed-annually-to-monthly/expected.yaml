@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two versions of a
+# pricing or product page, and the one category each change must receive.
+pair: billed-annually-to-monthly
+url: https://tasklane.example.com/pricing
+description: The Team plan changes from billed annually to billed monthly.
+expected_changes:
+- old: annually
+  new: monthly
+  price_category: billing_period
+forbidden_categories: [price, other]

@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two versions of a
+# pricing or product page, and the one category each change must receive.
+pair: currency-symbol-changed
+url: https://tasklane.example.com/pricing
+description: The Team plan's price is now written in euros rather than dollars.
+expected_changes:
+- old: $15
+  new: €15
+  price_category: currency
+forbidden_categories: [price, other]

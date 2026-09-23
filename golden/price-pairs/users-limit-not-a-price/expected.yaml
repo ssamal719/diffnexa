@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two versions of a
+# pricing or product page, and the one category each change must receive.
+pair: users-limit-not-a-price
+url: https://tasklane.example.com/pricing
+description: The Starter user limit changes from 10 to 25. That is a plan detail, not a price.
+expected_changes:
+- old: '10'
+  new: '25'
+  price_category: pricing_details
+forbidden_categories: [price, discount_sale, original_price, currency, billing_period]

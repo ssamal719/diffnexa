@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two versions of a
+# pricing or product page, and the one category each change must receive.
+pair: original-price-changed
+url: https://tasklane.example.com/pricing
+description: The Team plan's original ("was") price changes from $24 to $29.
+expected_changes:
+- old: $24
+  new: $29
+  price_category: original_price
+forbidden_categories: [price, discount_sale, other]

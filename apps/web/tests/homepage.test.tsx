@@ -51,12 +51,13 @@ describe("the homepage", () => {
     expect(hrefs).toContain("/website-compare");
     expect(hrefs).toContain("/policy-monitor");
     expect(hrefs).toContain("/competitor-monitor");
+    expect(hrefs).toContain("/price-monitor");
   });
 
   it("shows a card for every tool, each linking to its own page", () => {
     render(<HomePage />);
     const cards = screen.getAllByRole("article");
-    expect(cards).toHaveLength(4);
+    expect(cards).toHaveLength(5);
 
     for (const tool of TOOLS) {
       const card = cards.find((element) => element.textContent?.includes(tool.name));
@@ -271,6 +272,69 @@ describe("the competitor monitor page", () => {
   it("keeps a sensible heading order", async () => {
     const { default: CompetitorMonitorPage } = await import("@/app/competitor-monitor/page");
     render(<CompetitorMonitorPage />);
+    const levels = screen.getAllByRole("heading").map((node) => Number(node.tagName.slice(1)));
+    expect(levels[0]).toBe(1);
+    for (let i = 1; i < levels.length; i += 1) {
+      expect(levels[i] - levels[i - 1], `jump at heading ${i}`).toBeLessThanOrEqual(1);
+    }
+  });
+});
+
+describe("the price monitor page", () => {
+  it("has a card with the agreed words and an Open Price Monitor button", () => {
+    render(<HomePage />);
+    const cards = screen.getAllByRole("article").filter((element) =>
+      element.textContent?.includes("Price Monitor"),
+    );
+    expect(cards).toHaveLength(1);
+    expect(cards[0].textContent).toContain(
+      "Track changes on public pricing and product pages and see exactly what changed.",
+    );
+    const button = within(cards[0]).getByRole("link", { name: "Open Price Monitor" });
+    expect(button.getAttribute("href")).toBe("/price-monitor");
+  });
+
+  it("is in the header exactly once, alongside Competitor Monitor", () => {
+    const { container } = render(<SiteHeader />);
+    const hrefs = Array.from(container.querySelectorAll("a")).map((a) => a.getAttribute("href"));
+    expect(hrefs.filter((href) => href === "/price-monitor")).toHaveLength(1);
+    expect(hrefs.filter((href) => href === "/competitor-monitor")).toHaveLength(1);
+  });
+
+  it("has exactly one H1, saying what the tool does", async () => {
+    const { default: PriceMonitorPage } = await import("@/app/price-monitor/page");
+    render(<PriceMonitorPage />);
+    const h1s = screen.getAllByRole("heading", { level: 1 });
+    expect(h1s).toHaveLength(1);
+    expect(h1s[0].textContent).toBe("See what changed on a pricing or product page");
+  });
+
+  it("states the V1 limits and what counts as a price", async () => {
+    const { default: PriceMonitorPage } = await import("@/app/price-monitor/page");
+    render(<PriceMonitorPage />);
+    const text = document.body.textContent ?? "";
+    expect(text).toContain("It does not watch prices for you");
+    expect(text).toContain("no scheduled checking, no price alerts");
+    expect(text).toContain("behind a login");
+    expect(text).toContain("build their content in the browser");
+    expect(text).toContain("“10 users”, “a 14-day trial” and “99% uptime” are not prices");
+  });
+
+  it("claims nothing it cannot do and judges no price", async () => {
+    const { default: PriceMonitorPage } = await import("@/app/price-monitor/page");
+    render(<PriceMonitorPage />);
+    const text = (document.body.textContent ?? "").toLowerCase();
+    for (const phrase of [
+      "we monitor", "we alert", "real-time", "cheapest", "best price", "great offer", "better deal",
+      "worse deal", "good price", "undercut", "forecast", "amazon", "affiliate", "ai-powered",
+    ]) {
+      expect(text, phrase).not.toContain(phrase);
+    }
+  });
+
+  it("keeps a sensible heading order", async () => {
+    const { default: PriceMonitorPage } = await import("@/app/price-monitor/page");
+    render(<PriceMonitorPage />);
     const levels = screen.getAllByRole("heading").map((node) => Number(node.tagName.slice(1)));
     expect(levels[0]).toBe(1);
     for (let i = 1; i < levels.length; i += 1) {

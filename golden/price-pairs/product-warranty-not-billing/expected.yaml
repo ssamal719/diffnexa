@@ -1,0 +1,11 @@
+# Written by hand: what really changed between these two versions of a
+# pricing or product page, and the one category each change must receive.
+pair: product-warranty-not-billing
+url: https://shop.example.com/kettlewell-classic-kettle
+description: The warranty in the specifications changes from 2 to 3 years. Not a price or a billing period.
+expected_changes:
+- old: '2'
+  new: '3'
+  subtype: table_cell
+  price_category: other
+forbidden_categories: [price, billing_period, discount_sale, original_price, pricing_details]

@@ -1,0 +1,9 @@
+# Written by hand: what really changed between these two versions of a
+# pricing or product page, and the one category each change must receive.
+pair: cloudflare-email-token
+url: https://tasklane.example.com/pricing
+description: Only a Cloudflare email-protection token changed; the address is the same, so nothing is reported.
+expected_changes: []
+must_not_report:
+- text: email-protection
+  reason: the token is regenerated on every page load

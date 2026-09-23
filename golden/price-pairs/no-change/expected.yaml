@@ -1,0 +1,9 @@
+# Written by hand: what really changed between these two versions of a
+# pricing or product page, and the one category each change must receive.
+pair: no-change
+url: https://tasklane.example.com/pricing
+description: Nothing a reader sees changed; only tracking parameters were added to a link.
+expected_changes: []
+must_not_report:
+- text: utm_source
+  reason: tracking parameters are not a destination change

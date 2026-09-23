@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two versions of a
+# pricing or product page, and the one category each change must receive.
+pair: starter-period-changed
+url: https://tasklane.example.com/pricing
+description: The Starter price stays $8 but is now per user per year instead of per month.
+expected_changes:
+- old: month
+  new: year
+  price_category: billing_period
+forbidden_categories: [price, other]

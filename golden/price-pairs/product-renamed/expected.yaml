@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two versions of a
+# pricing or product page, and the one category each change must receive.
+pair: product-renamed
+url: https://shop.example.com/kettlewell-classic-kettle
+description: The product's name changes; the price under it does not.
+expected_changes:
+- new: Plus
+  subtype: heading
+  price_category: product_plan
+forbidden_categories: [price, other]

@@ -28,4 +28,9 @@ export const TOOLS = [
     name: "Competitor Monitor",
     summary: "Track changes on competitor webpages and see exactly what changed.",
   },
+  {
+    href: "/price-monitor",
+    name: "Price Monitor",
+    summary: "Track changes on public pricing and product pages and see exactly what changed.",
+  },
 ] as const;

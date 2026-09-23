@@ -29,3 +29,7 @@ Adds link-cloudflare-email-token: Cloudflare re-encrypts email links on every re
 ## 2026-09-22
 
 Tool 4 Competitor Monitor: add 21 competitor golden pairs (pricing, plans, features, calls to action, messaging, metadata, links, ordinary content, no-change, uncertain and mixed cases). Every pair scores recall 100%, 0 false positives, 0 noise leakage, 100% evidence; no existing pair changed.
+
+## 2026-09-23
+
+Tool 5 Price Monitor: add 28 price golden pairs (prices in $, €, £, ₹ and INR code; currency, billing period, sale, original/MRP, plan, product, availability and price-table changes; negative pairs proving that user limits, trial lengths, uptime, customer counts and warranty years are never labelled as prices; no-change, Cloudflare token and mixed cases). Every pair scores recall 100%, 0 false positives, 0 noise leakage, 100% evidence; no existing pair changed.

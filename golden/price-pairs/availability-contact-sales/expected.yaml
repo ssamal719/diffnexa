@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two versions of a
+# pricing or product page, and the one category each change must receive.
+pair: availability-contact-sales
+url: https://tasklane.example.com/pricing
+description: The Business plan's status changes from Available to Contact sales.
+expected_changes:
+- old: Available
+  new: Contact sales
+  price_category: availability
+forbidden_categories: [price, other]

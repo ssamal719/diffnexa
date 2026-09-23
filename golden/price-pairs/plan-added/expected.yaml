@@ -1,0 +1,18 @@
+# Written by hand: what really changed between these two versions of a
+# pricing or product page, and the one category each change must receive.
+pair: plan-added
+url: https://tasklane.example.com/pricing
+description: A new Enterprise plan is added, with its own price and inclusions.
+expected_changes:
+- new: Enterprise
+  kind: added
+  subtype: heading
+  match: exact
+  price_category: product_plan
+- new: $39 per user per month
+  kind: added
+  price_category: price
+- new: Dedicated success manager
+  kind: added
+  price_category: pricing_details
+forbidden_categories: [other, currency]

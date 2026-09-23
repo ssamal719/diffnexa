@@ -121,6 +121,9 @@ class _Handler(BaseHTTPRequestHandler):
         elif path == "/policy":
             self._send(200, server.policy_html)
 
+        elif path == "/price":
+            self._send(200, server.price_html)
+
         elif path == "/competitor":
             self._send(200, server.competitor_html)
 
@@ -213,6 +216,20 @@ class StubServer:
         b"<p>This agreement is governed by the laws of England and Wales.</p>"
         b"<h2>About us</h2>"
         b"<p>The company was founded in 2011 and employs 400 people.</p>"
+        b"</main></body></html>"
+    )
+    price_html: bytes = (
+        b"<!doctype html><html><head><title>Acme Pricing</title>"
+        b'<meta name="description" content="Plans and prices."></head><body><main>'
+        b"<h1>Acme Pricing</h1>"
+        b"<p>All prices in USD.</p>"
+        b"<h2>Plans</h2>"
+        b"<h3>Starter</h3><p>$9 per month</p><ul><li>Up to 10 users</li><li>Email support</li></ul>"
+        b"<h3>Pro Plan</h3><p>$29 per month, billed annually</p><p>Was $39, now $29</p>"
+        b"<ul><li>Unlimited users</li><li>14-day trial</li></ul>"
+        b"<h3>Business</h3><p>Status: Available</p>"
+        b"<h2>About us</h2><p>We serve 12,000 teams with 99% uptime.</p>"
+        b'<p>Read our <a href="https://acme.example.com/blog">blog</a>.</p>'
         b"</main></body></html>"
     )
     competitor_html: bytes = (

@@ -30,6 +30,8 @@ describe("the limits themselves", () => {
       "pdf-compare",
       "policy-capture",
       "policy-compare",
+      "price-capture",
+      "price-compare",
       "web-capture",
       "web-compare",
     ]);

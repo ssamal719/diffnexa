@@ -1,0 +1,11 @@
+# Written by hand: what really changed between these two versions of a
+# pricing or product page, and the one category each change must receive.
+pair: pricing-table-cell
+url: https://tasklane.example.com/pricing
+description: In the comparison table, the Starter price per user (a USD column) changes from 8 to 10.
+expected_changes:
+- old: '8'
+  new: '10'
+  subtype: table_cell
+  price_category: price
+forbidden_categories: [other, pricing_details]

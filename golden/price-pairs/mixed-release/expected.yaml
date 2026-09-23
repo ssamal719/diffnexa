@@ -1,0 +1,29 @@
+# Written by hand: what really changed between these two versions of a
+# pricing or product page, and the one category each change must receive.
+pair: mixed-release
+url: https://tasklane.example.com/pricing
+description: A release touching price, sale price, availability, a plan name, a plan detail and ordinary content together.
+expected_changes:
+- old: $15
+  new: $18
+  price_category: price
+- old: $19
+  new: $16
+  price_category: discount_sale
+- old: Available
+  new: Contact sales
+  price_category: availability
+- old: Team
+  new: Growth
+  subtype: heading
+  price_category: product_plan
+- old: '10'
+  new: '15'
+  price_category: pricing_details
+- old: 12,000
+  new: 13,000
+  price_category: other
+- old: https://tasklane.example.com/blog
+  new: https://tasklane.example.com/news
+  category: link
+  price_category: other

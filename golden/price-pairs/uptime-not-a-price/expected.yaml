@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two versions of a
+# pricing or product page, and the one category each change must receive.
+pair: uptime-not-a-price
+url: https://tasklane.example.com/pricing
+description: The uptime figure changes from 99.9% to 99.95%. A percentage is not a price or a discount.
+expected_changes:
+- old: 99.9%
+  new: 99.95%
+  price_category: other
+forbidden_categories: [price, discount_sale, original_price, currency, billing_period, pricing_details]

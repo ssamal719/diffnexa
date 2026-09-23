@@ -13,6 +13,7 @@ import { metadata as homeMetadata } from "@/app/page";
 import { metadata as competitorMetadata } from "@/app/competitor-monitor/page";
 import { metadata as pdfMetadata } from "@/app/pdf-compare/page";
 import { metadata as policyMetadata } from "@/app/policy-monitor/page";
+import { metadata as priceMetadata } from "@/app/price-monitor/page";
 import { metadata as webMetadata } from "@/app/website-compare/page";
 import robots from "@/app/robots";
 import sitemap from "@/app/sitemap";
@@ -23,6 +24,7 @@ const PAGES = [
   { name: "website-compare", metadata: webMetadata, path: "/website-compare" },
   { name: "policy-monitor", metadata: policyMetadata, path: "/policy-monitor" },
   { name: "competitor-monitor", metadata: competitorMetadata, path: "/competitor-monitor" },
+  { name: "price-monitor", metadata: priceMetadata, path: "/price-monitor" },
 ];
 
 function titleOf(metadata: (typeof PAGES)[number]["metadata"]): string {
@@ -39,12 +41,14 @@ describe("the tools", () => {
       "/website-compare",
       "/policy-monitor",
       "/competitor-monitor",
+      "/price-monitor",
     ]);
     expect(TOOLS.map((tool) => tool.name)).toEqual([
       "PDF Compare",
       "Website Change Detector",
       "Policy & Terms Monitor",
       "Competitor Monitor",
+      "Price Monitor",
     ]);
     for (const tool of TOOLS) expect(tool.summary.length).toBeGreaterThan(30);
     expect(TOOLS.find((tool) => tool.href === "/competitor-monitor")?.summary).toBe(
@@ -216,6 +220,44 @@ describe("the competitor monitor page", () => {
   });
 });
 
+describe("the price monitor page", () => {
+  it("has the agreed title, with the site name added once by the template", async () => {
+    expect(titleOf(priceMetadata)).toBe("Price Monitor — Track Changes on Public Pricing Pages");
+    const openGraph = priceMetadata.openGraph as Record<string, unknown>;
+    expect(openGraph.title).toBe("Price Monitor — Track Changes on Public Pricing Pages | DiffNexa");
+    const { metadata: root } = await import("@/app/layout");
+    const template = (root.title as { template: string }).template;
+    expect(template.replace("%s", titleOf(priceMetadata))).toBe(
+      "Price Monitor — Track Changes on Public Pricing Pages | DiffNexa",
+    );
+  });
+
+  it("has the agreed description, canonical and Open Graph address", () => {
+    expect(priceMetadata.description).toBe(
+      "Compare a public pricing or product page with your saved baseline and see exactly what changed, with evidence you can verify.",
+    );
+    expect(priceMetadata.alternates?.canonical).toBe("/price-monitor");
+    expect((priceMetadata.openGraph as Record<string, unknown>).url).toBe("/price-monitor");
+  });
+
+  it("claims no capability the product does not have and judges no price", () => {
+    const openGraph = priceMetadata.openGraph as Record<string, unknown>;
+    const wording = `${titleOf(priceMetadata)} ${priceMetadata.description} ${openGraph.title} ${openGraph.description}`.toLowerCase();
+    for (const claim of [
+      "ai", "automatic", "automatically", "alerts?", "scheduled?", "real-time", "notifications?",
+      "cheapest", "best price", "deals?", "forecast", "predict", "amazon", "history",
+    ]) {
+      expect(wording, `claims ${claim}`).not.toMatch(new RegExp(`\\b${claim}\\b`));
+    }
+  });
+
+  it("describes the tool card in the agreed words", () => {
+    expect(TOOLS.find((tool) => tool.href === "/price-monitor")?.summary).toBe(
+      "Track changes on public pricing and product pages and see exactly what changed.",
+    );
+  });
+});
+
 describe("the sitemap", () => {
   it("lists exactly the public pages", () => {
     const paths = sitemap().map((entry) => new URL(entry.url).pathname);
@@ -224,8 +266,14 @@ describe("the sitemap", () => {
       "/competitor-monitor",
       "/pdf-compare",
       "/policy-monitor",
+      "/price-monitor",
       "/website-compare",
     ].sort());
+  });
+
+  it("includes the price monitor route once", () => {
+    const urls = sitemap().map((entry) => entry.url);
+    expect(urls.filter((url) => url.endsWith("/price-monitor"))).toHaveLength(1);
   });
 
   it("includes the competitor monitor route", () => {

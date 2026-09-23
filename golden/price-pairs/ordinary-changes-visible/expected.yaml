@@ -1,0 +1,17 @@
+# Written by hand: what really changed between these two versions of a
+# pricing or product page, and the one category each change must receive.
+pair: ordinary-changes-visible
+url: https://tasklane.example.com/pricing
+description: Title, an ordinary link and FAQ wording change. None is about price, and all stay visible.
+expected_changes:
+- new: Plans and pricing
+  category: metadata
+  price_category: other
+- old: https://tasklane.example.com/blog
+  new: https://tasklane.example.com/news
+  category: link
+  price_category: other
+- old: your account settings
+  new: the billing page
+  price_category: other
+forbidden_categories: [price, discount_sale, original_price, currency, billing_period]

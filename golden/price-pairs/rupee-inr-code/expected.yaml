@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two versions of a
+# pricing or product page, and the one category each change must receive.
+pair: rupee-inr-code
+url: https://shaktiware.example.in/mixer-grinder
+description: A price written with the INR code changes from INR 2999 to INR 2799.
+expected_changes:
+- old: '2999'
+  new: '2799'
+  price_category: price
+forbidden_categories: [other, pricing_details]

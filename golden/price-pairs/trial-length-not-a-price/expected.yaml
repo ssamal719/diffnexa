@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two versions of a
+# pricing or product page, and the one category each change must receive.
+pair: trial-length-not-a-price
+url: https://tasklane.example.com/pricing
+description: The free trial changes from 14 to 30 days. That is not a price or a billing period.
+expected_changes:
+- old: 14-day
+  new: 30-day
+  price_category: pricing_details
+forbidden_categories: [price, discount_sale, original_price, currency, billing_period]

@@ -1,0 +1,11 @@
+# Written by hand: what really changed between these two versions of a
+# pricing or product page, and the one category each change must receive.
+pair: ordinary-number-not-a-price
+url: https://tasklane.example.com/pricing
+description: The number of customer teams changes. An ordinary number stays an ordinary change.
+expected_changes:
+- old: 12,000
+  new: 15,000
+  category: number
+  price_category: other
+forbidden_categories: [price, discount_sale, original_price, currency, billing_period, pricing_details, product_plan]

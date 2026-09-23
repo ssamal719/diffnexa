@@ -87,6 +87,7 @@ def cmd_golden_run(args: argparse.Namespace) -> int:
     from diffnexa_engine.golden.competitor import discover_competitor_pairs, score_competitor_pair
     from diffnexa_engine.golden.loader import discover_pairs
     from diffnexa_engine.golden.policy import discover_policy_pairs, score_policy_pair
+    from diffnexa_engine.golden.price import discover_price_pairs, score_price_pair
     from diffnexa_engine.golden.runner import (
         PairOutcome,
         render_summary_markdown,
@@ -166,6 +167,25 @@ def cmd_golden_run(args: argparse.Namespace) -> int:
                 name=f"competitor:{competitor_pair.name}",
                 source="competitor",
                 description=competitor_pair.spec.description,
+                extraction_failures=[],
+                comparison_status="scored",
+                score=score,
+            )
+        )
+
+    # Price pairs score the same four metrics, plus their category checks.
+    try:
+        price_pairs = discover_price_pairs(root / "golden" / "price-pairs")
+    except Exception as exc:
+        print(f"Price golden spec error: {exc}")
+        return 1
+    for price_pair in price_pairs:
+        score, _before, _after, _classification = score_price_pair(price_pair)
+        suite.pairs.append(
+            PairOutcome(
+                name=f"price:{price_pair.name}",
+                source="price",
+                description=price_pair.spec.description,
                 extraction_failures=[],
                 comparison_status="scored",
                 score=score,

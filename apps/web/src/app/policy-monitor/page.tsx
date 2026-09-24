@@ -2,6 +2,16 @@ import type { Metadata } from "next";
 
 import { PolicyDesk } from "@/components/policy/PolicyDesk";
 import { RelatedTools, ToolContent, ToolDesk, ToolPageIntro } from "@/components/site/ToolPage";
+import {
+  AiStep,
+  BulletList,
+  DetailCards,
+  FaqList,
+  Paragraphs,
+  Section,
+  StepCards,
+  TextLink,
+} from "@/components/site/ToolSections";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata("/policy-monitor");
@@ -22,105 +32,126 @@ export default function PolicyMonitorPage() {
       </ToolDesk>
 
       <ToolContent>
-        <section className="mt-10" aria-labelledby="how-it-works">
-          <h2 id="how-it-works" className="text-[1.35rem] font-semibold tracking-tight">
-            How it works
-          </h2>
-          <ol className="mt-3 grid gap-3 md:grid-cols-3">
-            {STEPS.map((step, index) => (
-              <li
-                key={step.title}
-                className="rounded-[var(--radius-panel)] border border-rule bg-paper p-4"
-              >
-                <span className="tabular text-[0.8rem] font-semibold text-ink-soft">
-                  Step {index + 1}
-                </span>
-                <h3 className="mt-1 font-medium">{step.title}</h3>
-                <p className="mt-1 text-[0.9rem] text-ink-soft">{step.detail}</p>
+        <Section id="what-is-policy-monitor" title="What is Policy & Terms Monitor?">
+          <Paragraphs>
+            <p>
+              Policy &amp; Terms Monitor compares a published policy or agreement with the version you saved earlier, and
+              shows what changed and which part of the document each change belongs to. It is built for the documents
+              organisations rely on and rarely re-read: a supplier&apos;s terms of service, a privacy policy, a data
+              processing agreement, a subprocessor list, a refund policy.
+            </p>
+            <p>
+              These documents change quietly. An update notice, if there is one, rarely says exactly what moved, and a
+              few changed words in a retention period, a cancellation notice or a fee clause can change what you have
+              agreed to. Seeing each change next to the words it replaced lets you decide for yourself whether it
+              matters.
+            </p>
+          </Paragraphs>
+        </Section>
+
+        <Section id="how-it-works" title="How it works">
+          <StepCards steps={STEPS} />
+        </Section>
+
+        <Section id="what-it-shows" title="What DiffNexa shows you">
+          <DetailCards items={SHOWS} />
+        </Section>
+
+        <Section
+          id="topics"
+          title="The parts of an agreement it recognises"
+          lead={
+            <p>
+              Alongside each change, DiffNexa names the part of the document it sits in when the page&apos;s headings and
+              wording make that clear, using fixed rules rather than AI. A change it cannot place is shown without a topic
+              rather than given a guessed one.
+            </p>
+          }
+        >
+          <ul className="mt-4 flex max-w-[60rem] flex-wrap gap-2">
+            {TOPICS.map((topic) => (
+              <li key={topic} className="rounded-full border border-rule bg-paper px-3 py-1 text-[0.88rem]">
+                {topic}
               </li>
             ))}
-          </ol>
-        </section>
+          </ul>
+        </Section>
 
-        <section className="mt-10" aria-labelledby="what-it-shows">
-          <h2 id="what-it-shows" className="text-[1.35rem] font-semibold tracking-tight">
-            What DiffNexa shows you
-          </h2>
-          <div className="mt-3 grid gap-3 md:grid-cols-2">
-            {SHOWS.map((item) => (
-              <div
-                key={item.title}
-                className="rounded-[var(--radius-panel)] border border-rule bg-paper p-4"
-              >
-                <h3 className="font-medium">{item.title}</h3>
-                <p className="mt-1 text-[0.9rem] text-ink-soft">{item.detail}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="mt-10" aria-labelledby="which-tool">
-          <h2 id="which-tool" className="text-[1.35rem] font-semibold tracking-tight">
-            Policy Monitor or Website Change Detector?
-          </h2>
+        <Section id="which-tool" title="Policy Monitor or Website Change Detector?">
           <div className="mt-3 grid max-w-[70ch] gap-4 md:grid-cols-2">
             <div>
               <h3 className="font-medium">Policy &amp; Terms Monitor</h3>
               <p className="mt-1 text-[0.95rem] text-ink-soft">
-                For agreements: privacy policies, terms of service, data processing agreements,
-                subprocessor lists, cookie and refund policies. Alongside each change it names the
-                part of the document it sits in, such as data retention, cancellation, fees or
-                governing law.
+                For agreements: privacy policies, terms of service, data processing agreements, subprocessor lists,
+                cookie and refund policies. Alongside each change it names the part of the document it sits in, such as
+                data retention, cancellation, fees or governing law.
               </p>
             </div>
             <div>
               <h3 className="font-medium">Website Change Detector</h3>
               <p className="mt-1 text-[0.95rem] text-ink-soft">
-                For any public page — pricing, documentation, product pages. The same comparison,
-                without the document-specific grouping.
+                For any public page — pricing, documentation, product pages. The same comparison, without the
+                document-specific grouping.
               </p>
             </div>
           </div>
-        </section>
+        </Section>
 
-        <section className="mt-10" aria-labelledby="limits">
-          <h2 id="limits" className="text-[1.35rem] font-semibold tracking-tight">
-            What this does not do
-          </h2>
-          <ul className="mt-3 max-w-[70ch] space-y-2 text-[0.95rem] text-ink-soft">
-            <li>
-              It does not watch pages for you. There is no scheduled checking, no alerts and no
-              saved history — you check when you choose to.
-            </li>
-            <li>
-              It does not judge changes. DiffNexa shows what changed and where it sits. Whether that
-              matters for your situation is a judgement for you or your lawyer.
-            </li>
-            <li>
-              It does not read pages behind a login, pages that build their content in the browser,
-              or PDF documents. For a PDF policy, use PDF Compare.
-            </li>
-          </ul>
-        </section>
+        <Section id="privacy" title="What happens to the pages you check">
+          <Paragraphs>
+            <p>
+              DiffNexa&apos;s server reads the policy page you name as <TextLink href="/bot">DiffNexaBot</TextLink>, once
+              each time you capture or check it. Your baseline, including the document type you chose, is a file you keep.
+              Nothing about the page or your result is stored by DiffNexa — see the{" "}
+              <TextLink href="/privacy-policy">Privacy Policy</TextLink>.
+            </p>
+          </Paragraphs>
+        </Section>
 
-        <section className="mt-10" aria-labelledby="questions">
-          <h2 id="questions" className="text-[1.35rem] font-semibold tracking-tight">
-            Questions
-          </h2>
-          <dl className="mt-3 max-w-[65ch] space-y-4 text-[0.95rem]">
-            {FAQ.map((item) => (
-              <div key={item.question}>
-                <dt className="font-medium">{item.question}</dt>
-                <dd className="mt-1 text-ink-soft">{item.answer}</dd>
-              </div>
-            ))}
-          </dl>
-        </section>
+        <Section id="limits" title="What this does not do">
+          <BulletList items={LIMITS} />
+        </Section>
+
+        <AiStep>
+          <p>
+            After a check, AI Change Analyst can summarise what changed in the policy in plain language and suggest which
+            changes look significant — without giving legal advice. Every statement cites a change and its wording from
+            the comparison.
+          </p>
+        </AiStep>
+
+        <Section id="questions" title="Questions">
+          <FaqList items={FAQ} />
+        </Section>
         <RelatedTools path="/policy-monitor" />
       </ToolContent>
     </>
   );
 }
+
+const TOPICS = [
+  "Liability",
+  "Warranties",
+  "Fees and pricing",
+  "Payment terms",
+  "Refunds",
+  "Cancellation and termination",
+  "Automatic renewal",
+  "Data retention",
+  "Data sharing",
+  "Your data rights",
+  "Licence and ownership",
+  "Acceptable use",
+  "Governing law",
+  "Disputes",
+];
+
+const LIMITS = [
+  "It does not watch pages for you. There is no scheduled checking, no alerts and no saved history — you check when you choose to.",
+  "It does not judge changes. DiffNexa shows what changed and where it sits. Whether that matters for your situation is a judgement for you or your lawyer, and nothing here is legal advice.",
+  "It does not read pages behind a login, pages that build their content in the browser, or PDF documents. For a PDF policy, use PDF Compare.",
+  "It reads the one page you name. A policy split across several pages needs a baseline for each.",
+];
 
 const STEPS = [
   {
@@ -164,24 +195,27 @@ const SHOWS = [
 
 const FAQ = [
   {
-    question: "Does DiffNexa watch the page for me?",
+    question: "What types of policy pages can I monitor?",
     answer:
-      "Not yet. You check when you choose to. There is no scheduled checking, and no alerts or email.",
+      "Any public web page that holds a policy or agreement: privacy policies, terms of service or terms and conditions, data processing agreements, subprocessor lists, security, cookie and refund policies. The page's text must be in the page itself — pages behind a login, or that assemble their content in the browser, can't be read yet.",
+  },
+  {
+    question: "How are policy changes identified?",
+    answer:
+      "The same deterministic comparison as Website Change Detector: the page is read again and compared with your baseline, section by section, with figures and dates compared as values. Each change is then matched to a part of the agreement — such as data retention or cancellation — by fixed rules that read the page's headings and wording.",
+  },
+  {
+    question: "Does DiffNexa watch the page for me?",
+    answer: "Not yet. You check when you choose to. There is no scheduled checking, and no alerts or email.",
   },
   {
     question: "Do I need an account?",
-    answer:
-      "No. Your baseline is a file you keep. DiffNexa stores nothing about the pages you check.",
+    answer: "No. Your baseline is a file you keep. DiffNexa stores nothing about the pages you check.",
   },
   {
     question: "Does this tell me whether a change is bad for me?",
     answer:
       "No, and it will not pretend to. DiffNexa shows what changed and where it sits in the document. Whether that matters for your situation is a judgement for you or your lawyer — this is not legal advice.",
-  },
-  {
-    question: "Which pages can be monitored?",
-    answer:
-      "Public pages whose text is in the page itself. Pages behind a login, and pages that assemble their content in the browser, can't be read yet — DiffNexa says so rather than guessing.",
   },
   {
     question: "What about PDF policies?",

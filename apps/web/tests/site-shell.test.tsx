@@ -95,11 +95,20 @@ describe("the header", () => {
     expect(screen.getByRole("button", { name: /^Compare/ }).className).not.toContain("text-signal");
   });
 
-  it("links home from the brand, and to how DiffNexa and its AI step work", () => {
+  it("links home from the brand, to how DiffNexa and its AI step work, and to About and Contact", () => {
     render(<SiteHeader />);
     expect(screen.getByRole("link", { name: "DiffNexa home" }).getAttribute("href")).toBe("/");
     expect(screen.getByRole("link", { name: "How it works" }).getAttribute("href")).toBe("/#how-it-works");
-    expect(screen.getByRole("link", { name: "AI Change Analyst" }).getAttribute("href")).toBe("/#ai-change-analyst");
+    expect(screen.getByRole("link", { name: "AI Change Analyst" }).getAttribute("href")).toBe("/ai-change-analyst");
+    expect(screen.getByRole("link", { name: "About" }).getAttribute("href")).toBe("/about");
+    expect(screen.getByRole("link", { name: "Contact" }).getAttribute("href")).toBe("/contact");
+  });
+
+  it("marks About as the current page when you are on it", () => {
+    currentPath = "/about";
+    render(<SiteHeader />);
+    expect(screen.getByRole("link", { name: "About" }).getAttribute("aria-current")).toBe("page");
+    expect(screen.getByRole("link", { name: "Contact" }).getAttribute("aria-current")).toBeNull();
   });
 });
 
@@ -108,14 +117,35 @@ describe("the footer", () => {
     render(<SiteFooter />);
     const hrefs = screen.getAllByRole("link").map((link) => link.getAttribute("href")!);
     for (const tool of TOOLS) expect(hrefs.filter((href) => href === tool.href)).toHaveLength(1);
-    const known = new Set(["/", ...TOOLS.map((tool) => tool.href), "/#how-it-works", "/#ai-change-analyst", "/#your-data"]);
+    const known = new Set([
+      "/",
+      ...TOOLS.map((tool) => tool.href),
+      "/#how-it-works",
+      "/#your-data",
+      "/ai-change-analyst",
+      "/about",
+      "/contact",
+      "/privacy-policy",
+      "/terms-of-service",
+    ]);
     for (const href of hrefs) expect(known.has(href), href).toBe(true);
   });
 
-  it("does not list legal or company pages that have not been written", () => {
+  it("has a Company column with About, Contact and the legal pages", () => {
+    render(<SiteFooter />);
+    const company = screen.getByRole("navigation", { name: "Company links" });
+    expect(within(company).getAllByRole("link").map((link) => [link.textContent, link.getAttribute("href")])).toEqual([
+      ["About", "/about"],
+      ["Contact", "/contact"],
+      ["Privacy Policy", "/privacy-policy"],
+      ["Terms of Service", "/terms-of-service"],
+    ]);
+  });
+
+  it("does not list pages that have not been written", () => {
     render(<SiteFooter />);
     const text = (document.body.textContent ?? "").toLowerCase();
-    for (const missing of ["privacy policy", "terms of service", "about us", "contact", "careers", "blog"]) {
+    for (const missing of ["careers", "blog", "pricing", "press", "cookie policy"]) {
       expect(text, missing).not.toContain(missing);
     }
   });
@@ -167,7 +197,7 @@ describe("the homepage", () => {
   it("says plainly what happens to files, pages, AI requests and analytics", () => {
     render(<HomePage />);
     const text = document.getElementById("your-data")!.textContent ?? "";
-    expect(text).toContain("compared in memory, and discarded");
+    expect(text).toContain("used only to produce your comparison, and discarded");
     expect(text).toContain("The baseline is a file you download and keep");
     expect(text).toContain("Only when you ask");
     expect(text).toContain("Google Analytics");

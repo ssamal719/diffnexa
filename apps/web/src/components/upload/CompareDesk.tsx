@@ -195,7 +195,7 @@ export function CompareDesk() {
           )}
 
           <p className="text-[0.8rem] text-ink-soft">
-            Your documents are sent to the comparison service, compared in memory, and discarded
+            Your documents are sent to the comparison service, used only for this comparison, and discarded
             when the result comes back. Nothing is stored and the comparison sends nothing to any AI service.
           </p>
         </div>

@@ -276,6 +276,11 @@ function AIAnalyst() {
               Every explanation is checked against the comparison evidence before it is shown.
             </li>
           </ul>
+          <p className="mt-5">
+            <Link href="/ai-change-analyst" className="font-medium text-signal hover:underline">
+              How AI Change Analyst works <span aria-hidden="true">→</span>
+            </Link>
+          </p>
         </div>
         <ol aria-label="Where AI fits" className="grid gap-3">
           <FlowStep label="1 · Comparison" title="DiffNexa finds and proves every change" tone="solid" />
@@ -305,7 +310,7 @@ function YourData() {
   const items = [
     {
       title: "Documents",
-      body: "PDF, Word and Excel files are sent to DiffNexa’s comparison service, compared in memory, and discarded when the result comes back.",
+      body: "PDF, Word and Excel files are sent to DiffNexa’s comparison service, used only to produce your comparison, and discarded when the result comes back.",
     },
     {
       title: "Web pages",
@@ -337,6 +342,11 @@ function YourData() {
             </div>
           ))}
         </dl>
+        <p className="mt-6 text-[0.98rem]">
+          <Link href="/privacy-policy" className="font-medium text-signal hover:underline">
+            Read the Privacy Policy <span aria-hidden="true">→</span>
+          </Link>
+        </p>
       </Container>
     </section>
   );

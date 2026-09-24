@@ -12,12 +12,15 @@ const GROUP_ORDER: ToolGroup[] = ["compare", "monitor"];
 
 const MORE = [
   { href: "/#how-it-works", label: "How it works" },
-  { href: "/#ai-change-analyst", label: "AI Change Analyst" },
+  { href: "/ai-change-analyst", label: "AI Change Analyst" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
 ];
 
 /**
- * The site header: the brand, and every tool in two groups — files you
- * compare, and web pages you check against a baseline.
+ * The site header: the brand, every tool in two groups — files you compare,
+ * and web pages you check against a baseline — then how DiffNexa works, AI
+ * Change Analyst, About and Contact. Legal pages are in the footer.
  *
  * Every tool is an ordinary link that is always in the page's HTML, so it can
  * be reached by keyboard, by screen reader and by a search engine. On a
@@ -120,7 +123,7 @@ export function SiteHeader() {
                     aria-controls={`${id}-${group}`}
                     onClick={() => setOpenGroup(open ? null : group)}
                     className={[
-                      "hidden items-center gap-1.5 rounded-[6px] px-3 py-2 text-[0.95rem] font-medium hover:bg-surface lg:inline-flex",
+                      "hidden items-center gap-1.5 rounded-[6px] px-3 py-2 text-[0.95rem] font-medium whitespace-nowrap hover:bg-surface lg:inline-flex lg:px-2.5 xl:px-3",
                       here ? "text-signal" : "text-ink",
                     ].join(" ")}
                   >
@@ -164,16 +167,23 @@ export function SiteHeader() {
                 </li>
               );
             })}
-            {MORE.map((item) => (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className="block rounded-[6px] px-3 py-2 text-[0.95rem] font-medium text-ink hover:bg-surface"
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
+            {MORE.map((item) => {
+              const current = item.href === pathname;
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    aria-current={current ? "page" : undefined}
+                    className={[
+                      "block rounded-[6px] px-3 py-2 text-[0.95rem] font-medium whitespace-nowrap hover:bg-surface lg:px-2.5 xl:px-3",
+                      current ? "text-signal" : "text-ink",
+                    ].join(" ")}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </nav>
       </Container>

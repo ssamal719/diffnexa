@@ -2,6 +2,16 @@ import type { Metadata } from "next";
 
 import { PriceDesk } from "@/components/price/PriceDesk";
 import { RelatedTools, ToolContent, ToolDesk, ToolPageIntro } from "@/components/site/ToolPage";
+import {
+  AiStep,
+  BulletList,
+  DetailCards,
+  FaqList,
+  Paragraphs,
+  Section,
+  StepCards,
+  TextLink,
+} from "@/components/site/ToolSections";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata("/price-monitor");
@@ -22,89 +32,77 @@ export default function PriceMonitorPage() {
       </ToolDesk>
 
       <ToolContent>
-        <section className="mt-10" aria-labelledby="how-it-works">
-          <h2 id="how-it-works" className="text-[1.35rem] font-semibold tracking-tight">
-            How it works
-          </h2>
-          <ol className="mt-3 grid gap-3 md:grid-cols-3">
-            {STEPS.map((step, index) => (
-              <li
-                key={step.title}
-                className="rounded-[var(--radius-panel)] border border-rule bg-paper p-4"
-              >
-                <span className="tabular text-[0.8rem] font-semibold text-ink-soft">
-                  Step {index + 1}
-                </span>
-                <h3 className="mt-1 font-medium">{step.title}</h3>
-                <p className="mt-1 text-[0.9rem] text-ink-soft">{step.detail}</p>
-              </li>
-            ))}
-          </ol>
-        </section>
+        <Section id="what-is-price-monitor" title="What is Price Monitor?">
+          <Paragraphs>
+            <p>
+              Price Monitor compares a public pricing or product page with the version you saved earlier and picks out
+              what changed about the price: the amount, a sale or original price, the currency, the billing period, a
+              plan&apos;s name, whether something is available. Everything else that changed on the page is listed too.
+            </p>
+            <p>
+              Prices are compared as amounts of money, so $29 becoming $35 is one change with the difference worked out, and a number is only
+              called a price when the page presents it as one. It is a check you run when you choose — not a live price
+              feed.
+            </p>
+          </Paragraphs>
+        </Section>
 
-        <section className="mt-10" aria-labelledby="what-counts">
-          <h2 id="what-counts" className="text-[1.35rem] font-semibold tracking-tight">
-            What counts as a price
-          </h2>
-          <p className="mt-2 max-w-[70ch] text-[0.95rem] text-ink-soft">
-            A number is treated as a price only when the page shows it as money: with a currency
-            symbol or code such as $29, €29.99, £29, ₹2,499, USD 29 or INR 2499, or in a table column
-            headed as a price. &ldquo;10 users&rdquo;, &ldquo;a 14-day trial&rdquo; and &ldquo;99%
-            uptime&rdquo; are not prices, and are never labelled as one. Common formats are
-            recognised; not every way of writing a price is.
+        <Section id="how-it-works" title="How it works">
+          <StepCards steps={STEPS} />
+        </Section>
+
+        <Section
+          id="what-counts"
+          title="What counts as a price"
+          lead={
+            <p>
+              A number is treated as a price only when the page shows it as money: with a currency symbol or code such as
+              $29, €29.99, £29, ₹2,499, USD 29 or INR 2499, or in a table column headed as a price. &ldquo;10
+              users&rdquo;, &ldquo;a 14-day trial&rdquo; and &ldquo;99% uptime&rdquo; are not prices, and are never
+              labelled as one. Common formats are recognised; not every way of writing a price is.
+            </p>
+          }
+        >
+          <DetailCards items={GROUPS} />
+        </Section>
+
+        <Section id="privacy" title="What happens to the pages you check">
+          <Paragraphs>
+            <p>
+              DiffNexa&apos;s server reads the page you name as <TextLink href="/bot">DiffNexaBot</TextLink>, once each
+              time you capture or check it, and follows the site&apos;s robots.txt. The product name, page type and
+              baseline stay in a file on your device, and DiffNexa stores nothing about the pages you check — see the{" "}
+              <TextLink href="/privacy-policy">Privacy Policy</TextLink>.
+            </p>
+          </Paragraphs>
+        </Section>
+
+        <Section id="limits" title="What this does not do">
+          <BulletList items={LIMITS} />
+        </Section>
+
+        <AiStep>
+          <p>
+            After a check, AI Change Analyst can describe the price and plan changes in plain language and suggest which
+            look significant. It explains what the page says; it does not rate prices or predict them.
           </p>
-          <dl className="mt-3 grid gap-3 md:grid-cols-2">
-            {GROUPS.map((group) => (
-              <div
-                key={group.title}
-                className="rounded-[var(--radius-panel)] border border-rule bg-paper p-4"
-              >
-                <dt className="font-medium">{group.title}</dt>
-                <dd className="mt-1 text-[0.9rem] text-ink-soft">{group.detail}</dd>
-              </div>
-            ))}
-          </dl>
-        </section>
+        </AiStep>
 
-        <section className="mt-10" aria-labelledby="limits">
-          <h2 id="limits" className="text-[1.35rem] font-semibold tracking-tight">
-            What this does not do
-          </h2>
-          <ul className="mt-3 max-w-[70ch] space-y-2 text-[0.95rem] text-ink-soft">
-            <li>
-              It does not watch prices for you. There is no scheduled checking, no price alerts, no
-              email or notifications, and no saved history — you check when you choose to.
-            </li>
-            <li>
-              It does not judge prices. It shows what the page says before and after, and does not
-              call a price good, bad, high or low, compare sellers or predict anything.
-            </li>
-            <li>
-              It reads one public page at a time. It does not read pages behind a login or pages
-              that build their content in the browser, follow links, or compare screenshots.
-            </li>
-            <li>It does not connect to shops or marketplaces. It reads the public page only.</li>
-          </ul>
-        </section>
-
-        <section className="mt-10" aria-labelledby="questions">
-          <h2 id="questions" className="text-[1.35rem] font-semibold tracking-tight">
-            Questions
-          </h2>
-          <dl className="mt-3 max-w-[65ch] space-y-4 text-[0.95rem]">
-            {FAQ.map((item) => (
-              <div key={item.question}>
-                <dt className="font-medium">{item.question}</dt>
-                <dd className="mt-1 text-ink-soft">{item.answer}</dd>
-              </div>
-            ))}
-          </dl>
-        </section>
+        <Section id="questions" title="Questions">
+          <FaqList items={FAQ} />
+        </Section>
         <RelatedTools path="/price-monitor" />
       </ToolContent>
     </>
   );
 }
+
+const LIMITS = [
+  "It does not watch prices for you. There is no scheduled checking, no price alerts, no email or notifications, and no saved history — you check when you choose to.",
+  "It does not judge prices. It shows what the page says before and after, and does not call a price good, bad, high or low, compare sellers or predict anything.",
+  "It reads one public page at a time. It does not read pages behind a login or pages that build their content in the browser, follow links, or compare screenshots.",
+  "It does not connect to shops or marketplaces. It reads the public page only, and prices that differ by visitor, location or basket may not match what you see.",
+];
 
 const STEPS = [
   {
@@ -148,9 +146,18 @@ const GROUPS = [
 
 const FAQ = [
   {
-    question: "Does DiffNexa track prices automatically?",
+    question: "What type of public pricing pages can be compared?",
     answer:
-      "No. You check when you choose to. There is no scheduled checking and no alerts of any kind.",
+      "Public pages that show prices in their own text: software pricing and plans pages, product pages, rate cards and fee schedules. Pages that load their prices in the browser after the page arrives, or that sit behind a login, can't be read yet — DiffNexa says so rather than guessing.",
+  },
+  {
+    question: "Is this real-time pricing?",
+    answer:
+      "No. Price Monitor reads the page at the moment you capture or check it and compares that with your baseline. It does not track prices continuously, keep a price history or send alerts.",
+  },
+  {
+    question: "Does DiffNexa track prices automatically?",
+    answer: "No. You check when you choose to. There is no scheduled checking and no alerts of any kind.",
   },
   {
     question: "Do I need an account?",
@@ -161,10 +168,5 @@ const FAQ = [
     question: "Does the page type change the result?",
     answer:
       "No. It is your own label, saved in your baseline file and shown in your report. The page is read and compared the same way whatever you choose.",
-  },
-  {
-    question: "Which pages can be checked?",
-    answer:
-      "Public pages whose text is in the page itself. Pages behind a login, and pages that assemble their content in the browser, can't be read yet — DiffNexa says so rather than guessing.",
   },
 ];

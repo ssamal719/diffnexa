@@ -18,8 +18,7 @@ import type { Metadata } from "next";
 import { SITE_NAME, TAGLINE, absoluteUrl } from "@/lib/site";
 import { TOOLS, toolByHref } from "@/lib/tools";
 
-export type PagePath =
-  | "/"
+export type ToolPath =
   | "/pdf-compare"
   | "/docx-compare"
   | "/excel-compare"
@@ -27,6 +26,27 @@ export type PagePath =
   | "/policy-monitor"
   | "/competitor-monitor"
   | "/price-monitor";
+
+/** Pages about DiffNexa itself, rather than tools. */
+export type InfoPath = "/ai-change-analyst" | "/about" | "/contact" | "/privacy-policy" | "/terms-of-service" | "/bot";
+
+export type PagePath = "/" | ToolPath | InfoPath;
+
+/**
+ * The information pages, in the order the sitemap lists them, with the name
+ * each is given in its breadcrumb and the kind of page schema.org calls it.
+ */
+export const INFO_PAGES: { path: InfoPath; name: string; schemaType: "WebPage" | "AboutPage" | "ContactPage" }[] = [
+  { path: "/ai-change-analyst", name: "AI Change Analyst", schemaType: "WebPage" },
+  { path: "/about", name: "About", schemaType: "AboutPage" },
+  { path: "/contact", name: "Contact", schemaType: "ContactPage" },
+  { path: "/privacy-policy", name: "Privacy Policy", schemaType: "WebPage" },
+  { path: "/terms-of-service", name: "Terms of Service", schemaType: "WebPage" },
+  { path: "/bot", name: "DiffNexaBot", schemaType: "WebPage" },
+];
+
+/** The one address people can write to. */
+export const CONTACT_EMAIL = "info@diffnexa.com";
 
 export const PAGE_SEO: Record<PagePath, { title: string; description: string }> = {
   "/": {
@@ -68,6 +88,36 @@ export const PAGE_SEO: Record<PagePath, { title: string; description: string }> 
     title: "Price Monitor — Track Changes to Public Pricing Pages | DiffNexa",
     description:
       "Compare a public pricing or product page with your saved baseline to find changed prices, currencies, billing periods, plans and availability, with evidence.",
+  },
+  "/ai-change-analyst": {
+    title: "AI Change Analyst — How Detected Changes Are Explained | DiffNexa",
+    description:
+      "An optional step that explains changes DiffNexa has already found. It runs only when you ask, never decides what changed, and cites the evidence it used.",
+  },
+  "/about": {
+    title: "About DiffNexa — Document & Web Page Comparison Tools",
+    description:
+      "Why DiffNexa exists, how its comparison works, what each tool does and does not do, and why every change it reports comes with evidence you can check.",
+  },
+  "/contact": {
+    title: "Contact DiffNexa — Get in Touch",
+    description:
+      "Email DiffNexa at info@diffnexa.com with product questions, bug reports, privacy requests, legal questions, feedback or business enquiries.",
+  },
+  "/privacy-policy": {
+    title: "Privacy Policy | DiffNexa",
+    description:
+      "How DiffNexa handles the files you compare, the web pages you check, AI Change Analyst requests, Google Analytics cookies and any future advertising.",
+  },
+  "/terms-of-service": {
+    title: "Terms of Service | DiffNexa",
+    description:
+      "The terms for using DiffNexa: acceptable use, the files and addresses you submit, the limits of automated comparison results, and liability.",
+  },
+  "/bot": {
+    title: "DiffNexaBot — How It Reads Public Web Pages | DiffNexa",
+    description:
+      "DiffNexaBot fetches one public web page when a DiffNexa visitor asks to check it. It follows robots.txt, runs no JavaScript and loads nothing else.",
   },
 };
 
@@ -112,7 +162,7 @@ export function websiteJsonLd(): JsonLd {
  * the homepage. Only facts the page itself states: name, address, what it does,
  * and that it runs in a web browser.
  */
-export function toolJsonLd(path: Exclude<PagePath, "/">): JsonLd[] {
+export function toolJsonLd(path: ToolPath): JsonLd[] {
   const tool = toolByHref(path);
   return [
     {
@@ -132,6 +182,38 @@ export function toolJsonLd(path: Exclude<PagePath, "/">): JsonLd[] {
       itemListElement: [
         { "@type": "ListItem", position: 1, name: SITE_NAME, item: absoluteUrl("/") },
         { "@type": "ListItem", position: 2, name: tool.name, item: absoluteUrl(path) },
+      ],
+    },
+  ];
+}
+
+/**
+ * An information page: what kind of page it is, where it sits in the site,
+ * and its breadcrumb. The contact page names the address to write to — the
+ * only fact about the organisation stated anywhere, because it is the only one
+ * DiffNexa publishes.
+ */
+export function infoPageJsonLd(path: InfoPath): JsonLd[] {
+  const page = INFO_PAGES.find((item) => item.path === path)!;
+  const main: JsonLd = {
+    "@context": "https://schema.org",
+    "@type": page.schemaType,
+    name: PAGE_SEO[path].title,
+    url: absoluteUrl(path),
+    description: PAGE_SEO[path].description,
+    isPartOf: { "@type": "WebSite", name: SITE_NAME, url: absoluteUrl("/") },
+  };
+  if (page.schemaType === "ContactPage") {
+    main.mainEntity = { "@type": "Organization", name: SITE_NAME, url: absoluteUrl("/"), email: CONTACT_EMAIL };
+  }
+  return [
+    main,
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: SITE_NAME, item: absoluteUrl("/") },
+        { "@type": "ListItem", position: 2, name: page.name, item: absoluteUrl(path) },
       ],
     },
   ];

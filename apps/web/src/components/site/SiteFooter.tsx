@@ -5,10 +5,9 @@ import { LogoMark } from "@/components/site/Logo";
 import { toolsIn } from "@/lib/tools";
 
 /**
- * The site footer: the brand, every tool, and how the product works.
- *
- * It links only to pages and sections that exist. There are no legal or
- * company pages yet, so none are listed.
+ * The site footer: the brand, every tool, how the product works, and the
+ * pages about DiffNexa itself — company and legal. It links only to pages and
+ * sections that exist.
  */
 export function SiteFooter() {
   const columns = [
@@ -18,24 +17,33 @@ export function SiteFooter() {
       title: "Product",
       links: [
         { href: "/#how-it-works", label: "How it works" },
-        { href: "/#ai-change-analyst", label: "AI Change Analyst" },
+        { href: "/ai-change-analyst", label: "AI Change Analyst" },
         { href: "/#your-data", label: "Your files and data" },
+      ],
+    },
+    {
+      title: "Company",
+      links: [
+        { href: "/about", label: "About" },
+        { href: "/contact", label: "Contact" },
+        { href: "/privacy-policy", label: "Privacy Policy" },
+        { href: "/terms-of-service", label: "Terms of Service" },
       ],
     },
   ];
 
   return (
     <footer className="mt-auto border-t border-rule bg-paper">
-      <Container className="grid gap-10 py-12 md:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr]">
-        <div className="max-w-[26rem]">
+      <Container className="grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1.2fr_1fr_1fr] lg:gap-8">
+        <div className="max-w-[26rem] sm:col-span-2 lg:col-span-1">
           <Link href="/" className="inline-flex items-center gap-2.5 text-[1.15rem] font-semibold tracking-tight">
             <LogoMark />
             DiffNexa
           </Link>
           <p className="mt-3 font-medium">Know What Changed.</p>
           <p className="mt-2 text-[0.9rem] text-ink-soft">
-            DiffNexa compares documents and public web pages and shows the evidence behind every change. Files are
-            compared in memory and not stored.
+            DiffNexa compares documents and public web pages and shows the evidence behind every change. Files you
+            compare are not stored.
           </p>
         </div>
         {columns.map((column) => (

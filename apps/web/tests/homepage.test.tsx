@@ -341,7 +341,10 @@ describe("the price monitor page", () => {
   it("claims nothing it cannot do and judges no price", async () => {
     const { default: PriceMonitorPage } = await import("@/app/price-monitor/page");
     render(<PriceMonitorPage />);
-    const text = (document.body.textContent ?? "").toLowerCase();
+    const full = (document.body.textContent ?? "").toLowerCase();
+    // The one place "real-time" may appear is the question that answers it: no.
+    expect(full).toContain("is this real-time pricing?no. price monitor reads the page at the moment");
+    const text = full.replace("is this real-time pricing?", "");
     for (const phrase of [
       "we monitor", "we alert", "real-time", "cheapest", "best price", "great offer", "better deal",
       "worse deal", "good price", "undercut", "forecast", "amazon", "affiliate", "ai-powered",

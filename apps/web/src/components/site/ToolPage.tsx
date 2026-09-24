@@ -3,10 +3,8 @@ import type { ReactNode } from "react";
 
 import { Container } from "@/components/site/Container";
 import { JsonLd } from "@/components/site/JsonLd";
-import { toolJsonLd, type PagePath } from "@/lib/seo";
+import { toolJsonLd, type ToolPath } from "@/lib/seo";
 import { GROUPS, toolByHref } from "@/lib/tools";
-
-type ToolPath = Exclude<PagePath, "/">;
 
 /**
  * The top of every tool page: where it sits in the site, the one H1 saying

@@ -19,13 +19,19 @@ import { metadata as pdfMetadata } from "@/app/pdf-compare/page";
 import { metadata as policyMetadata } from "@/app/policy-monitor/page";
 import { metadata as priceMetadata } from "@/app/price-monitor/page";
 import { metadata as webMetadata } from "@/app/website-compare/page";
+import { metadata as aiMetadata } from "@/app/ai-change-analyst/page";
+import { metadata as aboutMetadata } from "@/app/about/page";
+import { metadata as botMetadata } from "@/app/bot/page";
+import { metadata as contactMetadata } from "@/app/contact/page";
+import { metadata as privacyMetadata } from "@/app/privacy-policy/page";
+import { metadata as termsMetadata } from "@/app/terms-of-service/page";
 import robots from "@/app/robots";
 import sitemap from "@/app/sitemap";
-import { PAGE_SEO, serializeJsonLd, toolJsonLd, websiteJsonLd } from "@/lib/seo";
+import { INFO_PAGES, PAGE_SEO, infoPageJsonLd, serializeJsonLd, toolJsonLd, websiteJsonLd } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
 import { toolByHref } from "@/lib/tools";
 
-const PAGES = [
+const TOOL_PAGES = [
   { name: "home", metadata: homeMetadata, path: "/" },
   { name: "pdf-compare", metadata: pdfMetadata, path: "/pdf-compare" },
   { name: "website-compare", metadata: webMetadata, path: "/website-compare" },
@@ -35,6 +41,18 @@ const PAGES = [
   { name: "docx-compare", metadata: docxMetadata, path: "/docx-compare" },
   { name: "excel-compare", metadata: excelMetadata, path: "/excel-compare" },
 ];
+
+/** The pages about DiffNexa itself. */
+const INFO = [
+  { name: "ai-change-analyst", metadata: aiMetadata, path: "/ai-change-analyst" },
+  { name: "about", metadata: aboutMetadata, path: "/about" },
+  { name: "contact", metadata: contactMetadata, path: "/contact" },
+  { name: "privacy-policy", metadata: privacyMetadata, path: "/privacy-policy" },
+  { name: "terms-of-service", metadata: termsMetadata, path: "/terms-of-service" },
+  { name: "bot", metadata: botMetadata, path: "/bot" },
+];
+
+const PAGES = [...TOOL_PAGES, ...INFO];
 
 type PageMetadata = (typeof PAGES)[number]["metadata"];
 
@@ -80,7 +98,7 @@ describe("the tools", () => {
   });
 
   it("have one entry per public tool page", () => {
-    const toolPages = PAGES.filter((page) => page.path !== "/").map((page) => page.path);
+    const toolPages = TOOL_PAGES.filter((page) => page.path !== "/").map((page) => page.path);
     expect(TOOLS.map((tool) => tool.href).sort()).toEqual(toolPages.sort());
   });
 
@@ -126,12 +144,17 @@ describe("page metadata", () => {
     expect(titleOf(policyMetadata)).toBe("Policy & Terms Monitor — Find Changes to Policy Pages | DiffNexa");
     expect(titleOf(competitorMetadata)).toBe("Competitor Monitor — Track Changes on Competitor Web Pages | DiffNexa");
     expect(titleOf(priceMetadata)).toBe("Price Monitor — Track Changes to Public Pricing Pages | DiffNexa");
+    expect(titleOf(aboutMetadata)).toBe("About DiffNexa — Document & Web Page Comparison Tools");
+    expect(titleOf(contactMetadata)).toBe("Contact DiffNexa — Get in Touch");
+    expect(titleOf(privacyMetadata)).toBe("Privacy Policy | DiffNexa");
+    expect(titleOf(termsMetadata)).toBe("Terms of Service | DiffNexa");
   });
 
   it("names DiffNexa exactly once in every title, and never lets the template add it again", () => {
     for (const page of PAGES) {
       expect(page.metadata.title, page.name).toEqual({ absolute: titleOf(page.metadata) });
-      expect(titleOf(page.metadata).match(/DiffNexa/g)?.length, page.name).toBe(1);
+      // \b keeps the crawler's own name, DiffNexaBot, from counting as a second mention.
+      expect(titleOf(page.metadata).match(/\bDiffNexa\b/g)?.length, page.name).toBe(1);
       expect(titleOf(page.metadata).length, page.name).toBeLessThanOrEqual(70);
     }
   });
@@ -172,8 +195,10 @@ describe("page metadata", () => {
   });
 
   it("never claims the comparison uses AI", () => {
+    // The tools and the homepage. The AI Change Analyst page is about AI and is
+    // checked separately below; the privacy policy must name it to disclose it.
     const wording = [
-      ...PAGES.map((page) => `${titleOf(page.metadata)} ${page.metadata.description}`),
+      ...TOOL_PAGES.map((page) => `${titleOf(page.metadata)} ${page.metadata.description}`),
       String(rootMetadata.description),
       ...TOOLS.map((tool) => `${tool.summary} ${tool.menuLine}`),
     ]
@@ -193,6 +218,23 @@ describe("page metadata", () => {
       for (const [word, count] of counts) {
         expect(count, `${page.name}: "${word}" repeats ${count} times`).toBeLessThanOrEqual(2);
       }
+    }
+  });
+
+  it("describes AI Change Analyst as an optional explanation, never as what finds changes", () => {
+    const description = String(aiMetadata.description);
+    expect(description).toContain("already found");
+    expect(description).toContain("only when you ask");
+    expect(description).toContain("never decides what changed");
+    expect(description.toLowerCase()).not.toMatch(/ai-powered|detects changes|finds changes/);
+  });
+
+  it("claims no advertising, certification or approval anywhere in page metadata", () => {
+    const wording = PAGES.map((page) => `${titleOf(page.metadata)} ${page.metadata.description}`)
+      .join(" ")
+      .toLowerCase();
+    for (const claim of ["adsense approved", "google-approved", "certified", "gdpr compliant", "soc 2", "iso 27001"]) {
+      expect(wording, claim).not.toContain(claim);
     }
   });
 
@@ -275,8 +317,48 @@ describe("structured data", () => {
   });
 
   it("states only facts: no ratings, reviews, prices, people or user counts", () => {
-    const keys = keysOf([websiteJsonLd(), ...TOOLS.flatMap((tool) => toolJsonLd(tool.href as never))]);
+    const keys = keysOf([
+      websiteJsonLd(),
+      ...TOOLS.flatMap((tool) => toolJsonLd(tool.href as never)),
+      ...INFO_PAGES.flatMap((page) => infoPageJsonLd(page.path)),
+    ]);
     for (const key of FORBIDDEN) expect(keys, key).not.toContain(key);
+    for (const key of ["address", "telephone", "foundingDate", "legalName", "sameAs", "logo", "numberOfEmployees"]) {
+      expect(keys, key).not.toContain(key);
+    }
+  });
+
+  it("describes each information page as the kind of page it is, with a breadcrumb", () => {
+    const types = Object.fromEntries(INFO_PAGES.map((page) => [page.path, infoPageJsonLd(page.path)[0]["@type"]]));
+    expect(types).toEqual({
+      "/ai-change-analyst": "WebPage",
+      "/about": "AboutPage",
+      "/contact": "ContactPage",
+      "/privacy-policy": "WebPage",
+      "/terms-of-service": "WebPage",
+      "/bot": "WebPage",
+    });
+    for (const page of INFO_PAGES) {
+      const [main, crumbs] = infoPageJsonLd(page.path).map((block) => JSON.parse(serializeJsonLd(block)));
+      expect(main.url).toBe(`https://diffnexa.com${page.path}`);
+      expect(crumbs["@type"]).toBe("BreadcrumbList");
+      expect(crumbs.itemListElement[1]).toEqual({
+        "@type": "ListItem",
+        position: 2,
+        name: page.name,
+        item: `https://diffnexa.com${page.path}`,
+      });
+    }
+  });
+
+  it("names only the published contact address on the contact page", () => {
+    const [contact] = infoPageJsonLd("/contact");
+    expect(contact.mainEntity).toEqual({
+      "@type": "Organization",
+      name: "DiffNexa",
+      url: "https://diffnexa.com/",
+      email: "info@diffnexa.com",
+    });
   });
 
   it("gives each tool a breadcrumb from the homepage", () => {
@@ -307,6 +389,12 @@ describe("the sitemap", () => {
         "/policy-monitor",
         "/price-monitor",
         "/website-compare",
+        "/ai-change-analyst",
+        "/about",
+        "/contact",
+        "/privacy-policy",
+        "/terms-of-service",
+        "/bot",
       ].sort(),
     );
     expect(new Set(paths).size).toBe(paths.length);

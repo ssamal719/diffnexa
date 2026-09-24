@@ -27,7 +27,7 @@ export const GROUPS: Record<ToolGroup, { label: string; heading: string; blurb: 
   compare: {
     label: "Compare",
     heading: "Compare two files",
-    blurb: "Upload an original and a revised version. Both are compared in memory and not stored.",
+    blurb: "Upload an original and a revised version. Both are compared, then discarded — never stored.",
   },
   monitor: {
     label: "Web Monitoring",

@@ -18,6 +18,8 @@ export type DocxSlotFile = {
   file: File;
   displayName: string;
   sizeBytes: number;
+  /** One of DiffNexa's built-in example documents rather than the person's own file. */
+  example?: boolean;
 };
 
 type State =
@@ -50,6 +52,15 @@ export function DocxUploadSlot({
   const inputRef = useRef<HTMLInputElement>(null);
   const [state, setState] = useState<State>(value ? { status: "ready", value } : { status: "empty" });
   const [dragging, setDragging] = useState(false);
+
+  // The desk can also fill the slot itself — the example, or Reverse swapping
+  // the two files — so the slot follows a value set from outside.
+  const [shown, setShown] = useState<DocxSlotFile | null>(value);
+  if (value !== shown) {
+    setShown(value);
+    if (value) setState({ status: "ready", value });
+    else if (state.status === "ready") setState({ status: "empty" });
+  }
 
   async function accept(file: File) {
     const displayName = sanitizeFilename(file.name);
@@ -87,7 +98,8 @@ export function DocxUploadSlot({
 
   return (
     <section
-      aria-label={label}
+      // Named apart from the report's "Original document" and "Revised document" views, so every region has its own name.
+      aria-label={`${label} upload`}
       className="flex h-full flex-col"
       onDragOver={(event) => {
         event.preventDefault();
@@ -154,6 +166,11 @@ export function DocxUploadSlot({
             {state.status === "ready" && (
               <p className="tabular text-[0.85rem] text-ink-soft">
                 <Badge tone="ready">Ready</Badge>{" "}
+                {state.value.example && (
+                  <>
+                    <Badge tone="neutral">Example file</Badge>{" "}
+                  </>
+                )}
                 <span className="ml-1">{formatFileSize(state.value.sizeBytes)} · Word document</span>
               </p>
             )}
@@ -182,7 +199,8 @@ export function DocxUploadSlot({
       <p id={statusId} role="status" aria-live="polite" className="sr-only">
         {state.status === "empty" && `${label}: no file chosen.`}
         {state.status === "checking" && `${label}: checking ${state.displayName}.`}
-        {state.status === "ready" && `${label}: ${state.value.displayName} ready.`}
+        {state.status === "ready" &&
+          `${label}: ${state.value.displayName} ready.${state.value.example ? " This is an example file." : ""}`}
         {state.status === "rejected" &&
           `${label}: ${state.displayName} rejected. ${DOCX_ERROR_MESSAGES[state.code]}`}
       </p>

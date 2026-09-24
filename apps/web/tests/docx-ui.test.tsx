@@ -70,7 +70,7 @@ beforeEach(() => {
 });
 
 function choose(label: string, bytes: Uint8Array, name: string) {
-  const slot = screen.getByRole("region", { name: label });
+  const slot = screen.getByRole("region", { name: `${label} upload` });
   const input = slot.querySelector('input[type="file"]') as HTMLInputElement;
   fireEvent.change(input, { target: { files: [new File([bytes as BlobPart], name)] } });
 }
@@ -95,10 +95,10 @@ describe("the page", () => {
 
   it("labels the two uploads as agreed", () => {
     render(<DocxComparePage />);
-    expect(screen.getByRole("region", { name: "Original document" }).textContent).toContain(
+    expect(screen.getByRole("region", { name: "Original document upload" }).textContent).toContain(
       "Choose the earlier DOCX",
     );
-    expect(screen.getByRole("region", { name: "Revised document" }).textContent).toContain(
+    expect(screen.getByRole("region", { name: "Revised document upload" }).textContent).toContain(
       "Choose the newer DOCX",
     );
   });
@@ -231,14 +231,14 @@ describe("the report", () => {
     expect(RESULT.groups.reduce((sum, group) => sum + group.changeCount, 0)).toBe(RESULT.changes.length);
   });
 
-  it("places a change under the document's own headings, never on a made-up page", () => {
+  it("places a change under the document's own headings, and gives no page when the file records none", () => {
     render(<DocxReport result={RESULT} {...FILES} />);
     chooseChange(/Change 10:/);
     const panel = evidence();
     expect(panel.textContent).toContain("Supplier Agreement › Scope");
     // Word's paragraph and table position is a labelled detail, not the headline location.
     expect(panel.textContent).toContain("In Word: Revised: Table 1, row 2, column 2.");
-    expect(panel.textContent).toContain("Word files have no fixed page numbers");
+    expect(panel.textContent).toContain("this file does not record its pages");
     expect(document.body.textContent).not.toMatch(/\bPage \d/);
     // The navigator groups by heading, not by paragraph number.
     expect(within(navigator()).getAllByText("Supplier Agreement").length).toBeGreaterThan(0);

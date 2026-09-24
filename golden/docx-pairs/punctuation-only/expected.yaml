@@ -1,0 +1,15 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: punctuation-only
+description: >-
+  A comma is added after "agreement" in the termination clause. Punctuation is compared by default
+  (the Ignore options can ignore punctuation-only changes), so the added comma is reported, on the
+  word it follows.
+expected_changes:
+- group: text
+  kind: modified
+  category: text
+  old: agreement
+  new: agreement,
+  match: exact
+  locations: ['Paragraph 12']

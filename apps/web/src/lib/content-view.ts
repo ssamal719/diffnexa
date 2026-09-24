@@ -23,6 +23,10 @@ export type ViewNode = {
   listLevel?: number;
   /** Word documents: where this is, in words a reader can find in Word. */
   place?: string;
+  /** Word documents whose file records its pages: the page this node begins on. */
+  page?: number;
+  /** Character offsets in `text` where a new page begins, for a node that runs across pages. */
+  pageBreaks?: number[];
 };
 
 export type ViewSide = { nodes: ViewNode[]; fields: Record<string, string> };

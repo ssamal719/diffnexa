@@ -45,3 +45,7 @@ Excel Compare V1: add 33 Excel golden pairs (real workbooks saved by a spreadshe
 ## 2026-09-23
 
 Add 33 AI Change Analyst golden cases: grounded explanations shown, ungrounded statements withheld, invented changes refused, failures contained (additions only; no existing pair changes)
+
+## 2026-09-24
+
+Add three DOCX pairs: capitalisation-only and punctuation-only pin the default matching options behind Ignore options; pages-long-document checks every change's page against a LibreOffice rendering of two 135-page documents.

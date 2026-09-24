@@ -3,6 +3,7 @@
 import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 
 import { AIExplanation } from "@/components/workspace/AIExplanation";
+import { ComparisonControls, LinkedToggle, type WorkspaceControls } from "@/components/workspace/WorkspaceControls";
 import type { ChangeAnalysis } from "@/lib/analysis";
 import { scrollWithin } from "@/lib/scroll";
 import type { FocusRequest } from "@/lib/use-change-focus";
@@ -44,6 +45,8 @@ export type WorkspaceContext = {
   /** Sets one filter group's choice outright; an empty list means "all". */
   setFilter: (group: string, options: string[]) => void;
   clearFilters: () => void;
+  /** Linked scrolling: whether the two versions scroll together (only where the tool offers it). */
+  linked: boolean;
 };
 
 type Fact = { label: string; value: ReactNode };
@@ -89,6 +92,8 @@ export function ComparisonWorkspace({
   analyst,
   analysis = null,
   focus = null,
+  controls,
+  linkable = [],
 }: {
   /** The tool's name: "PDF Compare". */
   tool: string;
@@ -121,6 +126,10 @@ export function ComparisonWorkspace({
   analysis?: ChangeAnalysis | null;
   /** A change to show, asked for from outside the workspace (AI Change Analyst's "View change"). */
   focus?: FocusRequest;
+  /** Ignore options, Export and Reverse — only those the tool genuinely supports. */
+  controls?: WorkspaceControls;
+  /** The views (mode ids) in which the two versions can scroll together; the Linked switch appears there. */
+  linkable?: string[];
 }) {
   const id = useId();
   const [mode, setMode] = useState<string>(
@@ -130,6 +139,7 @@ export function ComparisonWorkspace({
   const [filterState, setFilterState] = useState<FilterState>(NO_FILTERS);
   const [includeMinor, setIncludeMinor] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [linked, setLinked] = useState(true);
   // The summary starts open where there is room for it, and folded on a phone.
   const [overviewOpen, setOverviewOpen] = useState(
     () => typeof window === "undefined" || !window.matchMedia || window.matchMedia("(min-width: 768px)").matches,
@@ -205,6 +215,7 @@ export function ComparisonWorkspace({
     toggleFilter: (group, option) => setFilterState((current) => toggleFilter(current, group, option)),
     setFilter: (group, options) => setFilterState((current) => ({ ...current, [group]: options })),
     clearFilters,
+    linked: linkable.includes(mode) && linked,
   };
 
   function onNavigatorKey(event: KeyboardEvent<HTMLElement>) {
@@ -267,6 +278,7 @@ export function ComparisonWorkspace({
             AI Analysis <span className="font-normal text-ink-soft">· optional</span>
           </a>
         )}
+        <ComparisonControls controls={controls} />
       </header>
 
       {notes}
@@ -333,6 +345,7 @@ export function ComparisonWorkspace({
                   ))}
                 </div>
               )}
+              {linkable.includes(mode) && <LinkedToggle linked={linked} onChange={setLinked} />}
               <label className="min-w-[9rem] flex-1 sm:max-w-[16rem]">
                 <span className="sr-only">Search changes</span>
                 <input

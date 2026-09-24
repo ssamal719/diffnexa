@@ -21,6 +21,14 @@ added, both factual:
   list item and cell in reading order, and each piece of evidence as a
   highlighted span within it, so the workspace can show a change in its
   surrounding text. It is presentation data; see `diffnexa_engine.web.view`.
+* **Pages, when the file records them** (`layout`, and `page` on each piece of
+  evidence and each node of the view): the page Microsoft Word showed that
+  word on when it last saved the document, read from the page breaks Word
+  recorded and trusted only when the file's own statistics confirm them (see
+  `diffnexa_engine.docx.layout`). When a document carries no trustworthy
+  layout, every page is null and `layout` says why. `location` is unchanged.
+* **The matching options the comparison ran with** (`options`), echoed from
+  the engine so the interface states what was actually ignored.
 """
 
 from __future__ import annotations
@@ -29,12 +37,13 @@ import re
 from typing import Any
 
 from diffnexa_engine.compare.normalize import normalize
-from diffnexa_engine.contracts.changes import Change, ChangeCategory, ChangeKind, DocxRef
+from diffnexa_engine.contracts.changes import Change, ChangeCategory, ChangeKind, DocxRef, Evidence
 from diffnexa_engine.docx.compare import PROPERTY_FIELDS, DocxComparisonOutcome
+from diffnexa_engine.docx.layout import DocxLayout
 from diffnexa_engine.docx.model import DocxDocument, DocxNode
 from diffnexa_engine.web.compare import _excerpt
 from diffnexa_engine.web.snapshot import NodeRole
-from diffnexa_engine.web.view import content_view
+from diffnexa_engine.web.view import content_view, token_spans
 
 GROUPS: tuple[tuple[str, str], ...] = (
     ("text", "Text changes"),
@@ -117,6 +126,42 @@ def within_block(change: Change, cited: list[DocxNode]) -> bool:
     return normalize(value or "") != normalize(_excerpt(cited[0].text))
 
 
+def token_index(token_id: str) -> int | None:
+    """The position of a word within its node, from its id ("n12-t5" is word 5)."""
+    _node, _, index = token_id.rpartition("-t")
+    return int(index) if index.isdigit() else None
+
+
+def evidence_page(document: DocxDocument, evidence: Evidence) -> int | None:
+    """The page the first cited word is on, when the document records its layout."""
+    if evidence.scope != "node" or not evidence.node_id:
+        return None
+    first = token_index(evidence.token_ids[0]) if evidence.token_ids else 0
+    return document.layout.page_of(evidence.node_id, first or 0)
+
+
+def layout_summary(layout: DocxLayout) -> dict[str, Any]:
+    return {"status": layout.status, "reason": layout.reason, "pages": layout.pages}
+
+
+def _with_pages(side: dict[str, Any], document: DocxDocument) -> dict[str, Any]:
+    """Each node of the view, with its page and the points inside it where a new page begins."""
+    if document.layout.status != "recorded":
+        return side
+    index = document.node_index()
+    for payload in side["nodes"]:
+        placed = document.layout.nodes.get(payload["id"])
+        node = index.get(payload["id"])
+        if placed is None or node is None:
+            continue
+        payload["page"] = placed.page
+        if placed.breaks:
+            spans = token_spans(node)
+            starts = [spans.get(f"{node.id}-t{word}") for word in placed.breaks]
+            payload["pageBreaks"] = [span[0] for span in starts if span is not None]
+    return side
+
+
 def serialize_docx_comparison(outcome: DocxComparisonOutcome, processing_ms: int) -> dict[str, Any]:
     result = outcome.result
     documents: dict[str, DocxDocument] = {"old": outcome.previous, "new": outcome.current}
@@ -146,6 +191,7 @@ def serialize_docx_comparison(outcome: DocxComparisonOutcome, processing_ms: int
                     "field": item.field,
                     "excerpt": item.excerpt,
                     "location": describe_location(node) if node is not None else "Document properties",
+                    "page": evidence_page(documents[item.side.value], item),
                 }
             )
         changes.append(
@@ -172,9 +218,30 @@ def serialize_docx_comparison(outcome: DocxComparisonOutcome, processing_ms: int
             }
         )
 
+    view = content_view(
+        outcome.previous.nodes,
+        outcome.current.nodes,
+        result.changes,
+        fields=tuple(
+            {name: getattr(document.properties, attribute) for name, attribute, _ in PROPERTY_FIELDS}
+            for document in (outcome.previous, outcome.current)
+        ),
+        place=describe_location,
+    )
+    view["original"] = _with_pages(view["original"], outcome.previous)
+    view["revised"] = _with_pages(view["revised"], outcome.current)
+
     return {
         "engineVersion": result.engine_version,
         "processingMs": processing_ms,
+        "options": {
+            "ignoreCase": outcome.options.ignore_case,
+            "ignorePunctuation": outcome.options.ignore_punctuation,
+        },
+        "layout": {
+            "previous": layout_summary(outcome.previous.layout),
+            "revised": layout_summary(outcome.current.layout),
+        },
         "documents": {"previous": source(result.old_document), "revised": source(result.new_document)},
         "counts": {"total": len(changes), "meaningful": len(changes), "noise": 0},
         "changes": changes,
@@ -187,16 +254,7 @@ def serialize_docx_comparison(outcome: DocxComparisonOutcome, processing_ms: int
             }
             for group_id, label in GROUPS
         ],
-        "view": content_view(
-            outcome.previous.nodes,
-            outcome.current.nodes,
-            result.changes,
-            fields=tuple(
-                {name: getattr(document.properties, attribute) for name, attribute, _ in PROPERTY_FIELDS}
-                for document in (outcome.previous, outcome.current)
-            ),
-            place=describe_location,
-        ),
+        "view": view,
         "diagnostics": {
             "notes": list(outcome.diagnostics.notes),
             "previousWarnings": list(outcome.diagnostics.previous_warnings),
@@ -206,4 +264,12 @@ def serialize_docx_comparison(outcome: DocxComparisonOutcome, processing_ms: int
     }
 
 
-__all__ = ["GROUPS", "describe_location", "group_of", "serialize_docx_comparison", "within_block"]
+__all__ = [
+    "GROUPS",
+    "describe_location",
+    "evidence_page",
+    "group_of",
+    "serialize_docx_comparison",
+    "token_index",
+    "within_block",
+]

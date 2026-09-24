@@ -1,0 +1,71 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+#
+# The two documents are the 135-page test documents from
+# apps/engine/tests/fixtures/docx_pages (built by build.py there). Each page
+# below is the page the changed words were printed on when the documents were
+# rendered by LibreOffice (expected.json there) — never a page DiffNexa
+# computed. The files record that layout the way Microsoft Word records its
+# own, so every change must carry exactly these pages.
+pair: pages-long-document
+description: >-
+  Two 135-page Word documents with changes near pages 10, 25, 50, 61, 75, 82 and 101: a replaced
+  word, a changed quantity, an added paragraph, a word after a page break inside a paragraph, a
+  removed paragraph, a changed table cell and two changes on one page. Each must be found and must
+  give the page it was rendered on.
+expected_changes:
+- group: text
+  kind: modified
+  old: p0023w006
+  new: amended0010x001
+  match: exact
+  old_page: 10
+  new_page: 10
+- group: numbers
+  kind: modified
+  category: number
+  old: '160'
+  new: '187'
+  delta: +27 (+16.88%)
+  match: exact
+  old_page: 25
+  new_page: 25
+- group: text
+  kind: added
+  new: added0050w001
+  new_page: 51
+- group: text
+  kind: modified
+  old: p0147w033
+  new: amended0060x002
+  match: exact
+  old_page: 61
+  new_page: 61
+  note: The paragraph starts on page 60 in the original; the changed word is after the page break.
+- group: text
+  kind: removed
+  old: p0182w001
+  old_page: 75
+- group: tables
+  kind: modified
+  subtype: table_cell
+  old: t0200w022
+  new: amended0070x004
+  match: exact
+  locations: ['Table 5, row 2, column 2']
+  old_page: 82
+  new_page: 82
+- group: text
+  kind: modified
+  old: p0245w004
+  new: amended0100x003
+  match: exact
+  old_page: 101
+  new_page: 101
+- group: text
+  kind: modified
+  old: p0246w008
+  new: amended0100x005
+  match: exact
+  old_page: 101
+  new_page: 101

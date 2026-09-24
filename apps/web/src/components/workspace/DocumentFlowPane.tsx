@@ -1,12 +1,13 @@
 "use client";
 
-import { memo, useEffect, useMemo, useRef } from "react";
+import { Fragment, memo, useEffect, useMemo, useRef } from "react";
 
 import {
   FIELD_LABELS,
   blocksOf,
   marksFor,
   segmentsOf,
+  type Block as ViewBlock,
   type ContentView,
   type Side,
   type ViewNode,
@@ -25,6 +26,12 @@ import type { EditKind } from "@/lib/workspace";
  * difference never rests on colour alone. The active change's words are
  * outlined and numbered, and the pane scrolls to them whenever a change is
  * chosen.
+ *
+ * When a Word document records its pages, the pane marks where each page
+ * begins — between blocks, and inside a paragraph that runs across a page
+ * break — so a change sits under the same page number the navigator gives it.
+ * The page numbers come from the file (see docx/layout.py); the pane does not
+ * paginate anything itself.
  */
 export function DocumentFlowPane({
   side,
@@ -35,6 +42,8 @@ export function DocumentFlowPane({
   activeNumber,
   activation,
   reveal,
+  onContainer,
+  onScroll,
 }: {
   side: Side;
   view: ContentView;
@@ -45,10 +54,18 @@ export function DocumentFlowPane({
   activeNumber: number | null;
   activation: number;
   reveal: number;
+  /** The scrolling element, for a view that keeps two panes in step. */
+  onContainer?: (element: HTMLDivElement | null) => void;
+  onScroll?: () => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const setContainer = (element: HTMLDivElement | null) => {
+    containerRef.current = element;
+    onContainer?.(element);
+  };
   const marks = useMemo(() => marksFor(view, side), [view, side]);
   const blocks = useMemo(() => blocksOf(view[side].nodes), [view, side]);
+  const placed = useMemo(() => withPageDividers(blocks), [blocks]);
   const fields = Object.entries(view[side].fields);
   // The change's number is shown once, at the first place it is marked.
   const fieldLabelled = activeId !== null && [...marks.fields.values()].some((list) => list.includes(activeId));
@@ -76,7 +93,8 @@ export function DocumentFlowPane({
         </p>
       )}
       <div
-        ref={containerRef}
+        ref={setContainer}
+        onScroll={onScroll}
         role="region"
         aria-label={`${label}, as compared`}
         tabIndex={0}
@@ -105,44 +123,103 @@ export function DocumentFlowPane({
           </dl>
         )}
         {blocks.length === 0 && <p className="text-ink-soft">No text was found in this version.</p>}
-        {blocks.map((block) =>
+        {placed.map(({ block, divider, rowDividers }) =>
           block.type === "table" ? (
-            <div key={block.key} className="my-2 overflow-x-auto">
-              <table className="w-full border-collapse text-[0.82rem]">
-                <tbody>
-                  {block.rows.map((row) => (
-                    <tr key={row[0].id}>
-                      {row.map((cell) => (
-                        <td key={cell.id} className="border border-rule px-1.5 py-0.5 align-top wrap-anywhere">
-                          <NodeText
-                            node={cell}
-                            side={side}
-                            marks={marks.nodes.get(cell.id)}
-                            activeId={activeId}
-                            activeNumber={numberFor(cell.id)}
-                          />
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <Fragment key={block.key}>
+              {divider !== null && <PageDivider page={divider} />}
+              <div className="my-2 overflow-x-auto">
+                <table className="w-full border-collapse text-[0.82rem]">
+                  <tbody>
+                    {block.rows.map((row, rowIndex) => (
+                      <Fragment key={row[0].id}>
+                        {rowDividers.get(rowIndex) !== undefined && (
+                          <tr>
+                            <td colSpan={row.length} className="p-0">
+                              <PageDivider page={rowDividers.get(rowIndex)!} />
+                            </td>
+                          </tr>
+                        )}
+                        <tr data-node-id={row[0].id}>
+                          {row.map((cell) => (
+                            <td key={cell.id} className="border border-rule px-1.5 py-0.5 align-top wrap-anywhere">
+                              <NodeText
+                                node={cell}
+                                side={side}
+                                marks={marks.nodes.get(cell.id)}
+                                activeId={activeId}
+                                activeNumber={numberFor(cell.id)}
+                              />
+                            </td>
+                          ))}
+                        </tr>
+                      </Fragment>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Fragment>
           ) : (
-            <Block
-              key={block.node.id}
-              node={block.node}
-              side={side}
-              marks={marks.nodes.get(block.node.id)}
-              activeId={cites(marks.nodes.get(block.node.id), activeId) ? activeId : null}
-              activeNumber={numberFor(block.node.id)}
-            />
+            <Fragment key={block.node.id}>
+              {divider !== null && <PageDivider page={divider} />}
+              <Block
+                node={block.node}
+                side={side}
+                marks={marks.nodes.get(block.node.id)}
+                activeId={cites(marks.nodes.get(block.node.id), activeId) ? activeId : null}
+                activeNumber={numberFor(block.node.id)}
+              />
+            </Fragment>
           ),
         )}
       </div>
       <p className="mt-1 text-[0.72rem] text-ink-soft">
         The text DiffNexa read and compared, in reading order — not a picture of the original layout.
       </p>
+    </div>
+  );
+}
+
+/**
+ * Each block with the page divider that goes before it, if a new page begins
+ * there. Links are listed after the body, so they neither get a divider nor
+ * move the current page.
+ */
+function withPageDividers(blocks: ViewBlock[]) {
+  let current: number | null = null;
+  const pageAfter = (node: ViewNode) => (node.page ?? 0) + (node.pageBreaks?.length ?? 0);
+  return blocks.map((block) => {
+    const rowDividers = new Map<number, number>();
+    if (block.type === "table") {
+      const first = block.rows[0]?.[0];
+      const divider = first?.page !== undefined && first.page !== current ? first.page : null;
+      if (first?.page !== undefined) current = first.page;
+      block.rows.forEach((row, index) => {
+        const page = Math.min(...row.map((cell) => cell.page ?? Infinity));
+        if (index > 0 && Number.isFinite(page) && current !== null && page > current) rowDividers.set(index, page);
+        const end = Math.max(...row.map((cell) => (cell.page === undefined ? -Infinity : pageAfter(cell))));
+        if (Number.isFinite(end)) current = Math.max(current ?? end, end);
+      });
+      return { block, divider, rowDividers };
+    }
+    const node = block.node;
+    if (node.role === "link" || node.page === undefined) return { block, divider: null, rowDividers };
+    const divider = node.page !== current ? node.page : null;
+    current = pageAfter(node);
+    return { block, divider, rowDividers };
+  });
+}
+
+function PageDivider({ page }: { page: number }) {
+  return (
+    <div
+      role="separator"
+      aria-label={`Page ${page}`}
+      data-page={page}
+      className="my-2 flex items-center gap-2 text-[0.72rem] font-semibold tracking-wide text-ink-soft uppercase"
+    >
+      <span aria-hidden="true" className="h-px flex-1 bg-rule" />
+      Page {page}
+      <span aria-hidden="true" className="h-px flex-1 bg-rule" />
     </div>
   );
 }
@@ -175,12 +252,12 @@ const Block = memo(function Block({
   const text = <NodeText node={node} side={side} marks={marks} activeId={activeId} activeNumber={activeNumber} />;
   if (node.role === "heading") {
     const size = node.level === 1 ? "text-[1.05rem]" : node.level === 2 ? "text-[0.98rem]" : "text-[0.92rem]";
-    return <p className={`mt-3 mb-1 font-semibold ${size}`}>{text}</p>;
+    return <p data-node-id={node.id} className={`mt-3 mb-1 font-semibold ${size}`}>{text}</p>;
   }
   if (node.role === "list_item") {
     const depth = Math.max(1, node.listLevel ?? 1);
     return (
-      <p className="my-0.5 flex gap-2" style={{ paddingLeft: `${(depth - 1) * 1.1}rem` }}>
+      <p data-node-id={node.id} className="my-0.5 flex gap-2" style={{ paddingLeft: `${(depth - 1) * 1.1}rem` }}>
         <span aria-hidden="true" className="text-ink-soft">
           {node.list === "number" || node.list === "numbered" ? "–" : "•"}
         </span>
@@ -188,19 +265,19 @@ const Block = memo(function Block({
       </p>
     );
   }
-  if (node.role === "quote") return <p className="my-1.5 border-l-2 border-rule pl-2 italic">{text}</p>;
+  if (node.role === "quote") return <p data-node-id={node.id} className="my-1.5 border-l-2 border-rule pl-2 italic">{text}</p>;
   if (node.role === "preformatted") {
-    return <p className="my-1.5 font-mono text-[0.8rem] whitespace-pre-wrap">{text}</p>;
+    return <p data-node-id={node.id} className="my-1.5 font-mono text-[0.8rem] whitespace-pre-wrap">{text}</p>;
   }
   if (node.role === "link") {
     return (
-      <p className="my-1">
+      <p data-node-id={node.id} className="my-1">
         {text}
         {node.href && <span className="ml-1 text-[0.75rem] wrap-anywhere text-ink-soft">({node.href})</span>}
       </p>
     );
   }
-  return <p className="my-1.5 wrap-anywhere">{text}</p>;
+  return <p data-node-id={node.id} className="my-1.5 wrap-anywhere">{text}</p>;
 });
 
 function NodeText({
@@ -216,21 +293,58 @@ function NodeText({
   activeId: string | null;
   activeNumber: number | null;
 }) {
-  if (!marks || marks.length === 0) return <>{node.text}</>;
-  const segments = segmentsOf(node.text, marks);
+  const breaks = node.pageBreaks ?? [];
+  if ((!marks || marks.length === 0) && breaks.length === 0) return <>{node.text}</>;
+  // A new page inside this block cuts the text there, like a mark boundary does.
+  const cuts = [...(marks ?? []), ...breaks.map((offset) => ({ change: "", start: offset, end: offset }))];
+  const segments = segmentsOf(node.text, cuts).map((segment) => ({
+    ...segment,
+    changes: segment.changes.filter(Boolean),
+  }));
+  const starts: number[] = [];
+  segments.reduce((offset, segment) => {
+    starts.push(offset);
+    return offset + segment.text.length;
+  }, 0);
   const first = activeId === null ? -1 : segments.findIndex((segment) => segment.changes.includes(activeId));
   return (
     <>
       {segments.map((segment, index) => {
-        if (segment.changes.length === 0) return <span key={index}>{segment.text}</span>;
+        const breakIndex = breaks.indexOf(starts[index]);
+        const pageStart =
+          breakIndex >= 0 && node.page !== undefined ? <InlinePage key={`page-${index}`} page={node.page + breakIndex + 1} /> : null;
+        if (segment.changes.length === 0) {
+          return (
+            <Fragment key={index}>
+              {pageStart}
+              <span>{segment.text}</span>
+            </Fragment>
+          );
+        }
         const active = activeId !== null && segment.changes.includes(activeId);
         return (
-          <Marked key={index} side={side} active={active} number={index === first ? activeNumber : null}>
-            {segment.text}
-          </Marked>
+          <Fragment key={index}>
+            {pageStart}
+            <Marked side={side} active={active} number={index === first ? activeNumber : null}>
+              {segment.text}
+            </Marked>
+          </Fragment>
         );
       })}
     </>
+  );
+}
+
+/** Where a new page begins inside a paragraph. */
+function InlinePage({ page }: { page: number }) {
+  return (
+    <span
+      data-page={page}
+      className="mx-1 inline-block rounded-[2px] border border-rule px-1 align-[1px] text-[0.66rem] font-semibold tracking-wide text-ink-soft uppercase"
+    >
+      <span className="sr-only">Page {page} begins here: </span>
+      <span aria-hidden="true">Page {page}</span>
+    </span>
   );
 }
 

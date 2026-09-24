@@ -1,0 +1,73 @@
+{
+  "note": "Pages read from LibreOffice renderings of the plain documents; see build.py.",
+  "pages": {
+    "original": 135,
+    "revised": 135
+  },
+  "changes": [
+    {
+      "id": "text-page-10",
+      "what": "a word replaced",
+      "old": "p0023w006",
+      "new": "amended0010x001",
+      "oldPage": 10,
+      "newPage": 10
+    },
+    {
+      "id": "number-page-25",
+      "what": "a quantity changed",
+      "old": "160",
+      "new": "187",
+      "oldPage": 25,
+      "newPage": 25
+    },
+    {
+      "id": "added-page-50",
+      "what": "a paragraph added",
+      "old": null,
+      "new": "added0050w001",
+      "oldPage": null,
+      "newPage": 51
+    },
+    {
+      "id": "removed-page-75",
+      "what": "a paragraph removed",
+      "old": "p0182w001",
+      "new": null,
+      "oldPage": 75,
+      "newPage": null
+    },
+    {
+      "id": "second-half-of-a-split-paragraph",
+      "what": "a word after a page break inside a paragraph",
+      "old": "p0147w033",
+      "new": "amended0060x002",
+      "oldPage": 61,
+      "newPage": 61
+    },
+    {
+      "id": "same-page-first",
+      "what": "one of two changes on one page",
+      "old": "p0245w004",
+      "new": "amended0100x003",
+      "oldPage": 101,
+      "newPage": 101
+    },
+    {
+      "id": "same-page-second",
+      "what": "the other change on that page",
+      "old": "p0246w008",
+      "new": "amended0100x005",
+      "oldPage": 101,
+      "newPage": 101
+    },
+    {
+      "id": "table-cell",
+      "what": "a table cell changed",
+      "old": "t0200w022",
+      "new": "amended0070x004",
+      "oldPage": 82,
+      "newPage": 82
+    }
+  ]
+}

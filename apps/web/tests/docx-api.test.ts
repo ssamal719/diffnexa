@@ -33,7 +33,7 @@ function stubEngine(status: number, body: unknown) {
   });
 }
 
-function upload(files: Partial<Record<"original" | "revised", Uint8Array | string>>, ip = "203.0.113.7") {
+function upload(files: Partial<Record<string, Uint8Array | string>>, ip = "203.0.113.7") {
   const form = new FormData();
   for (const [side, bytes] of Object.entries(files)) {
     if (typeof bytes === "string") form.append(side, bytes);
@@ -46,7 +46,7 @@ function upload(files: Partial<Record<"original" | "revised", Uint8Array | strin
   });
 }
 
-async function post(files: Partial<Record<"original" | "revised", Uint8Array | string>>, ip?: string) {
+async function post(files: Partial<Record<string, Uint8Array | string>>, ip?: string) {
   vi.resetModules();
   const { POST } = await import("@/app/api/docx/compare/route");
   return POST(upload(files, ip));
@@ -95,6 +95,24 @@ describe("comparing two Word documents", () => {
     const text = await response.text();
     expect(text).not.toContain(SECRET);
     expect(text).not.toContain("engine.internal");
+  });
+});
+
+describe("Ignore options", () => {
+  it("passes the matching options on to the engine under its own names", async () => {
+    stubEngine(200, COMPARISON);
+    await post({ original: ZIP, revised: ZIP, ignoreCase: "false", ignorePunctuation: "true" });
+    const sent = calls[0].init.body as FormData;
+    expect(sent.get("ignore_case")).toBe("false");
+    expect(sent.get("ignore_punctuation")).toBe("true");
+  });
+
+  it("passes on nothing but an explicit true or false, leaving the engine's defaults", async () => {
+    stubEngine(200, COMPARISON);
+    await post({ original: ZIP, revised: ZIP, ignoreCase: "yes please", ignorePunctuation: "<script>" });
+    const sent = calls[0].init.body as FormData;
+    expect(sent.get("ignore_case")).toBeNull();
+    expect(sent.get("ignore_punctuation")).toBeNull();
   });
 });
 

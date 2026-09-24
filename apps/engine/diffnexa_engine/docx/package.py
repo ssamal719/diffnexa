@@ -105,6 +105,10 @@ class DocxPackage:
     numbering: etree._Element | None
     core: etree._Element | None
     relationships: dict[str, Relationship] = field(default_factory=dict)
+    #: The document statistics (docProps/app.xml): the page and word counts the
+    #: application that saved the file recorded. Used only to decide whether the
+    #: page layout recorded in the document can be trusted (see layout.py).
+    app: etree._Element | None = None
     #: Relationship types present on the main document, used only to say what
     #: the document contains that is not compared (headers, comments, ...).
     related_types: frozenset[str] = frozenset()
@@ -153,6 +157,17 @@ def open_package(data: bytes, limits: DocxLimits | None = None) -> DocxPackage:
                         return reader.xml(rel.target)
                 return None
 
+            app_name = next(
+                (
+                    rel.target
+                    for rel in reader.relationships("_rels/.rels", "").values()
+                    if not rel.external
+                    and rel.type.endswith("/extended-properties")
+                    and reader.has(rel.target)
+                ),
+                None,
+            )
+
             document = reader.xml(main, limits.max_document_bytes)
             return DocxPackage(
                 document=document,
@@ -161,6 +176,7 @@ def open_package(data: bytes, limits: DocxLimits | None = None) -> DocxPackage:
                 core=reader.xml(core_name) if core_name else None,
                 relationships=relationships,
                 related_types=frozenset(rel.type.rsplit("/", 1)[-1] for rel in relationships.values()),
+                app=reader.xml(app_name) if app_name else None,
             )
 
 

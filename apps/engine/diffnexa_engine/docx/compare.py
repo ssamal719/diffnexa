@@ -36,7 +36,7 @@ from dataclasses import dataclass, field
 from difflib import SequenceMatcher
 
 from diffnexa_engine import ENGINE_VERSION
-from diffnexa_engine.compare.normalize import normalize, normalize_key
+from diffnexa_engine.compare.normalize import MatchOptions, matching, normalize, normalize_key
 from diffnexa_engine.compare.text_align import BlockPair, PairKind, align_blocks, word_segments
 from diffnexa_engine.contracts.changes import (
     ChangeCategory,
@@ -89,6 +89,8 @@ class DocxComparisonOutcome:
     diagnostics: DocxDiagnostics
     previous: DocxDocument
     current: DocxDocument
+    #: The matching options the comparison actually ran with.
+    options: MatchOptions = field(default_factory=MatchOptions)
 
 
 # ---------------------------------------------------------------- properties
@@ -108,7 +110,7 @@ def _compare_properties(builder: _Builder, old: DocxDocument, new: DocxDocument)
     for field_name, attribute, label in PROPERTY_FIELDS:
         before = getattr(old.properties, attribute)
         after = getattr(new.properties, attribute)
-        if normalize(before or "") == normalize(after or ""):
+        if normalize_key(before or "") == normalize_key(after or ""):
             continue
         evidence = []
         if before:
@@ -394,7 +396,8 @@ def _compare_cells(
             _cell_change(builder, ChangeKind.REMOVED, old_cell, old, Side.OLD)
             continue
         matched_new.add(_column(new_cell))
-        if normalize(old_cell.text) == normalize(new_cell.text):
+        # The same matching rule as paragraphs, so an option applies everywhere.
+        if normalize_key(old_cell.text) == normalize_key(new_cell.text):
             continue
         typed = _typed_values(old_cell.text, new_cell.text)
         builder.add(
@@ -544,8 +547,28 @@ def _compare_tables(builder: _Builder, old: DocxDocument, new: DocxDocument) -> 
 # ---------------------------------------------------------------- entry point
 
 
-def compare_docx(old: DocxDocument, new: DocxDocument) -> DocxComparisonOutcome:
-    """Compare two Word documents. Deterministic: same two documents, same result."""
+def compare_docx(
+    old: DocxDocument, new: DocxDocument, options: MatchOptions | None = None
+) -> DocxComparisonOutcome:
+    """Compare two Word documents. Deterministic: same two documents and options, same result.
+
+    `options` says what counts as the same words — whether capitalisation and
+    punctuation-only differences are ignored. It changes which differences are
+    reported, never what the evidence quotes.
+    """
+    options = options or MatchOptions()
+    with matching(options):
+        outcome = _compare(old, new)
+    outcome.options = options
+    return outcome
+
+
+def _comparable(node: DocxNode) -> bool:
+    """Whether a block has anything left to compare under the current options."""
+    return bool(normalize_key(node.text))
+
+
+def _compare(old: DocxDocument, new: DocxDocument) -> DocxComparisonOutcome:
     diagnostics = DocxDiagnostics(
         previous_warnings=old.extraction.warnings,
         revised_warnings=new.extraction.warnings,
@@ -553,8 +576,8 @@ def compare_docx(old: DocxDocument, new: DocxDocument) -> DocxComparisonOutcome:
     builder = _Builder()
     _compare_properties(builder, old, new)
 
-    old_headings = [node for node in old.nodes if node.role is NodeRole.HEADING]
-    new_headings = [node for node in new.nodes if node.role is NodeRole.HEADING]
+    old_headings = [node for node in old.nodes if node.role is NodeRole.HEADING and _comparable(node)]
+    new_headings = [node for node in new.nodes if node.role is NodeRole.HEADING and _comparable(node)]
     heading_pairs = _pair_renamed_headings(align_blocks(old_headings, new_headings), old, new)  # type: ignore[arg-type]
     word_level = _whole_heading_changes(builder, heading_pairs, old, new)
     _emit_block_changes(builder, word_level, old, new, _subtype_for_heading)  # type: ignore[arg-type]
@@ -562,8 +585,8 @@ def compare_docx(old: DocxDocument, new: DocxDocument) -> DocxComparisonOutcome:
         if pair.kind in (PairKind.EQUAL, PairKind.MODIFIED):
             _structure_change(builder, old, new, pair)
 
-    old_prose = [node for node in old.nodes if node.role in PROSE_ROLES]
-    new_prose = [node for node in new.nodes if node.role in PROSE_ROLES]
+    old_prose = [node for node in old.nodes if node.role in PROSE_ROLES and _comparable(node)]
+    new_prose = [node for node in new.nodes if node.role in PROSE_ROLES and _comparable(node)]
     prose_pairs = align_blocks(old_prose, new_prose)
     _emit_block_changes(builder, prose_pairs, old, new, _subtype_for_prose)  # type: ignore[arg-type]
     for pair in prose_pairs:

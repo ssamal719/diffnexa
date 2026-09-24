@@ -31,6 +31,7 @@ from diffnexa_engine.ai.config import AIConfig
 from diffnexa_engine.ai.errors import AIAnalysisError, AIErrorCode
 from diffnexa_engine.ai.providers import AIAnalysisProvider, provider_from_config
 from diffnexa_engine.compare import compare_documents_verbose
+from diffnexa_engine.compare.normalize import MatchOptions
 from diffnexa_engine.competitor.api import serialize_competitor_comparison
 from diffnexa_engine.competitor.classify import classify_changes as classify_competitor_changes
 from diffnexa_engine.config import EngineLimits
@@ -77,7 +78,7 @@ def build_app(ai_provider: AIAnalysisProvider | None = None, ai_config: AIConfig
     import logging
     import threading
 
-    from fastapi import FastAPI, File, Request, UploadFile
+    from fastapi import FastAPI, File, Form, Request, UploadFile
     from fastapi.middleware.cors import CORSMiddleware
     from fastapi.responses import JSONResponse
     from starlette.concurrency import run_in_threadpool
@@ -285,6 +286,8 @@ def build_app(ai_provider: AIAnalysisProvider | None = None, ai_config: AIConfig
     async def docx_compare(
         original: UploadFile = File(...),
         revised: UploadFile = File(...),
+        ignore_case: str = Form("true"),
+        ignore_punctuation: str = Form("false"),
     ) -> Any:
         """Compare two Word (.docx) documents.
 
@@ -308,7 +311,13 @@ def build_app(ai_provider: AIAnalysisProvider | None = None, ai_config: AIConfig
                     content={"error": {"code": exc.code.value, "message": exc.user_message, "side": side}},
                 )
 
-        outcome = compare_docx(documents["original"], documents["revised"])
+        # Optional matching options; anything but an explicit "true"/"false"
+        # keeps the default, so an old client gets the result it always got.
+        options = MatchOptions(
+            ignore_case=ignore_case.strip().lower() != "false",
+            ignore_punctuation=ignore_punctuation.strip().lower() == "true",
+        )
+        outcome = compare_docx(documents["original"], documents["revised"], options)
         elapsed_ms = int((time.perf_counter() - started) * 1000)
         return JSONResponse(content=serialize_docx_comparison(outcome, elapsed_ms))
 

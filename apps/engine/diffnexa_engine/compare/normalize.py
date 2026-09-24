@@ -13,6 +13,10 @@ from __future__ import annotations
 
 import re
 import unicodedata
+from collections.abc import Iterator
+from contextlib import contextmanager
+from contextvars import ContextVar
+from dataclasses import dataclass
 
 _QUOTES = {
     "\u2018": "'",
@@ -47,9 +51,63 @@ def normalize(text: str) -> str:
     return _WHITESPACE.sub(" ", folded).strip()
 
 
+@dataclass(frozen=True)
+class MatchOptions:
+    """What counts as "the same words" when two versions are matched.
+
+    The defaults are how every DiffNexa comparison has always matched text:
+    capitalisation is ignored, punctuation is not. A comparison may choose
+    otherwise for its own duration with `matching(...)`; nothing else is
+    affected, and what is shown and quoted is always the original text.
+    """
+
+    ignore_case: bool = True
+    ignore_punctuation: bool = False
+
+
+_DEFAULT = MatchOptions()
+_OPTIONS: ContextVar[MatchOptions | None] = ContextVar("diffnexa_match_options", default=None)
+
+
+@contextmanager
+def matching(options: MatchOptions) -> Iterator[None]:
+    """Use these matching options for the comparison run inside this block."""
+    token = _OPTIONS.set(options)
+    try:
+        yield
+    finally:
+        _OPTIONS.reset(token)
+
+
+def current_matching() -> MatchOptions:
+    return _OPTIONS.get() or _DEFAULT
+
+
+def _without_punctuation(text: str) -> str:
+    """Drop punctuation, except between two digits: "1,000" and "3.5" keep their meaning."""
+    kept: list[str] = []
+    for index, char in enumerate(text):
+        if unicodedata.category(char).startswith("P"):
+            between_digits = (
+                0 < index < len(text) - 1 and text[index - 1].isdigit() and text[index + 1].isdigit()
+            )
+            if not between_digits:
+                continue
+        kept.append(char)
+    return _WHITESPACE.sub(" ", "".join(kept)).strip()
+
+
 def normalize_key(text: str) -> str:
-    """A looser form used for alignment scoring only: also case-insensitive."""
-    return normalize(text).casefold()
+    """The form used to decide whether two pieces of text match.
+
+    Never shown or stored. By default it is `normalize` made case-insensitive;
+    the current `MatchOptions` can make it case-sensitive, or drop punctuation.
+    """
+    options = current_matching()
+    key = normalize(text)
+    if options.ignore_punctuation:
+        key = _without_punctuation(key)
+    return key.casefold() if options.ignore_case else key
 
 
 def tokens(text: str) -> list[str]:

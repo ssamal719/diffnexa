@@ -1,0 +1,1294 @@
+{
+ "engineVersion": "0.1.0",
+ "processingMs": 0,
+ "options": {
+  "ignoreCase": false,
+  "ignorePunctuation": false
+ },
+ "layout": {
+  "previous": {
+   "status": "recorded",
+   "reason": null,
+   "pages": 2
+  },
+  "revised": {
+   "status": "recorded",
+   "reason": null,
+   "pages": 2
+  }
+ },
+ "documents": {
+  "previous": {
+   "sha256": "5aea3c734d278e7802a1e00e2a313cbe9cdf8c3cc181d4c48cb045361b7ee083",
+   "nodeCount": 33
+  },
+  "revised": {
+   "sha256": "a9f15abe8f72f7435e24c57cb1c898454db911f037663c10c90daff8fb272c53",
+   "nodeCount": 33
+  }
+ },
+ "counts": {
+  "total": 8,
+  "meaningful": 8,
+  "noise": 0
+ },
+ "changes": [
+  {
+   "id": "c0",
+   "seq": 0,
+   "type": "TEXT_MODIFIED",
+   "kind": "modified",
+   "category": "text",
+   "subtype": null,
+   "label": "1. Services",
+   "oldValue": "Client,",
+   "newValue": "Client",
+   "delta": null,
+   "confidence": 0.999,
+   "isNoise": false,
+   "noiseReason": null,
+   "sections": [
+    "1. Services"
+   ],
+   "group": "text",
+   "withinBlock": false,
+   "evidence": [
+    {
+     "side": "old",
+     "scope": "node",
+     "nodeId": "n3",
+     "path": "body/p[4]",
+     "sectionPath": [
+      "1. Services"
+     ],
+     "field": null,
+     "excerpt": "Client,",
+     "location": "Paragraph 4",
+     "page": 1
+    },
+    {
+     "side": "new",
+     "scope": "node",
+     "nodeId": "n3",
+     "path": "body/p[4]",
+     "sectionPath": [
+      "1. Services"
+     ],
+     "field": null,
+     "excerpt": "Client",
+     "location": "Paragraph 4",
+     "page": 1
+    }
+   ]
+  },
+  {
+   "id": "c1",
+   "seq": 1,
+   "type": "DATE_CHANGED",
+   "kind": "modified",
+   "category": "date",
+   "subtype": null,
+   "label": "1. Services",
+   "oldValue": "1 March 2026",
+   "newValue": "1 April 2026",
+   "delta": "31 days later",
+   "confidence": 0.984,
+   "isNoise": false,
+   "noiseReason": null,
+   "sections": [
+    "1. Services"
+   ],
+   "group": "dates",
+   "withinBlock": false,
+   "evidence": [
+    {
+     "side": "old",
+     "scope": "node",
+     "nodeId": "n7",
+     "path": "body/p[8]",
+     "sectionPath": [
+      "1. Services"
+     ],
+     "field": null,
+     "excerpt": "1 March 2026",
+     "location": "Paragraph 8",
+     "page": 1
+    },
+    {
+     "side": "new",
+     "scope": "node",
+     "nodeId": "n7",
+     "path": "body/p[8]",
+     "sectionPath": [
+      "1. Services"
+     ],
+     "field": null,
+     "excerpt": "1 April 2026",
+     "location": "Paragraph 8",
+     "page": 1
+    }
+   ]
+  },
+  {
+   "id": "c2",
+   "seq": 2,
+   "type": "NUMBER_CHANGED",
+   "kind": "modified",
+   "category": "number",
+   "subtype": "table_cell",
+   "label": "Monthly retainer · Amount",
+   "oldValue": "£2,500",
+   "newValue": "£2,750",
+   "delta": "+250 (+10%)",
+   "confidence": 1.0,
+   "isNoise": false,
+   "noiseReason": null,
+   "sections": [
+    "2. Fees and payment"
+   ],
+   "group": "tables",
+   "withinBlock": false,
+   "evidence": [
+    {
+     "side": "old",
+     "scope": "node",
+     "nodeId": "n17",
+     "path": "body/tbl[1]/tr[2]/tc[2]",
+     "sectionPath": [
+      "2. Fees and payment"
+     ],
+     "field": null,
+     "excerpt": "£2,500",
+     "location": "Table 1, row 2, column 2",
+     "page": 2
+    },
+    {
+     "side": "new",
+     "scope": "node",
+     "nodeId": "n17",
+     "path": "body/tbl[1]/tr[2]/tc[2]",
+     "sectionPath": [
+      "2. Fees and payment"
+     ],
+     "field": null,
+     "excerpt": "£2,750",
+     "location": "Table 1, row 2, column 2",
+     "page": 2
+    }
+   ]
+  },
+  {
+   "id": "c3",
+   "seq": 3,
+   "type": "TEXT_REMOVED",
+   "kind": "removed",
+   "category": "text",
+   "subtype": null,
+   "label": "2. Fees and payment",
+   "oldValue": "Travel within the city is included; other travel will be reimbursed at cost with receipts.",
+   "newValue": null,
+   "delta": null,
+   "confidence": 1.0,
+   "isNoise": false,
+   "noiseReason": null,
+   "sections": [
+    "2. Fees and payment"
+   ],
+   "group": "text",
+   "withinBlock": false,
+   "evidence": [
+    {
+     "side": "old",
+     "scope": "node",
+     "nodeId": "n22",
+     "path": "body/p[15]",
+     "sectionPath": [
+      "2. Fees and payment"
+     ],
+     "field": null,
+     "excerpt": "Travel within the city is included; other travel will be reimbursed at cost with receipts.",
+     "location": "Paragraph 15",
+     "page": 2
+    }
+   ]
+  },
+  {
+   "id": "c4",
+   "seq": 4,
+   "type": "TEXT_ADDED",
+   "kind": "added",
+   "category": "text",
+   "subtype": null,
+   "label": "4. Data protection",
+   "oldValue": null,
+   "newValue": "The Studio will not appoint a subcontractor to process the Client's personal data without the Client's prior written approval, and will remain responsible for any subcontractor it appoints.",
+   "delta": null,
+   "confidence": 1.0,
+   "isNoise": false,
+   "noiseReason": null,
+   "sections": [
+    "4. Data protection"
+   ],
+   "group": "text",
+   "withinBlock": false,
+   "evidence": [
+    {
+     "side": "new",
+     "scope": "node",
+     "nodeId": "n26",
+     "path": "body/p[19]",
+     "sectionPath": [
+      "4. Data protection"
+     ],
+     "field": null,
+     "excerpt": "The Studio will not appoint a subcontractor to process the Client's personal data without the Client's prior written approval, and will remain responsible for any subcontractor it appoints.",
+     "location": "Paragraph 19",
+     "page": 2
+    }
+   ]
+  },
+  {
+   "id": "c5",
+   "seq": 5,
+   "type": "NUMBER_CHANGED",
+   "kind": "modified",
+   "category": "number",
+   "subtype": null,
+   "label": "5. Ending the agreement",
+   "oldValue": "30",
+   "newValue": "60",
+   "delta": "+30 (+100%)",
+   "confidence": 0.996,
+   "isNoise": false,
+   "noiseReason": null,
+   "sections": [
+    "5. Ending the agreement"
+   ],
+   "group": "numbers",
+   "withinBlock": false,
+   "evidence": [
+    {
+     "side": "old",
+     "scope": "node",
+     "nodeId": "n28",
+     "path": "body/p[21]",
+     "sectionPath": [
+      "5. Ending the agreement"
+     ],
+     "field": null,
+     "excerpt": "30",
+     "location": "Paragraph 21",
+     "page": 2
+    },
+    {
+     "side": "new",
+     "scope": "node",
+     "nodeId": "n28",
+     "path": "body/p[21]",
+     "sectionPath": [
+      "5. Ending the agreement"
+     ],
+     "field": null,
+     "excerpt": "60",
+     "location": "Paragraph 21",
+     "page": 2
+    }
+   ]
+  },
+  {
+   "id": "c6",
+   "seq": 6,
+   "type": "TEXT_MODIFIED",
+   "kind": "modified",
+   "category": "text",
+   "subtype": "heading",
+   "label": null,
+   "oldValue": "Liability",
+   "newValue": "Limitation of liability",
+   "delta": null,
+   "confidence": 0.632,
+   "isNoise": false,
+   "noiseReason": null,
+   "sections": [],
+   "group": "headings",
+   "withinBlock": false,
+   "evidence": [
+    {
+     "side": "old",
+     "scope": "node",
+     "nodeId": "n29",
+     "path": "body/p[22]",
+     "sectionPath": [],
+     "field": null,
+     "excerpt": "Liability",
+     "location": "Heading 1, paragraph 22",
+     "page": 2
+    },
+    {
+     "side": "new",
+     "scope": "node",
+     "nodeId": "n29",
+     "path": "body/p[22]",
+     "sectionPath": [],
+     "field": null,
+     "excerpt": "Limitation of liability",
+     "location": "Heading 1, paragraph 22",
+     "page": 2
+    }
+   ]
+  },
+  {
+   "id": "c7",
+   "seq": 7,
+   "type": "TEXT_MODIFIED",
+   "kind": "modified",
+   "category": "text",
+   "subtype": null,
+   "label": "7. General",
+   "oldValue": "Client's",
+   "newValue": "client's",
+   "delta": null,
+   "confidence": 0.996,
+   "isNoise": false,
+   "noiseReason": null,
+   "sections": [
+    "7. General"
+   ],
+   "group": "text",
+   "withinBlock": false,
+   "evidence": [
+    {
+     "side": "old",
+     "scope": "node",
+     "nodeId": "n32",
+     "path": "body/p[25]",
+     "sectionPath": [
+      "7. General"
+     ],
+     "field": null,
+     "excerpt": "Client's",
+     "location": "Paragraph 25",
+     "page": 2
+    },
+    {
+     "side": "new",
+     "scope": "node",
+     "nodeId": "n32",
+     "path": "body/p[25]",
+     "sectionPath": [
+      "7. General"
+     ],
+     "field": null,
+     "excerpt": "client's",
+     "location": "Paragraph 25",
+     "page": 2
+    }
+   ]
+  }
+ ],
+ "groups": [
+  {
+   "id": "text",
+   "label": "Text changes",
+   "changeCount": 4,
+   "changeIds": [
+    "c0",
+    "c3",
+    "c4",
+    "c7"
+   ]
+  },
+  {
+   "id": "headings",
+   "label": "Headings",
+   "changeCount": 1,
+   "changeIds": [
+    "c6"
+   ]
+  },
+  {
+   "id": "lists",
+   "label": "Lists",
+   "changeCount": 0,
+   "changeIds": []
+  },
+  {
+   "id": "tables",
+   "label": "Tables",
+   "changeCount": 1,
+   "changeIds": [
+    "c2"
+   ]
+  },
+  {
+   "id": "numbers",
+   "label": "Numbers",
+   "changeCount": 1,
+   "changeIds": [
+    "c5"
+   ]
+  },
+  {
+   "id": "dates",
+   "label": "Dates",
+   "changeCount": 1,
+   "changeIds": [
+    "c1"
+   ]
+  },
+  {
+   "id": "structure",
+   "label": "Structure",
+   "changeCount": 0,
+   "changeIds": []
+  },
+  {
+   "id": "other",
+   "label": "Other",
+   "changeCount": 0,
+   "changeIds": []
+  }
+ ],
+ "view": {
+  "original": {
+   "nodes": [
+    {
+     "id": "n0",
+     "role": "heading",
+     "text": "Website Design Services Agreement",
+     "level": 1,
+     "place": "Heading 1, paragraph 1",
+     "page": 1
+    },
+    {
+     "id": "n1",
+     "role": "paragraph",
+     "text": "This agreement is made between Harbourline Design Studio (the Studio) and Example Client Ltd (the Client). It sets out the design services the Studio will provide, the fees the Client will pay, and how either party may end the arrangement. It is an example document written for DiffNexa; the parties and terms are fictional.",
+     "section": [
+      "Website Design Services Agreement"
+     ],
+     "place": "Paragraph 2",
+     "page": 1
+    },
+    {
+     "id": "n2",
+     "role": "heading",
+     "text": "1. Services",
+     "level": 1,
+     "place": "Heading 1, paragraph 3",
+     "page": 1
+    },
+    {
+     "id": "n3",
+     "role": "paragraph",
+     "text": "The Studio will design and build a marketing website for the Client, including page layouts, a small component library, copy editing for up to twelve pages, and two rounds of revisions on each deliverable. The Studio will share work in progress every two weeks and will record decisions in a shared project log that both parties can read.",
+     "section": [
+      "1. Services"
+     ],
+     "place": "Paragraph 4",
+     "page": 1
+    },
+    {
+     "id": "n4",
+     "role": "list_item",
+     "text": "Discovery workshop and written project brief.",
+     "section": [
+      "1. Services"
+     ],
+     "list": "bulleted",
+     "listLevel": 1,
+     "place": "Bulleted list item (level 1), paragraph 5",
+     "page": 1
+    },
+    {
+     "id": "n5",
+     "role": "list_item",
+     "text": "Page designs for desktop and mobile screens.",
+     "section": [
+      "1. Services"
+     ],
+     "list": "bulleted",
+     "listLevel": 1,
+     "place": "Bulleted list item (level 1), paragraph 6",
+     "page": 1
+    },
+    {
+     "id": "n6",
+     "role": "list_item",
+     "text": "Development of the approved designs and launch support.",
+     "section": [
+      "1. Services"
+     ],
+     "list": "bulleted",
+     "listLevel": 1,
+     "place": "Bulleted list item (level 1), paragraph 7",
+     "page": 1
+    },
+    {
+     "id": "n7",
+     "role": "paragraph",
+     "text": "Work begins on 1 March 2026 and is planned to take sixteen weeks. The timetable depends on the Client providing content and feedback within five working days of each request; delays on either side move the dates that follow by the same number of days.",
+     "section": [
+      "1. Services"
+     ],
+     "place": "Paragraph 8",
+     "page": 1
+    },
+    {
+     "id": "n8",
+     "role": "paragraph",
+     "text": "Milestone 1: the Studio will present the deliverables for this stage in a review meeting, explain the decisions behind them, and collect the Client's comments in the project log. Comments received after the review window closes will be scheduled into the next stage rather than reopening the current one, so that the overall timetable can be kept.",
+     "section": [
+      "1. Services"
+     ],
+     "place": "Paragraph 9",
+     "page": 1
+    },
+    {
+     "id": "n9",
+     "role": "paragraph",
+     "text": "Milestone 2: the Studio will present the deliverables for this stage in a review meeting, explain the decisions behind them, and collect the Client's comments in the project log. Comments received after the review window closes will be scheduled into the next stage rather than reopening the current one, so that the overall timetable can be kept.",
+     "section": [
+      "1. Services"
+     ],
+     "place": "Paragraph 10",
+     "page": 1
+    },
+    {
+     "id": "n10",
+     "role": "paragraph",
+     "text": "Milestone 3: the Studio will present the deliverables for this stage in a review meeting, explain the decisions behind them, and collect the Client's comments in the project log. Comments received after the review window closes will be scheduled into the next stage rather than reopening the current one, so that the overall timetable can be kept.",
+     "section": [
+      "1. Services"
+     ],
+     "place": "Paragraph 11",
+     "page": 1
+    },
+    {
+     "id": "n11",
+     "role": "paragraph",
+     "text": "Milestone 4: the Studio will present the deliverables for this stage in a review meeting, explain the decisions behind them, and collect the Client's comments in the project log. Comments received after the review window closes will be scheduled into the next stage rather than reopening the current one, so that the overall timetable can be kept.",
+     "section": [
+      "1. Services"
+     ],
+     "place": "Paragraph 12",
+     "page": 1
+    },
+    {
+     "id": "n12",
+     "role": "heading",
+     "text": "2. Fees and payment",
+     "level": 1,
+     "place": "Heading 1, paragraph 13",
+     "page": 2
+    },
+    {
+     "id": "n13",
+     "role": "paragraph",
+     "text": "The Client will pay a monthly retainer for the duration of the project, invoiced at the start of each month and payable within thirty days. Work outside the agreed services is charged at the day rate below once the Client has approved a written estimate.",
+     "section": [
+      "2. Fees and payment"
+     ],
+     "place": "Paragraph 14",
+     "page": 2
+    },
+    {
+     "id": "n14",
+     "role": "table_cell",
+     "text": "Item",
+     "section": [
+      "2. Fees and payment"
+     ],
+     "table": [
+      0,
+      0,
+      0
+     ],
+     "place": "Table 1, row 1, column 1",
+     "page": 2
+    },
+    {
+     "id": "n15",
+     "role": "table_cell",
+     "text": "Amount",
+     "section": [
+      "2. Fees and payment"
+     ],
+     "table": [
+      0,
+      0,
+      1
+     ],
+     "place": "Table 1, row 1, column 2",
+     "page": 2
+    },
+    {
+     "id": "n16",
+     "role": "table_cell",
+     "text": "Monthly retainer",
+     "section": [
+      "2. Fees and payment"
+     ],
+     "table": [
+      0,
+      1,
+      0
+     ],
+     "place": "Table 1, row 2, column 1",
+     "page": 2
+    },
+    {
+     "id": "n17",
+     "role": "table_cell",
+     "text": "£2,500",
+     "section": [
+      "2. Fees and payment"
+     ],
+     "table": [
+      0,
+      1,
+      1
+     ],
+     "place": "Table 1, row 2, column 2",
+     "page": 2
+    },
+    {
+     "id": "n18",
+     "role": "table_cell",
+     "text": "Additional day rate",
+     "section": [
+      "2. Fees and payment"
+     ],
+     "table": [
+      0,
+      2,
+      0
+     ],
+     "place": "Table 1, row 3, column 1",
+     "page": 2
+    },
+    {
+     "id": "n19",
+     "role": "table_cell",
+     "text": "£650",
+     "section": [
+      "2. Fees and payment"
+     ],
+     "table": [
+      0,
+      2,
+      1
+     ],
+     "place": "Table 1, row 3, column 2",
+     "page": 2
+    },
+    {
+     "id": "n20",
+     "role": "table_cell",
+     "text": "Hosting set-up (one-off)",
+     "section": [
+      "2. Fees and payment"
+     ],
+     "table": [
+      0,
+      3,
+      0
+     ],
+     "place": "Table 1, row 4, column 1",
+     "page": 2
+    },
+    {
+     "id": "n21",
+     "role": "table_cell",
+     "text": "£300",
+     "section": [
+      "2. Fees and payment"
+     ],
+     "table": [
+      0,
+      3,
+      1
+     ],
+     "place": "Table 1, row 4, column 2",
+     "page": 2
+    },
+    {
+     "id": "n22",
+     "role": "paragraph",
+     "text": "Travel within the city is included; other travel will be reimbursed at cost with receipts.",
+     "section": [
+      "2. Fees and payment"
+     ],
+     "place": "Paragraph 15",
+     "page": 2
+    },
+    {
+     "id": "n23",
+     "role": "heading",
+     "text": "3. Intellectual property",
+     "level": 1,
+     "place": "Heading 1, paragraph 16",
+     "page": 2
+    },
+    {
+     "id": "n24",
+     "role": "paragraph",
+     "text": "Once all fees are paid, the Client owns the final designs and the website code written for this project. The Studio keeps ownership of its general tools, templates and know-how, and grants the Client a permanent licence to use any of them that are built into the website.",
+     "section": [
+      "3. Intellectual property"
+     ],
+     "place": "Paragraph 17",
+     "page": 2
+    },
+    {
+     "id": "n25",
+     "role": "heading",
+     "text": "4. Data protection",
+     "level": 1,
+     "place": "Heading 1, paragraph 18",
+     "page": 2
+    },
+    {
+     "id": "n26",
+     "role": "paragraph",
+     "text": "Each party will handle personal data it receives under this agreement lawfully and only for the purposes of the project. The Studio will keep project files in access-controlled storage and delete them within ninety days of the project ending, unless the Client asks for them to be returned first.",
+     "section": [
+      "4. Data protection"
+     ],
+     "place": "Paragraph 19",
+     "page": 2
+    },
+    {
+     "id": "n27",
+     "role": "heading",
+     "text": "5. Ending the agreement",
+     "level": 1,
+     "place": "Heading 1, paragraph 20",
+     "page": 2
+    },
+    {
+     "id": "n28",
+     "role": "paragraph",
+     "text": "Either party may end this agreement by giving 30 days' written notice. The Client will pay for work completed up to the date the agreement ends, and the Studio will hand over all finished work and working files that the Client has paid for.",
+     "section": [
+      "5. Ending the agreement"
+     ],
+     "place": "Paragraph 21",
+     "page": 2
+    },
+    {
+     "id": "n29",
+     "role": "heading",
+     "text": "6. Liability",
+     "level": 1,
+     "place": "Heading 1, paragraph 22",
+     "page": 2
+    },
+    {
+     "id": "n30",
+     "role": "paragraph",
+     "text": "Neither party is liable for indirect or consequential losses. Each party's total liability under this agreement is limited to the fees paid in the twelve months before the claim arose, except where the law does not allow liability to be limited.",
+     "section": [
+      "6. Liability"
+     ],
+     "place": "Paragraph 23",
+     "page": 2
+    },
+    {
+     "id": "n31",
+     "role": "heading",
+     "text": "7. General",
+     "level": 1,
+     "place": "Heading 1, paragraph 24",
+     "page": 2
+    },
+    {
+     "id": "n32",
+     "role": "paragraph",
+     "text": "This agreement is the whole agreement between the parties about the project. Changes to it must be agreed in writing by both parties. If any part of it cannot be enforced, the rest remains in effect. Notices must be sent to the Client's registered email address.",
+     "section": [
+      "7. General"
+     ],
+     "place": "Paragraph 25",
+     "page": 2
+    }
+   ],
+   "fields": {
+    "properties.title": "Website Design Services Agreement (example)"
+   }
+  },
+  "revised": {
+   "nodes": [
+    {
+     "id": "n0",
+     "role": "heading",
+     "text": "Website Design Services Agreement",
+     "level": 1,
+     "place": "Heading 1, paragraph 1",
+     "page": 1
+    },
+    {
+     "id": "n1",
+     "role": "paragraph",
+     "text": "This agreement is made between Harbourline Design Studio (the Studio) and Example Client Ltd (the Client). It sets out the design services the Studio will provide, the fees the Client will pay, and how either party may end the arrangement. It is an example document written for DiffNexa; the parties and terms are fictional.",
+     "section": [
+      "Website Design Services Agreement"
+     ],
+     "place": "Paragraph 2",
+     "page": 1
+    },
+    {
+     "id": "n2",
+     "role": "heading",
+     "text": "1. Services",
+     "level": 1,
+     "place": "Heading 1, paragraph 3",
+     "page": 1
+    },
+    {
+     "id": "n3",
+     "role": "paragraph",
+     "text": "The Studio will design and build a marketing website for the Client including page layouts, a small component library, copy editing for up to twelve pages, and two rounds of revisions on each deliverable. The Studio will share work in progress every two weeks and will record decisions in a shared project log that both parties can read.",
+     "section": [
+      "1. Services"
+     ],
+     "place": "Paragraph 4",
+     "page": 1
+    },
+    {
+     "id": "n4",
+     "role": "list_item",
+     "text": "Discovery workshop and written project brief.",
+     "section": [
+      "1. Services"
+     ],
+     "list": "bulleted",
+     "listLevel": 1,
+     "place": "Bulleted list item (level 1), paragraph 5",
+     "page": 1
+    },
+    {
+     "id": "n5",
+     "role": "list_item",
+     "text": "Page designs for desktop and mobile screens.",
+     "section": [
+      "1. Services"
+     ],
+     "list": "bulleted",
+     "listLevel": 1,
+     "place": "Bulleted list item (level 1), paragraph 6",
+     "page": 1
+    },
+    {
+     "id": "n6",
+     "role": "list_item",
+     "text": "Development of the approved designs and launch support.",
+     "section": [
+      "1. Services"
+     ],
+     "list": "bulleted",
+     "listLevel": 1,
+     "place": "Bulleted list item (level 1), paragraph 7",
+     "page": 1
+    },
+    {
+     "id": "n7",
+     "role": "paragraph",
+     "text": "Work begins on 1 April 2026 and is planned to take sixteen weeks. The timetable depends on the Client providing content and feedback within five working days of each request; delays on either side move the dates that follow by the same number of days.",
+     "section": [
+      "1. Services"
+     ],
+     "place": "Paragraph 8",
+     "page": 1
+    },
+    {
+     "id": "n8",
+     "role": "paragraph",
+     "text": "Milestone 1: the Studio will present the deliverables for this stage in a review meeting, explain the decisions behind them, and collect the Client's comments in the project log. Comments received after the review window closes will be scheduled into the next stage rather than reopening the current one, so that the overall timetable can be kept.",
+     "section": [
+      "1. Services"
+     ],
+     "place": "Paragraph 9",
+     "page": 1
+    },
+    {
+     "id": "n9",
+     "role": "paragraph",
+     "text": "Milestone 2: the Studio will present the deliverables for this stage in a review meeting, explain the decisions behind them, and collect the Client's comments in the project log. Comments received after the review window closes will be scheduled into the next stage rather than reopening the current one, so that the overall timetable can be kept.",
+     "section": [
+      "1. Services"
+     ],
+     "place": "Paragraph 10",
+     "page": 1
+    },
+    {
+     "id": "n10",
+     "role": "paragraph",
+     "text": "Milestone 3: the Studio will present the deliverables for this stage in a review meeting, explain the decisions behind them, and collect the Client's comments in the project log. Comments received after the review window closes will be scheduled into the next stage rather than reopening the current one, so that the overall timetable can be kept.",
+     "section": [
+      "1. Services"
+     ],
+     "place": "Paragraph 11",
+     "page": 1
+    },
+    {
+     "id": "n11",
+     "role": "paragraph",
+     "text": "Milestone 4: the Studio will present the deliverables for this stage in a review meeting, explain the decisions behind them, and collect the Client's comments in the project log. Comments received after the review window closes will be scheduled into the next stage rather than reopening the current one, so that the overall timetable can be kept.",
+     "section": [
+      "1. Services"
+     ],
+     "place": "Paragraph 12",
+     "page": 1
+    },
+    {
+     "id": "n12",
+     "role": "heading",
+     "text": "2. Fees and payment",
+     "level": 1,
+     "place": "Heading 1, paragraph 13",
+     "page": 2
+    },
+    {
+     "id": "n13",
+     "role": "paragraph",
+     "text": "The Client will pay a monthly retainer for the duration of the project, invoiced at the start of each month and payable within thirty days. Work outside the agreed services is charged at the day rate below once the Client has approved a written estimate.",
+     "section": [
+      "2. Fees and payment"
+     ],
+     "place": "Paragraph 14",
+     "page": 2
+    },
+    {
+     "id": "n14",
+     "role": "table_cell",
+     "text": "Item",
+     "section": [
+      "2. Fees and payment"
+     ],
+     "table": [
+      0,
+      0,
+      0
+     ],
+     "place": "Table 1, row 1, column 1",
+     "page": 2
+    },
+    {
+     "id": "n15",
+     "role": "table_cell",
+     "text": "Amount",
+     "section": [
+      "2. Fees and payment"
+     ],
+     "table": [
+      0,
+      0,
+      1
+     ],
+     "place": "Table 1, row 1, column 2",
+     "page": 2
+    },
+    {
+     "id": "n16",
+     "role": "table_cell",
+     "text": "Monthly retainer",
+     "section": [
+      "2. Fees and payment"
+     ],
+     "table": [
+      0,
+      1,
+      0
+     ],
+     "place": "Table 1, row 2, column 1",
+     "page": 2
+    },
+    {
+     "id": "n17",
+     "role": "table_cell",
+     "text": "£2,750",
+     "section": [
+      "2. Fees and payment"
+     ],
+     "table": [
+      0,
+      1,
+      1
+     ],
+     "place": "Table 1, row 2, column 2",
+     "page": 2
+    },
+    {
+     "id": "n18",
+     "role": "table_cell",
+     "text": "Additional day rate",
+     "section": [
+      "2. Fees and payment"
+     ],
+     "table": [
+      0,
+      2,
+      0
+     ],
+     "place": "Table 1, row 3, column 1",
+     "page": 2
+    },
+    {
+     "id": "n19",
+     "role": "table_cell",
+     "text": "£650",
+     "section": [
+      "2. Fees and payment"
+     ],
+     "table": [
+      0,
+      2,
+      1
+     ],
+     "place": "Table 1, row 3, column 2",
+     "page": 2
+    },
+    {
+     "id": "n20",
+     "role": "table_cell",
+     "text": "Hosting set-up (one-off)",
+     "section": [
+      "2. Fees and payment"
+     ],
+     "table": [
+      0,
+      3,
+      0
+     ],
+     "place": "Table 1, row 4, column 1",
+     "page": 2
+    },
+    {
+     "id": "n21",
+     "role": "table_cell",
+     "text": "£300",
+     "section": [
+      "2. Fees and payment"
+     ],
+     "table": [
+      0,
+      3,
+      1
+     ],
+     "place": "Table 1, row 4, column 2",
+     "page": 2
+    },
+    {
+     "id": "n22",
+     "role": "heading",
+     "text": "3. Intellectual property",
+     "level": 1,
+     "place": "Heading 1, paragraph 15",
+     "page": 2
+    },
+    {
+     "id": "n23",
+     "role": "paragraph",
+     "text": "Once all fees are paid, the Client owns the final designs and the website code written for this project. The Studio keeps ownership of its general tools, templates and know-how, and grants the Client a permanent licence to use any of them that are built into the website.",
+     "section": [
+      "3. Intellectual property"
+     ],
+     "place": "Paragraph 16",
+     "page": 2
+    },
+    {
+     "id": "n24",
+     "role": "heading",
+     "text": "4. Data protection",
+     "level": 1,
+     "place": "Heading 1, paragraph 17",
+     "page": 2
+    },
+    {
+     "id": "n25",
+     "role": "paragraph",
+     "text": "Each party will handle personal data it receives under this agreement lawfully and only for the purposes of the project. The Studio will keep project files in access-controlled storage and delete them within ninety days of the project ending, unless the Client asks for them to be returned first.",
+     "section": [
+      "4. Data protection"
+     ],
+     "place": "Paragraph 18",
+     "page": 2
+    },
+    {
+     "id": "n26",
+     "role": "paragraph",
+     "text": "The Studio will not appoint a subcontractor to process the Client's personal data without the Client's prior written approval, and will remain responsible for any subcontractor it appoints.",
+     "section": [
+      "4. Data protection"
+     ],
+     "place": "Paragraph 19",
+     "page": 2
+    },
+    {
+     "id": "n27",
+     "role": "heading",
+     "text": "5. Ending the agreement",
+     "level": 1,
+     "place": "Heading 1, paragraph 20",
+     "page": 2
+    },
+    {
+     "id": "n28",
+     "role": "paragraph",
+     "text": "Either party may end this agreement by giving 60 days' written notice. The Client will pay for work completed up to the date the agreement ends, and the Studio will hand over all finished work and working files that the Client has paid for.",
+     "section": [
+      "5. Ending the agreement"
+     ],
+     "place": "Paragraph 21",
+     "page": 2
+    },
+    {
+     "id": "n29",
+     "role": "heading",
+     "text": "6. Limitation of liability",
+     "level": 1,
+     "place": "Heading 1, paragraph 22",
+     "page": 2
+    },
+    {
+     "id": "n30",
+     "role": "paragraph",
+     "text": "Neither party is liable for indirect or consequential losses. Each party's total liability under this agreement is limited to the fees paid in the twelve months before the claim arose, except where the law does not allow liability to be limited.",
+     "section": [
+      "6. Limitation of liability"
+     ],
+     "place": "Paragraph 23",
+     "page": 2
+    },
+    {
+     "id": "n31",
+     "role": "heading",
+     "text": "7. General",
+     "level": 1,
+     "place": "Heading 1, paragraph 24",
+     "page": 2
+    },
+    {
+     "id": "n32",
+     "role": "paragraph",
+     "text": "This agreement is the whole agreement between the parties about the project. Changes to it must be agreed in writing by both parties. If any part of it cannot be enforced, the rest remains in effect. Notices must be sent to the client's registered email address.",
+     "section": [
+      "7. General"
+     ],
+     "place": "Paragraph 25",
+     "page": 2
+    }
+   ],
+   "fields": {
+    "properties.title": "Website Design Services Agreement (example)"
+   }
+  },
+  "marks": [
+   {
+    "change": "c0",
+    "side": "original",
+    "node": "n3",
+    "start": 61,
+    "end": 68
+   },
+   {
+    "change": "c0",
+    "side": "revised",
+    "node": "n3",
+    "start": 61,
+    "end": 67
+   },
+   {
+    "change": "c1",
+    "side": "original",
+    "node": "n7",
+    "start": 15,
+    "end": 27
+   },
+   {
+    "change": "c1",
+    "side": "revised",
+    "node": "n7",
+    "start": 15,
+    "end": 27
+   },
+   {
+    "change": "c2",
+    "side": "original",
+    "node": "n17",
+    "start": 0,
+    "end": 6
+   },
+   {
+    "change": "c2",
+    "side": "revised",
+    "node": "n17",
+    "start": 0,
+    "end": 6
+   },
+   {
+    "change": "c3",
+    "side": "original",
+    "node": "n22",
+    "start": 0,
+    "end": 90
+   },
+   {
+    "change": "c4",
+    "side": "revised",
+    "node": "n26",
+    "start": 0,
+    "end": 189
+   },
+   {
+    "change": "c5",
+    "side": "original",
+    "node": "n28",
+    "start": 46,
+    "end": 48
+   },
+   {
+    "change": "c5",
+    "side": "revised",
+    "node": "n28",
+    "start": 46,
+    "end": 48
+   },
+   {
+    "change": "c6",
+    "side": "original",
+    "node": "n29",
+    "start": 3,
+    "end": 12
+   },
+   {
+    "change": "c6",
+    "side": "revised",
+    "node": "n29",
+    "start": 3,
+    "end": 26
+   },
+   {
+    "change": "c7",
+    "side": "original",
+    "node": "n32",
+    "start": 228,
+    "end": 236
+   },
+   {
+    "change": "c7",
+    "side": "revised",
+    "node": "n32",
+    "start": 228,
+    "end": 236
+   }
+  ]
+ },
+ "diagnostics": {
+  "notes": [],
+  "previousWarnings": [],
+  "revisedWarnings": [],
+  "droppedUntraceable": 0
+ }
+}

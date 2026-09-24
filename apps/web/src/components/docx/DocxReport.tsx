@@ -8,6 +8,7 @@ import { ChangeList } from "@/components/workspace/ChangeList";
 import { ComparisonWorkspace, type WorkspaceContext } from "@/components/workspace/ComparisonWorkspace";
 import { DetectedValues } from "@/components/workspace/EvidenceBits";
 import { CitedPassages, FlowView } from "@/components/workspace/FlowView";
+import type { WorkspaceControls } from "@/components/workspace/WorkspaceControls";
 import type { ChangeAnalysis } from "@/lib/analysis";
 import { readView } from "@/lib/content-view";
 import {
@@ -16,9 +17,12 @@ import {
   docxPlace,
   docxWorkspaceChanges,
   headline,
+  layoutNote,
   readingNotes,
+  type DocxLayoutSummary,
   type DocxComparison,
 } from "@/lib/docx-report";
+import { optionsSentence } from "@/lib/docx-export";
 import type { FocusRequest } from "@/lib/use-change-focus";
 import { formatFileSize } from "@/lib/validation";
 
@@ -29,9 +33,13 @@ type FileSummary = { name: string; sizeBytes: number };
  *
  * Side by side shows both documents' text as the comparison read it —
  * headings, paragraphs, lists and tables in reading order — with every change
- * marked in place. Places are the document's own headings; the paragraph or
- * table position Word would use is a labelled secondary detail. There are no
- * page numbers, because a Word file does not have fixed pages.
+ * marked in place. When a document records the pages Word laid it out on,
+ * every change is placed by its page first, and the side-by-side view marks
+ * where each page begins; otherwise by the document's own headings, with the
+ * paragraph or table position as a labelled secondary detail.
+ *
+ * The comparison controls — Ignore options, Export, Reverse — are passed in by
+ * the desk that ran the comparison, because running it again is the desk's job.
  */
 export function DocxReport({
   result,
@@ -40,6 +48,7 @@ export function DocxReport({
   analyst,
   analysis = null,
   focus = null,
+  controls,
 }: {
   result: DocxComparison;
   original: FileSummary;
@@ -49,12 +58,16 @@ export function DocxReport({
   analysis?: ChangeAnalysis | null;
   /** A change to show, asked for from outside the report ("View change"). */
   focus?: FocusRequest;
+  controls?: WorkspaceControls;
 }) {
   const view = useMemo(() => readView(result.view), [result]);
   const changes = useMemo(() => docxWorkspaceChanges(result), [result]);
   const filters = useMemo(() => docxFilters(result, changes), [result, changes]);
   const byId = useMemo(() => new Map(result.changes.map((change) => [change.id, change])), [result]);
-  const notes = readingNotes(result);
+  const pageNote = layoutNote(result);
+  const notes = [...(pageNote ? [pageNote] : []), ...readingNotes(result)];
+  const pages = (summary?: DocxLayoutSummary) =>
+    summary?.status === "recorded" && summary.pages ? ` · ${summary.pages} pages` : "";
   const modes = view
     ? [
         { id: "document", label: "Side by side" },
@@ -69,9 +82,18 @@ export function DocxReport({
       summary={result.groups.filter((item) => item.changeCount > 0).map((item) => ({ label: item.label, count: item.changeCount }))}
       emptyNote={NO_CHANGES_SENTENCE}
       facts={[
-        { label: "Original document", value: `${original.name} · ${formatFileSize(original.sizeBytes)}` },
-        { label: "Revised document", value: `${revised.name} · ${formatFileSize(revised.sizeBytes)}` },
+        {
+          label: "Original document",
+          value: `${original.name} · ${formatFileSize(original.sizeBytes)}${pages(result.layout?.previous)}`,
+        },
+        {
+          label: "Revised document",
+          value: `${revised.name} · ${formatFileSize(revised.sizeBytes)}${pages(result.layout?.revised)}`,
+        },
+        { label: "Matching", value: optionsSentence(result) },
       ]}
+      controls={controls}
+      linkable={["document"]}
       changes={changes}
       modes={modes}
       initialMode={modes[0].id}
@@ -140,7 +162,13 @@ export function DocxReport({
                 where:
                   item.scope === "document"
                     ? "Document properties"
-                    : `${item.sectionPath.length > 0 ? item.sectionPath.join(" › ") : docxPlace(change, view)} · ${item.location}`,
+                    : [
+                        typeof item.page === "number" ? `Page ${item.page}` : null,
+                        item.sectionPath.length > 0 ? item.sectionPath.join(" › ") : docxPlace(change, view),
+                        item.location,
+                      ]
+                        .filter(Boolean)
+                        .join(" · "),
               }))}
             />
           </div>

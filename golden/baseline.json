@@ -505,6 +505,15 @@
         "evidence_completeness": 1.0
       }
     },
+    "docx:capitalisation-only": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
     "docx:date-change": {
       "extraction_passed": true,
       "comparison": {
@@ -622,6 +631,15 @@
         "evidence_completeness": 1.0
       }
     },
+    "docx:pages-long-document": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
     "docx:paragraph-added": {
       "extraction_passed": true,
       "comparison": {
@@ -659,6 +677,15 @@
       }
     },
     "docx:paragraph-reworded": {
+      "extraction_passed": true,
+      "comparison": {
+        "recall": 1.0,
+        "false_positives": 0.0,
+        "noise_leakage": 0.0,
+        "evidence_completeness": 1.0
+      }
+    },
+    "docx:punctuation-only": {
       "extraction_passed": true,
       "comparison": {
         "recall": 1.0,

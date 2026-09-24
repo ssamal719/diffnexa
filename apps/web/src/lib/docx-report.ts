@@ -22,7 +22,24 @@ export type DocxEvidence = {
   excerpt: string | null;
   /** Where this is, in words a reader can find in Word: "Table 2, row 3, column 2". */
   location: string;
+  /**
+   * The page the first cited word was on when Microsoft Word last saved the
+   * document — null when the file carries no page layout DiffNexa can trust.
+   */
+  page?: number | null;
 };
+
+/** Whether a document's pages can be shown, and if not, why. */
+export type DocxLayoutSummary = {
+  status: "recorded" | "unavailable";
+  reason: "no_statistics" | "statistics_out_of_date" | "pages_disagree" | "empty" | null;
+  pages: number | null;
+};
+
+/** What counted as the same words in this comparison, as the engine applied it. */
+export type DocxOptions = { ignoreCase: boolean; ignorePunctuation: boolean };
+
+export const DEFAULT_DOCX_OPTIONS: DocxOptions = { ignoreCase: true, ignorePunctuation: false };
 
 export type DocxGroupId =
   | "text"
@@ -63,6 +80,10 @@ export type DocxGroup = {
 export type DocxComparison = {
   engineVersion: string;
   processingMs: number;
+  /** The matching options the engine used; older results have none (the defaults). */
+  options?: DocxOptions;
+  /** Whether each document's pages could be read from the file. */
+  layout?: { previous: DocxLayoutSummary; revised: DocxLayoutSummary };
   documents: {
     previous: { sha256: string; nodeCount: number };
     revised: { sha256: string; nodeCount: number };
@@ -162,6 +183,12 @@ export function showsValuesInline(change: DocxChange): boolean {
   );
 }
 
+/** A piece of evidence's place: its page first when the file records pages, then its paragraph or cell. */
+export function whereOf(item: DocxEvidence): string {
+  if (item.scope === "document") return "Document properties";
+  return typeof item.page === "number" ? `Page ${item.page} · ${item.location}` : item.location;
+}
+
 /**
  * Where the change is, in the revised document if it is there and in the
  * original if it was removed. Taken from the evidence the engine cited.
@@ -172,7 +199,53 @@ export function locationOf(change: DocxChange): string | null {
   const item = revised ?? original;
   if (!item) return null;
   const side = revised ? "Revised" : "Original";
-  return item.scope === "document" ? "Document properties" : `${side}: ${item.location}`;
+  return item.scope === "document" ? "Document properties" : `${side}: ${whereOf(item)}`;
+}
+
+/**
+ * The page a change is on: in the revised document when it is there, in the
+ * original when it was removed. Null when that document records no pages.
+ */
+export function pageOf(change: DocxChange): { page: number; side: "old" | "new" } | null {
+  const revised = change.evidence.find((item) => item.side === "new" && item.scope === "node");
+  const original = change.evidence.find((item) => item.side === "old" && item.scope === "node");
+  const item = revised ?? original;
+  return item && typeof item.page === "number" ? { page: item.page, side: item.side } : null;
+}
+
+const LAYOUT_REASONS: Record<NonNullable<DocxLayoutSummary["reason"]>, string> = {
+  no_statistics: "the file does not record a page layout",
+  statistics_out_of_date:
+    "the file was not last saved by Microsoft Word, or the page layout saved in it is out of date",
+  pages_disagree: "the page layout saved in the file does not match its own page count",
+  empty: "the document has no text",
+};
+
+/**
+ * What the reader needs to know about page numbers, once: where they come
+ * from, or why there are none. Null for results from before pages existed.
+ */
+export function layoutNote(result: DocxComparison): { title: string; text: string } | null {
+  const layout = result.layout;
+  if (!layout) return null;
+  const sides = [
+    ["original", layout.previous],
+    ["revised", layout.revised],
+  ] as const;
+  const missing = sides.filter(([, summary]) => summary.status !== "recorded");
+  if (missing.length === 0) {
+    return {
+      title: "Page numbers",
+      text: "Pages are the ones Microsoft Word showed when each document was last saved, read from the page layout Word stores in the file. Paragraph numbers are shown beside them.",
+    };
+  }
+  const which =
+    missing.length === 2 ? "either document" : `the ${missing[0][0]} document`;
+  const reasons = [...new Set(missing.map(([, summary]) => LAYOUT_REASONS[summary.reason ?? "no_statistics"]))];
+  return {
+    title: "Page numbers",
+    text: `Page numbers are not shown for ${which}, because ${reasons.join("; and ")}. Changes there are located by heading and paragraph instead. Opening the document in Microsoft Word and saving it records its pages.`,
+  };
 }
 
 // ---------------------------------------------------------------- grouping and filtering
@@ -242,9 +315,10 @@ export function readingNotes(result: DocxComparison): { title: string; text: str
 
 /**
  * Where a Word change is, in the document's own terms: the headings it sits
- * under. A Word file stores no page numbers — pages depend on the printer,
- * fonts and window size — so none are ever shown. When there is no heading
- * above the change, that is said plainly.
+ * under. When there is no heading above the change, that is said plainly.
+ * Pages are added by the caller, and only when the file records them: a
+ * Word file's pages depend on the fonts and printer of whoever lays it out,
+ * so DiffNexa uses the layout Word saved and never works pages out itself.
  */
 export function docxPlace(change: DocxChange, view: ContentView | null = null): string {
   if (change.category === "metadata") return "Document properties";
@@ -273,7 +347,10 @@ function sectionPathOf(change: DocxChange): string[] {
 export function docxPlaceNote(change: DocxChange): string | null {
   const where = locationOf(change);
   if (!where || change.category === "metadata") return null;
-  return `In Word: ${where}. Paragraphs are counted from the start of the document; Word files have no fixed page numbers.`;
+  if (pageOf(change)) {
+    return `In Word: ${where}. Pages are as Word laid out the document when it was last saved; paragraphs are counted from the start of the document.`;
+  }
+  return `In Word: ${where}. Paragraphs are counted from the start of the document; this file does not record its pages.`;
 }
 
 export function docxWorkspaceChanges(result: DocxComparison): WorkspaceChange[] {
@@ -295,23 +372,39 @@ export function docxWorkspaceChanges(result: DocxComparison): WorkspaceChange[] 
         .join(" ");
       const heading = change.subtype === "heading" || change.subtype === "heading_level";
       const top = sectionPathOf(change)[0] ?? (heading ? (citedText(view, change.evidence) ?? undefined) : undefined);
+      // With the pages recorded, a change is found by its page first — the
+      // way a reader finds it in a long document — with its headings or
+      // paragraph after. Without them, by the headings it sits under.
+      const paged = pageOf(change);
+      const pageLabel = paged ? `Page ${paged.page}${paged.side === "old" ? " (original)" : ""}` : null;
+      const firstNode = change.evidence.find((item) => item.scope === "node");
+      const pagePlace = paged
+        ? `${pageLabel} · ${sectionPathOf(change).length > 0 ? place : (firstNode?.location ?? place)}`
+        : place;
       return {
         id: change.id,
         number: index + 1,
-        group: top ? `s:${top}` : change.category === "metadata" ? "properties" : "top",
-        groupLabel: top ?? (change.category === "metadata" ? "Document properties" : "Before the first heading"),
+        group: paged
+          ? `p:${paged.side}:${paged.page}`
+          : top
+            ? `s:${top}`
+            : change.category === "metadata"
+              ? "properties"
+              : "top",
+        groupLabel:
+          pageLabel ?? top ?? (change.category === "metadata" ? "Document properties" : "Before the first heading"),
         title,
-        place,
+        place: pagePlace,
         placeNote: docxPlaceNote(change),
         category: labels.get(change.group) ?? "Other",
         kind: editKindOf(change),
         before,
         after,
         context: before || after ? null : shorten(excerpt, 80),
-        description: `Change ${index + 1}: ${title}, ${place}${said ? `, ${said}` : ""}.`,
+        description: `Change ${index + 1}: ${title}, ${pagePlace}${said ? `, ${said}` : ""}.`,
         searchText: [
           title,
-          place,
+          pagePlace,
           labels.get(change.group),
           change.label,
           change.oldValue,
@@ -322,13 +415,17 @@ export function docxWorkspaceChanges(result: DocxComparison): WorkspaceChange[] 
         ]
           .filter(Boolean)
           .join(" "),
-        tags: { group: [change.group] },
+        tags: { group: [change.group], ...(paged ? { page: [String(paged.page)] } : {}) },
       };
     });
 }
 
 export function docxFilters(result: DocxComparison, changes: WorkspaceChange[]): FilterGroup[] {
-  return [
+  const pages = [...new Set(changes.flatMap((change) => change.tags?.page ?? []))]
+    .map(Number)
+    .sort((a, b) => a - b)
+    .map((page) => ({ id: String(page), label: `Page ${page}` }));
+  const groups = [
     kindFilter(changes),
     filterGroup(
       "group",
@@ -338,4 +435,6 @@ export function docxFilters(result: DocxComparison, changes: WorkspaceChange[]):
       { inBar: false },
     ),
   ];
+  if (pages.length > 0) groups.push(filterGroup("page", "Page", changes, pages, { inBar: false }));
+  return groups;
 }

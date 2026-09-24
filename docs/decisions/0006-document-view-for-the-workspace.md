@@ -36,6 +36,7 @@
   dependency, a second reading of an untrusted file, and text that would not
   match the engine's evidence.
 - *Estimating Word page numbers*: Word files have no fixed pages; any number
-  would be invented.
+  would be invented. (Still rejected. Decision 0007 shows the pages Word itself
+  recorded in the file, and nothing when it did not.)
 - *Sending the text to AI for context*: AI analysis stays bounded by the
   evidence contract (decision 0005).

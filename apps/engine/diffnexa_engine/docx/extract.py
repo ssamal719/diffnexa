@@ -29,6 +29,10 @@ What is deliberately **not** read, and why:
   were checked.
 * **Hidden text** (runs formatted as hidden directly) and **field codes** (the
   instructions behind a field; the field's displayed result is read).
+
+While the body is read, the page breaks Word recorded are counted in reading
+order, so every node knows the page its words were on when Word last saved the
+file. Whether that record can be trusted is decided at the end; see layout.py.
 """
 
 from __future__ import annotations
@@ -39,6 +43,7 @@ from lxml import etree
 
 from diffnexa_engine.compare.normalize import normalize
 from diffnexa_engine.docx.errors import DocxError, DocxErrorCode
+from diffnexa_engine.docx.layout import BreakLog, NodePage, PageTracker, decide_layout, node_page
 from diffnexa_engine.docx.model import (
     DocxDocument,
     DocxExtractionInfo,
@@ -233,13 +238,23 @@ class _Numbering:
 
 
 class _Text:
-    """Collects a block's visible text, and the links and objects inside it."""
+    """Collects a block's visible text, and the links and objects inside it.
 
-    def __init__(self, relationships) -> None:
+    With a page tracker, it also notes each page break it meets as the index
+    of the word that begins the new page.
+    """
+
+    def __init__(self, relationships, tracker: PageTracker | None = None) -> None:
         self.relationships = relationships
+        self.tracker = tracker
         self.parts: list[str] = []
-        self.links: list[tuple[str, str]] = []
+        #: (text, href, page the link starts on — or None without a tracker)
+        self.links: list[tuple[str, str, int | None]] = []
         self.objects = 0
+        self.log = BreakLog()
+
+    def _words_so_far(self) -> int:
+        return len(normalize("".join(self.parts)).split())
 
     def read(self, element: etree._Element) -> None:
         tag = element.tag
@@ -247,6 +262,8 @@ class _Text:
             return
         if tag in OBJECTS:
             self.objects += 1
+            if self.tracker is not None:
+                self.tracker.content()
             return
         if tag == w("r"):
             rpr = element.find(w("rPr"))
@@ -254,7 +271,19 @@ class _Text:
             if vanish is not None and _is_on(vanish):
                 return
         if tag == w("t"):
-            self.parts.append(element.text or "")
+            text = element.text or ""
+            self.parts.append(text)
+            if self.tracker is not None and text.strip():
+                self.tracker.content()
+            return
+        if tag == w("lastRenderedPageBreak"):
+            if self.tracker is not None and self.tracker.rendered_break():
+                self.log.breaks.append(self._words_so_far())
+            return
+        if tag == w("br") and element.get(w("type")) == "page":
+            if self.tracker is not None and self.tracker.hard_break():
+                self.log.breaks.append(self._words_so_far())
+            self.parts.append(" ")
             return
         if tag in (w("tab"), w("ptab"), w("br"), w("cr")):
             self.parts.append(" ")
@@ -263,15 +292,21 @@ class _Text:
             self.parts.append("-")
             return
         if tag == w("hyperlink"):
-            inner = _Text(self.relationships)
+            inner = _Text(self.relationships, self.tracker)
+            offset = self._words_so_far()
+            page_before = self.tracker.page if self.tracker is not None else None
             for child in element:
                 inner.read(child)
             self.parts.extend(inner.parts)
             self.objects += inner.objects
+            self.log.breaks.extend(inner.log.shifted(offset))
             href = self._href(element)
             text = normalize("".join(inner.parts))
             if href and text:
-                self.links.append((text, href))
+                page = None
+                if page_before is not None:
+                    page = page_before + sum(1 for index in inner.log.breaks if index <= 0)
+                self.links.append((text, href, page))
             return
         for child in element:
             self.read(child)
@@ -301,7 +336,10 @@ class _Builder:
         self.styles = _Styles(package.styles)
         self.numbering = _Numbering(package.numbering)
         self.nodes: list[DocxNode] = []
-        self.links: list[tuple[str, str, str, tuple[str, ...]]] = []
+        self.links: list[tuple[str, str, str, tuple[str, ...], int | None]] = []
+        self.tracker = PageTracker()
+        self.pages: dict[str, NodePage] = {}
+        self.words_read = 0
         self.headings: list[tuple[int, str]] = []
         self.paragraphs = 0
         self.tables = 0
@@ -315,8 +353,14 @@ class _Builder:
             raise DocxError(DocxErrorCode.TOO_COMPLEX, f"more than {self.limits.max_nodes} pieces of content")
         return f"n{len(self.nodes)}"
 
-    def _add(self, text: str, path: str, role: NodeRole, **fields) -> None:
+    def _add(
+        self, text: str, path: str, role: NodeRole, placed: tuple[int, list[int]] | None = None, **fields
+    ) -> None:
         node_id = self._next_id()
+        words = len(text.split())
+        self.words_read += words
+        if placed is not None:
+            self.pages[node_id] = node_page(placed[0], placed[1], words)
         self.nodes.append(
             DocxNode(
                 id=node_id,
@@ -333,8 +377,8 @@ class _Builder:
 
     def _collect_links(self, reader: _Text, path: str) -> None:
         section = tuple(heading for _level, heading in self.headings)
-        for index, (text, href) in enumerate(reader.links, start=1):
-            self.links.append((text, href, f"{path}/hyperlink[{index}]", section))
+        for index, (text, href, page) in enumerate(reader.links, start=1):
+            self.links.append((text, href, f"{path}/hyperlink[{index}]", section, page))
 
     # -- blocks
 
@@ -359,15 +403,20 @@ class _Builder:
     def paragraph(self, p: etree._Element) -> None:
         self.paragraphs += 1
         path = f"body/p[{self.paragraphs}]"
-        reader = _Text(self.package.relationships)
+        ppr = p.find(w("pPr"))
+        before = ppr.find(w("pageBreakBefore")) if ppr is not None else None
+        if before is not None and _is_on(before) and self.tracker.content_seen:
+            self.tracker.hard_break()
+        start = self.tracker.page
+        reader = _Text(self.package.relationships, self.tracker)
         for child in p:
             reader.read(child)
         self.objects += reader.objects
         text = reader.text
         if not text:
             return
+        placed = (start, reader.log.breaks)
 
-        ppr = p.find(w("pPr"))
         style_id = _val(ppr, "pStyle") or self.styles.default
         direct_outline = _val(ppr, "outlineLvl")
         if direct_outline is not None and direct_outline.isdigit():
@@ -378,7 +427,7 @@ class _Builder:
         if level is not None:
             capped = min(level, 6)
             self.headings = [(lvl, txt) for lvl, txt in self.headings if lvl < capped]
-            self._add(text, path, NodeRole.HEADING, level=capped)
+            self._add(text, path, NodeRole.HEADING, placed, level=capped)
             self.headings.append((capped, text))
             self._collect_links(reader, path)
             return
@@ -394,13 +443,14 @@ class _Builder:
                     text,
                     path,
                     NodeRole.LIST_ITEM,
+                    placed,
                     list_kind=kind,
                     list_level=min(ilvl + 1, 9),
                 )
                 self._collect_links(reader, path)
                 return
 
-        self._add(text, path, NodeRole.PARAGRAPH)
+        self._add(text, path, NodeRole.PARAGRAPH, placed)
         self._collect_links(reader, path)
 
     def _rows(self, table: etree._Element) -> list[etree._Element]:
@@ -422,13 +472,22 @@ class _Builder:
         return cells
 
     def _cell_text(self, cell: etree._Element, reader: _Text) -> None:
-        """All the text in a cell, including any table nested inside it."""
+        """All the text in a cell, including any table nested inside it.
+
+        Page breaks met inside the cell are logged against the cell's words as a
+        whole, so they point at the right word of the joined text.
+        """
         pieces: list[str] = []
+
+        def words_so_far() -> int:
+            return sum(len(piece.split()) for piece in pieces)
+
         for block in self.blocks(cell):
             if block.tag == w("p"):
-                inner = _Text(self.package.relationships)
+                inner = _Text(self.package.relationships, self.tracker)
                 for child in block:
                     inner.read(child)
+                reader.log.breaks.extend(inner.log.shifted(words_so_far()))
                 reader.links.extend(inner.links)
                 reader.objects += inner.objects
                 if inner.text:
@@ -436,8 +495,9 @@ class _Builder:
             else:
                 for row in self._rows(block):
                     for nested in self._cells(row):
-                        nested_reader = _Text(self.package.relationships)
+                        nested_reader = _Text(self.package.relationships, self.tracker)
                         self._cell_text(nested, nested_reader)
+                        reader.log.breaks.extend(nested_reader.log.shifted(words_so_far()))
                         reader.links.extend(nested_reader.links)
                         reader.objects += nested_reader.objects
                         if nested_reader.parts:
@@ -449,26 +509,35 @@ class _Builder:
         table_index = self.tables - 1
         rows = self._rows(table)
 
-        grid: list[list[tuple[int, str, _Text]]] = []
+        grid: list[list[tuple[int, str, _Text, int]]] = []
         for row in rows:
-            cells: list[tuple[int, str, _Text]] = []
+            cells: list[tuple[int, str, _Text, int]] = []
             column = 0
+            # A row that splits across pages carries Word's page marker in each
+            # of its cells. The new page is one page, so every cell starts from
+            # the row's page and the row ends on the furthest page any cell reached.
+            row_state = self.tracker.snapshot()
+            ends = [row_state]
             for cell in self._cells(row):
+                self.tracker.restore(row_state)
                 tcpr = cell.find(w("tcPr"))
                 span_value = _val(tcpr, "gridSpan")
                 span = int(span_value) if span_value and span_value.isdigit() and int(span_value) > 0 else 1
-                reader = _Text(self.package.relationships)
+                start = self.tracker.page
+                reader = _Text(self.package.relationships, self.tracker)
                 self._cell_text(cell, reader)
-                cells.append((column, reader.text, reader))
+                cells.append((column, reader.text, reader, start))
+                ends.append(self.tracker.snapshot())
                 column += span
+            self.tracker.restore(max(ends, key=lambda state: state[0]))
             grid.append(cells)
 
         has_header = len(rows) >= 2
-        header = {column: text for column, text, _reader in grid[0]} if grid and has_header else {}
+        header = {column: text for column, text, _reader, _start in grid[0]} if grid and has_header else {}
 
         for row_number, cells in enumerate(grid, start=1):
-            row_key = next((text for _column, text, _reader in cells if text), None)
-            for column, text, reader in cells:
+            row_key = next((text for _column, text, _reader, _start in cells if text), None)
+            for column, text, reader, start in cells:
                 self.objects += reader.objects
                 path = f"body/tbl[{self.tables}]/tr[{row_number}]/tc[{column + 1}]"
                 if text:
@@ -477,6 +546,7 @@ class _Builder:
                         text,
                         path,
                         NodeRole.TABLE_CELL,
+                        (start, reader.log.breaks),
                         table=TableRef(
                             table_index=table_index,
                             row_index=row_number - 1,
@@ -492,8 +562,10 @@ class _Builder:
 
     def link_nodes(self) -> list[DocxNode]:
         nodes: list[DocxNode] = []
-        for text, href, path, section in self.links:
+        for text, href, path, section, page in self.links:
             node_id = f"n{len(self.nodes) + len(nodes)}"
+            if page is not None:
+                self.pages[node_id] = NodePage(page=page)
             nodes.append(
                 DocxNode(
                     id=node_id,
@@ -571,6 +643,7 @@ def extract_docx(data: bytes, limits: DocxLimits | None = None) -> DocxDocument:
     return DocxDocument(
         properties=properties,
         nodes=nodes,
+        layout=decide_layout(package.app, builder.tracker, builder.pages, builder.words_read),
         extraction=DocxExtractionInfo(
             embedded_objects=builder.objects,
             warnings=_warnings(builder, package.related_types),

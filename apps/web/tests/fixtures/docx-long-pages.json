@@ -1,0 +1,788 @@
+{
+ "note": "Engine output for apps/engine/tests/fixtures/docx_pages (135 pages each), with the view trimmed to the paragraphs changes cite. \"oracle\" holds the pages LibreOffice rendered each change on (expected.json), not pages DiffNexa computed.",
+ "oracle": [
+  {
+   "what": "a word replaced",
+   "oracleId": "text-page-10",
+   "change": "c0",
+   "oldPage": 10,
+   "newPage": 10
+  },
+  {
+   "what": "a quantity changed",
+   "oracleId": "number-page-25",
+   "change": "c1",
+   "oldPage": 25,
+   "newPage": 25
+  },
+  {
+   "what": "a paragraph added",
+   "oracleId": "added-page-50",
+   "change": "c2",
+   "oldPage": null,
+   "newPage": 51
+  },
+  {
+   "what": "a paragraph removed",
+   "oracleId": "removed-page-75",
+   "change": "c4",
+   "oldPage": 75,
+   "newPage": null
+  },
+  {
+   "what": "a word after a page break inside a paragraph",
+   "oracleId": "second-half-of-a-split-paragraph",
+   "change": "c3",
+   "oldPage": 61,
+   "newPage": 61
+  },
+  {
+   "what": "one of two changes on one page",
+   "oracleId": "same-page-first",
+   "change": "c6",
+   "oldPage": 101,
+   "newPage": 101
+  },
+  {
+   "what": "the other change on that page",
+   "oracleId": "same-page-second",
+   "change": "c7",
+   "oldPage": 101,
+   "newPage": 101
+  },
+  {
+   "what": "a table cell changed",
+   "oracleId": "table-cell",
+   "change": "c5",
+   "oldPage": 82,
+   "newPage": 82
+  }
+ ],
+ "result": {
+  "engineVersion": "0.1.0",
+  "processingMs": 0,
+  "options": {
+   "ignoreCase": true,
+   "ignorePunctuation": false
+  },
+  "layout": {
+   "previous": {
+    "status": "recorded",
+    "reason": null,
+    "pages": 135
+   },
+   "revised": {
+    "status": "recorded",
+    "reason": null,
+    "pages": 135
+   }
+  },
+  "documents": {
+   "previous": {
+    "sha256": "fac30534fc3ba3e4a75337d259366b7f0ad1fbb92f87fabd4bd93420fbe6a39d",
+    "nodeCount": 435
+   },
+   "revised": {
+    "sha256": "7791ed8caee673571bda5774e9673ecb0995d2eba7d039e9aeca1d6853dd57cf",
+    "nodeCount": 435
+   }
+  },
+  "counts": {
+   "total": 8,
+   "meaningful": 8,
+   "noise": 0
+  },
+  "changes": [
+   {
+    "id": "c0",
+    "seq": 0,
+    "type": "TEXT_MODIFIED",
+    "kind": "modified",
+    "category": "text",
+    "subtype": null,
+    "label": "h0001w001 h0001w002 h0001w003",
+    "oldValue": "p0023w006",
+    "newValue": "amended0010x001",
+    "delta": null,
+    "confidence": 0.994,
+    "isNoise": false,
+    "noiseReason": null,
+    "sections": [
+     "h0001w001 h0001w002 h0001w003"
+    ],
+    "group": "text",
+    "withinBlock": false,
+    "evidence": [
+     {
+      "side": "old",
+      "scope": "node",
+      "nodeId": "n24",
+      "path": "body/p[25]",
+      "sectionPath": [
+       "h0001w001 h0001w002 h0001w003"
+      ],
+      "field": null,
+      "excerpt": "p0023w006",
+      "location": "Paragraph 25",
+      "page": 10
+     },
+     {
+      "side": "new",
+      "scope": "node",
+      "nodeId": "n24",
+      "path": "body/p[25]",
+      "sectionPath": [
+       "h0001w001 h0001w002 h0001w003"
+      ],
+      "field": null,
+      "excerpt": "amended0010x001",
+      "location": "Paragraph 25",
+      "page": 10
+     }
+    ]
+   },
+   {
+    "id": "c1",
+    "seq": 1,
+    "type": "NUMBER_CHANGED",
+    "kind": "modified",
+    "category": "number",
+    "subtype": null,
+    "label": "h0051w001 h0051w002 h0051w003",
+    "oldValue": "160",
+    "newValue": "187",
+    "delta": "+27 (+16.88%)",
+    "confidence": 0.999,
+    "isNoise": false,
+    "noiseReason": null,
+    "sections": [
+     "h0051w001 h0051w002 h0051w003"
+    ],
+    "group": "numbers",
+    "withinBlock": false,
+    "evidence": [
+     {
+      "side": "old",
+      "scope": "node",
+      "nodeId": "n74",
+      "path": "body/p[66]",
+      "sectionPath": [
+       "h0051w001 h0051w002 h0051w003"
+      ],
+      "field": null,
+      "excerpt": "160",
+      "location": "Paragraph 66",
+      "page": 25
+     },
+     {
+      "side": "new",
+      "scope": "node",
+      "nodeId": "n74",
+      "path": "body/p[66]",
+      "sectionPath": [
+       "h0051w001 h0051w002 h0051w003"
+      ],
+      "field": null,
+      "excerpt": "187",
+      "location": "Paragraph 66",
+      "page": 25
+     }
+    ]
+   },
+   {
+    "id": "c2",
+    "seq": 2,
+    "type": "TEXT_ADDED",
+    "kind": "added",
+    "category": "text",
+    "subtype": null,
+    "label": "h0101w001 h0101w002 h0101w003",
+    "oldValue": null,
+    "newValue": "added0050w001 added0050w002 added0050w003 added0050w004 added0050w005 added0050w006 added0050w007 added0050w008 added0050w009 added0050w010 added0050w011 added0050w012 added0050w013 added0050w014 added0050w015 added0050w016 added0050w017",
+    "delta": null,
+    "confidence": 1.0,
+    "isNoise": false,
+    "noiseReason": null,
+    "sections": [
+     "h0101w001 h0101w002 h0101w003"
+    ],
+    "group": "text",
+    "withinBlock": false,
+    "evidence": [
+     {
+      "side": "new",
+      "scope": "node",
+      "nodeId": "n160",
+      "path": "body/p[135]",
+      "sectionPath": [
+       "h0101w001 h0101w002 h0101w003"
+      ],
+      "field": null,
+      "excerpt": "added0050w001 added0050w002 added0050w003 added0050w004 added0050w005 added0050w006 added0050w007 added0050w008 added0050w009 added0050w010 added0050w011 added0050w012 added0050w013 added0050w014 added0050w015 added0050w016 added0050w017",
+      "location": "Paragraph 135",
+      "page": 51
+     }
+    ]
+   },
+   {
+    "id": "c3",
+    "seq": 3,
+    "type": "TEXT_MODIFIED",
+    "kind": "modified",
+    "category": "text",
+    "subtype": null,
+    "label": "h0126w001 h0126w002 h0126w003",
+    "oldValue": "p0147w033",
+    "newValue": "amended0060x002",
+    "delta": null,
+    "confidence": 0.994,
+    "isNoise": false,
+    "noiseReason": null,
+    "sections": [
+     "h0126w001 h0126w002 h0126w003"
+    ],
+    "group": "text",
+    "withinBlock": false,
+    "evidence": [
+     {
+      "side": "old",
+      "scope": "node",
+      "nodeId": "n187",
+      "path": "body/p[162]",
+      "sectionPath": [
+       "h0126w001 h0126w002 h0126w003"
+      ],
+      "field": null,
+      "excerpt": "p0147w033",
+      "location": "Paragraph 162",
+      "page": 61
+     },
+     {
+      "side": "new",
+      "scope": "node",
+      "nodeId": "n188",
+      "path": "body/p[163]",
+      "sectionPath": [
+       "h0126w001 h0126w002 h0126w003"
+      ],
+      "field": null,
+      "excerpt": "amended0060x002",
+      "location": "Paragraph 163",
+      "page": 61
+     }
+    ]
+   },
+   {
+    "id": "c4",
+    "seq": 4,
+    "type": "TEXT_REMOVED",
+    "kind": "removed",
+    "category": "text",
+    "subtype": null,
+    "label": "h0176w001 h0176w002 h0176w003",
+    "oldValue": "p0182w001 p0182w002 p0182w003 p0182w004 p0182w005 p0182w006 p0182w007 p0182w008 p0182w009 p0182w010 p0182w011 p0182w012 p0182w013 p0182w014 p0182w015 p0182w016 p0182w017 p0182w018 p0182w019 p0182w020 p0182w021 p0182w022 p0182w023 p0182w024",
+    "newValue": null,
+    "delta": null,
+    "confidence": 1.0,
+    "isNoise": false,
+    "noiseReason": null,
+    "sections": [
+     "h0176w001 h0176w002 h0176w003"
+    ],
+    "group": "text",
+    "withinBlock": false,
+    "evidence": [
+     {
+      "side": "old",
+      "scope": "node",
+      "nodeId": "n235",
+      "path": "body/p[201]",
+      "sectionPath": [
+       "h0176w001 h0176w002 h0176w003"
+      ],
+      "field": null,
+      "excerpt": "p0182w001 p0182w002 p0182w003 p0182w004 p0182w005 p0182w006 p0182w007 p0182w008 p0182w009 p0182w010 p0182w011 p0182w012 p0182w013 p0182w014 p0182w015 p0182w016 p0182w017 p0182w018 p0182w019 p0182w020 p0182w021 p0182w022 p0182w023 p0182w024",
+      "location": "Paragraph 201",
+      "page": 75
+     }
+    ]
+   },
+   {
+    "id": "c5",
+    "seq": 5,
+    "type": "TABLE_CHANGED",
+    "kind": "modified",
+    "category": "table",
+    "subtype": "table_cell",
+    "label": "t0200w021 · t0200w012",
+    "oldValue": "t0200w022",
+    "newValue": "amended0070x004",
+    "delta": null,
+    "confidence": 1.0,
+    "isNoise": false,
+    "noiseReason": null,
+    "sections": [
+     "h0176w001 h0176w002 h0176w003"
+    ],
+    "group": "tables",
+    "withinBlock": false,
+    "evidence": [
+     {
+      "side": "old",
+      "scope": "node",
+      "nodeId": "n259",
+      "path": "body/tbl[5]/tr[2]/tc[2]",
+      "sectionPath": [
+       "h0176w001 h0176w002 h0176w003"
+      ],
+      "field": null,
+      "excerpt": "t0200w022",
+      "location": "Table 5, row 2, column 2",
+      "page": 82
+     },
+     {
+      "side": "new",
+      "scope": "node",
+      "nodeId": "n259",
+      "path": "body/tbl[5]/tr[2]/tc[2]",
+      "sectionPath": [
+       "h0176w001 h0176w002 h0176w003"
+      ],
+      "field": null,
+      "excerpt": "amended0070x004",
+      "location": "Table 5, row 2, column 2",
+      "page": 82
+     }
+    ]
+   },
+   {
+    "id": "c6",
+    "seq": 6,
+    "type": "TEXT_MODIFIED",
+    "kind": "modified",
+    "category": "text",
+    "subtype": null,
+    "label": "h0226w001 h0226w002 h0226w003",
+    "oldValue": "p0245w004",
+    "newValue": "amended0100x003",
+    "delta": null,
+    "confidence": 0.992,
+    "isNoise": false,
+    "noiseReason": null,
+    "sections": [
+     "h0226w001 h0226w002 h0226w003"
+    ],
+    "group": "text",
+    "withinBlock": false,
+    "evidence": [
+     {
+      "side": "old",
+      "scope": "node",
+      "nodeId": "n322",
+      "path": "body/p[271]",
+      "sectionPath": [
+       "h0226w001 h0226w002 h0226w003"
+      ],
+      "field": null,
+      "excerpt": "p0245w004",
+      "location": "Paragraph 271",
+      "page": 101
+     },
+     {
+      "side": "new",
+      "scope": "node",
+      "nodeId": "n322",
+      "path": "body/p[271]",
+      "sectionPath": [
+       "h0226w001 h0226w002 h0226w003"
+      ],
+      "field": null,
+      "excerpt": "amended0100x003",
+      "location": "Paragraph 271",
+      "page": 101
+     }
+    ]
+   },
+   {
+    "id": "c7",
+    "seq": 7,
+    "type": "TEXT_MODIFIED",
+    "kind": "modified",
+    "category": "text",
+    "subtype": null,
+    "label": "h0226w001 h0226w002 h0226w003",
+    "oldValue": "p0246w008",
+    "newValue": "amended0100x005",
+    "delta": null,
+    "confidence": 0.994,
+    "isNoise": false,
+    "noiseReason": null,
+    "sections": [
+     "h0226w001 h0226w002 h0226w003"
+    ],
+    "group": "text",
+    "withinBlock": false,
+    "evidence": [
+     {
+      "side": "old",
+      "scope": "node",
+      "nodeId": "n323",
+      "path": "body/p[272]",
+      "sectionPath": [
+       "h0226w001 h0226w002 h0226w003"
+      ],
+      "field": null,
+      "excerpt": "p0246w008",
+      "location": "Paragraph 272",
+      "page": 101
+     },
+     {
+      "side": "new",
+      "scope": "node",
+      "nodeId": "n323",
+      "path": "body/p[272]",
+      "sectionPath": [
+       "h0226w001 h0226w002 h0226w003"
+      ],
+      "field": null,
+      "excerpt": "amended0100x005",
+      "location": "Paragraph 272",
+      "page": 101
+     }
+    ]
+   }
+  ],
+  "groups": [
+   {
+    "id": "text",
+    "label": "Text changes",
+    "changeCount": 6,
+    "changeIds": [
+     "c0",
+     "c2",
+     "c3",
+     "c4",
+     "c6",
+     "c7"
+    ]
+   },
+   {
+    "id": "headings",
+    "label": "Headings",
+    "changeCount": 0,
+    "changeIds": []
+   },
+   {
+    "id": "lists",
+    "label": "Lists",
+    "changeCount": 0,
+    "changeIds": []
+   },
+   {
+    "id": "tables",
+    "label": "Tables",
+    "changeCount": 1,
+    "changeIds": [
+     "c5"
+    ]
+   },
+   {
+    "id": "numbers",
+    "label": "Numbers",
+    "changeCount": 1,
+    "changeIds": [
+     "c1"
+    ]
+   },
+   {
+    "id": "dates",
+    "label": "Dates",
+    "changeCount": 0,
+    "changeIds": []
+   },
+   {
+    "id": "structure",
+    "label": "Structure",
+    "changeCount": 0,
+    "changeIds": []
+   },
+   {
+    "id": "other",
+    "label": "Other",
+    "changeCount": 0,
+    "changeIds": []
+   }
+  ],
+  "view": {
+   "original": {
+    "nodes": [
+     {
+      "id": "n24",
+      "role": "paragraph",
+      "text": "p0023w001 p0023w002 p0023w003 p0023w004 p0023w005 p0023w006 p0023w007 p0023w008 p0023w009 p0023w010 p0023w011 p0023w012 p0023w013 p0023w014 p0023w015 p0023w016 p0023w017 p0023w018 p0023w019 p0023w020 p0023w021 p0023w022 p0023w023 p0023w024 p0023w025 p0023w026 p0023w027 p0023w028 p0023w029 p0023w030 p0023w031 p0023w032 p0023w033 p0023w034 p0023w035 p0023w036 p0023w037 p0023w038 p0023w039 p0023w040 p0023w041 p0023w042 p0023w043 p0023w044 p0023w045 p0023w046 p0023w047 p0023w048 p0023w049 p0023w050 p0023w051 p0023w052 p0023w053 p0023w054 p0023w055 p0023w056 p0023w057 p0023w058 p0023w059 p0023w060 p0023w061 p0023w062 p0023w063 p0023w064 p0023w065 p0023w066 p0023w067 p0023w068 p0023w069 p0023w070 p0023w071 p0023w072 p0023w073 p0023w074 p0023w075 p0023w076 p0023w077 p0023w078 p0023w079 p0023w080 p0023w081 p0023w082 p0023w083 p0023w084 p0023w085 p0023w086 p0023w087 p0023w088 p0023w089 p0023w090 p0023w091 p0023w092 p0023w093 p0023w094 p0023w095 p0023w096 p0023w097 p0023w098 p0023w099 p0023w100 p0023w101 p0023w102 p0023w103 p0023w104 p0023w105 p0023w106 p0023w107 p0023w108 p0023w109 p0023w110 p0023w111 p0023w112 p0023w113 p0023w114 p0023w115 p0023w116 p0023w117 p0023w118 p0023w119 p0023w120 p0023w121 p0023w122 p0023w123 p0023w124 p0023w125 p0023w126 p0023w127 p0023w128 p0023w129 p0023w130 p0023w131 p0023w132 p0023w133 p0023w134 p0023w135 p0023w136 p0023w137 p0023w138 p0023w139 p0023w140 p0023w141",
+      "section": [
+       "h0001w001 h0001w002 h0001w003"
+      ],
+      "place": "Paragraph 25",
+      "page": 10
+     },
+     {
+      "id": "n74",
+      "role": "paragraph",
+      "text": "p0060w001 p0060w002 p0060w003 p0060w004 p0060w005 p0060w006 p0060w007 p0060w008 p0060w009 p0060w010 p0060w011 p0060w012 p0060w013 p0060w014 p0060w015 p0060w016 p0060w017 p0060w018 p0060w019 p0060w020 Quantity 160 units p0060w021 p0060w022 p0060w023 p0060w024 p0060w025 p0060w026 p0060w027 p0060w028 p0060w029 p0060w030 p0060w031 p0060w032 p0060w033 p0060w034 p0060w035 p0060w036 p0060w037 p0060w038 p0060w039 p0060w040 p0060w041 p0060w042 p0060w043 p0060w044 p0060w045 p0060w046 p0060w047 p0060w048 p0060w049 p0060w050 p0060w051 p0060w052 p0060w053 p0060w054 p0060w055 p0060w056 p0060w057 p0060w058 p0060w059 p0060w060 p0060w061 p0060w062 p0060w063 p0060w064 p0060w065 p0060w066 p0060w067 p0060w068 p0060w069 p0060w070 p0060w071 p0060w072 p0060w073 p0060w074 p0060w075 p0060w076 p0060w077 p0060w078 p0060w079 p0060w080 p0060w081 p0060w082 p0060w083 p0060w084 p0060w085 p0060w086 p0060w087 p0060w088 p0060w089 p0060w090 p0060w091 p0060w092 p0060w093 p0060w094 p0060w095 p0060w096 p0060w097 p0060w098 p0060w099 p0060w100 p0060w101 p0060w102 p0060w103 p0060w104 p0060w105 p0060w106 p0060w107 p0060w108 p0060w109 p0060w110 p0060w111 p0060w112 p0060w113 p0060w114 p0060w115 p0060w116 p0060w117 p0060w118 p0060w119 p0060w120 p0060w121 p0060w122 p0060w123 p0060w124 p0060w125 p0060w126 p0060w127 p0060w128 p0060w129 p0060w130 p0060w131 p0060w132 p0060w133 p0060w134 p0060w135 p0060w136 p0060w137 p0060w138 p0060w139 p0060w140 p0060w141 p0060w142 p0060w143 p0060w144 p0060w145 p0060w146 p0060w147 p0060w148 p0060w149 p0060w150",
+      "section": [
+       "h0051w001 h0051w002 h0051w003"
+      ],
+      "place": "Paragraph 66",
+      "page": 25
+     },
+     {
+      "id": "n187",
+      "role": "paragraph",
+      "text": "p0147w001 p0147w002 p0147w003 p0147w004 p0147w005 p0147w006 p0147w007 p0147w008 p0147w009 p0147w010 p0147w011 p0147w012 p0147w013 p0147w014 p0147w015 p0147w016 p0147w017 p0147w018 p0147w019 p0147w020 Quantity 247 units p0147w021 p0147w022 p0147w023 p0147w024 p0147w025 p0147w026 p0147w027 p0147w028 p0147w029 p0147w030 p0147w031 p0147w032 p0147w033 p0147w034 p0147w035 p0147w036 p0147w037 p0147w038 p0147w039 p0147w040 p0147w041 p0147w042 p0147w043 p0147w044 p0147w045 p0147w046 p0147w047 p0147w048 p0147w049 p0147w050 p0147w051 p0147w052 p0147w053 p0147w054 p0147w055 p0147w056 p0147w057 p0147w058 p0147w059 p0147w060 p0147w061 p0147w062 p0147w063 p0147w064 p0147w065 p0147w066 p0147w067 p0147w068 p0147w069 p0147w070 p0147w071 p0147w072 p0147w073 p0147w074 p0147w075 p0147w076 p0147w077 p0147w078 p0147w079 p0147w080 p0147w081 p0147w082 p0147w083 p0147w084 p0147w085 p0147w086 p0147w087 p0147w088 p0147w089 p0147w090 p0147w091 p0147w092 p0147w093 p0147w094 p0147w095 p0147w096 p0147w097 p0147w098 p0147w099 p0147w100 p0147w101 p0147w102 p0147w103 p0147w104 p0147w105 p0147w106 p0147w107 p0147w108 p0147w109 p0147w110 p0147w111 p0147w112 p0147w113 p0147w114 p0147w115 p0147w116 p0147w117 p0147w118 p0147w119 p0147w120 p0147w121 p0147w122 p0147w123 p0147w124 p0147w125 p0147w126 p0147w127 p0147w128 p0147w129 p0147w130 p0147w131 p0147w132 p0147w133 p0147w134 p0147w135 p0147w136 p0147w137 p0147w138 p0147w139 p0147w140 p0147w141 p0147w142 p0147w143 p0147w144 p0147w145 p0147w146 p0147w147 p0147w148 p0147w149 p0147w150 p0147w151 p0147w152 p0147w153 p0147w154 p0147w155 p0147w156 p0147w157 p0147w158 p0147w159 p0147w160 p0147w161 p0147w162 p0147w163 p0147w164 p0147w165 p0147w166 p0147w167 p0147w168 p0147w169",
+      "section": [
+       "h0126w001 h0126w002 h0126w003"
+      ],
+      "place": "Paragraph 162",
+      "page": 60,
+      "pageBreaks": [
+       319
+      ]
+     },
+     {
+      "id": "n235",
+      "role": "paragraph",
+      "text": "p0182w001 p0182w002 p0182w003 p0182w004 p0182w005 p0182w006 p0182w007 p0182w008 p0182w009 p0182w010 p0182w011 p0182w012 p0182w013 p0182w014 p0182w015 p0182w016 p0182w017 p0182w018 p0182w019 p0182w020 p0182w021 p0182w022 p0182w023 p0182w024 p0182w025 p0182w026 p0182w027 p0182w028 p0182w029 p0182w030 p0182w031 p0182w032 p0182w033 p0182w034 p0182w035 p0182w036 p0182w037 p0182w038 p0182w039 p0182w040 p0182w041 p0182w042 p0182w043 p0182w044 p0182w045 p0182w046 p0182w047 p0182w048 p0182w049 p0182w050 p0182w051 p0182w052 p0182w053 p0182w054 p0182w055 p0182w056 p0182w057 p0182w058 p0182w059 p0182w060 p0182w061 p0182w062 p0182w063 p0182w064 p0182w065 p0182w066 p0182w067 p0182w068 p0182w069 p0182w070 p0182w071 p0182w072 p0182w073 p0182w074 p0182w075 p0182w076 p0182w077 p0182w078 p0182w079 p0182w080 p0182w081 p0182w082 p0182w083 p0182w084 p0182w085 p0182w086 p0182w087 p0182w088 p0182w089 p0182w090 p0182w091 p0182w092 p0182w093 p0182w094 p0182w095 p0182w096 p0182w097 p0182w098 p0182w099 p0182w100 p0182w101 p0182w102 p0182w103 p0182w104",
+      "section": [
+       "h0176w001 h0176w002 h0176w003"
+      ],
+      "place": "Paragraph 201",
+      "page": 75
+     },
+     {
+      "id": "n259",
+      "role": "table_cell",
+      "text": "t0200w022",
+      "section": [
+       "h0176w001 h0176w002 h0176w003"
+      ],
+      "table": [
+       4,
+       1,
+       1
+      ],
+      "place": "Table 5, row 2, column 2",
+      "page": 82
+     },
+     {
+      "id": "n322",
+      "role": "paragraph",
+      "text": "p0245w001 p0245w002 p0245w003 p0245w004 p0245w005 p0245w006 p0245w007 p0245w008 p0245w009 p0245w010 p0245w011 p0245w012 p0245w013 p0245w014 p0245w015 p0245w016 p0245w017 p0245w018 p0245w019 p0245w020 p0245w021 p0245w022 p0245w023 p0245w024 p0245w025 p0245w026 p0245w027 p0245w028 p0245w029 p0245w030 p0245w031 p0245w032 p0245w033 p0245w034 p0245w035 p0245w036 p0245w037 p0245w038 p0245w039 p0245w040 p0245w041 p0245w042 p0245w043 p0245w044 p0245w045 p0245w046 p0245w047 p0245w048 p0245w049 p0245w050 p0245w051 p0245w052 p0245w053 p0245w054 p0245w055 p0245w056 p0245w057 p0245w058 p0245w059 p0245w060 p0245w061 p0245w062 p0245w063 p0245w064 p0245w065 p0245w066 p0245w067 p0245w068 p0245w069 p0245w070 p0245w071 p0245w072 p0245w073 p0245w074 p0245w075 p0245w076 p0245w077 p0245w078 p0245w079 p0245w080 p0245w081 p0245w082 p0245w083 p0245w084 p0245w085 p0245w086 p0245w087 p0245w088 p0245w089 p0245w090 p0245w091 p0245w092 p0245w093 p0245w094 p0245w095 p0245w096 p0245w097 p0245w098 p0245w099 p0245w100 p0245w101 p0245w102 p0245w103 p0245w104 p0245w105 p0245w106 p0245w107 p0245w108 p0245w109 p0245w110 p0245w111 p0245w112 p0245w113 p0245w114 p0245w115",
+      "section": [
+       "h0226w001 h0226w002 h0226w003"
+      ],
+      "place": "Paragraph 271",
+      "page": 101
+     },
+     {
+      "id": "n323",
+      "role": "paragraph",
+      "text": "p0246w001 p0246w002 p0246w003 p0246w004 p0246w005 p0246w006 p0246w007 p0246w008 p0246w009 p0246w010 p0246w011 p0246w012 p0246w013 p0246w014 p0246w015 p0246w016 p0246w017 p0246w018 p0246w019 p0246w020 Quantity 346 units p0246w021 p0246w022 p0246w023 p0246w024 p0246w025 p0246w026 p0246w027 p0246w028 p0246w029 p0246w030 p0246w031 p0246w032 p0246w033 p0246w034 p0246w035 p0246w036 p0246w037 p0246w038 p0246w039 p0246w040 p0246w041 p0246w042 p0246w043 p0246w044 p0246w045 p0246w046 p0246w047 p0246w048 p0246w049 p0246w050 p0246w051 p0246w052 p0246w053 p0246w054 p0246w055 p0246w056 p0246w057 p0246w058 p0246w059 p0246w060 p0246w061 p0246w062 p0246w063 p0246w064 p0246w065 p0246w066 p0246w067 p0246w068 p0246w069 p0246w070 p0246w071 p0246w072 p0246w073 p0246w074 p0246w075 p0246w076 p0246w077 p0246w078 p0246w079 p0246w080 p0246w081 p0246w082 p0246w083 p0246w084 p0246w085 p0246w086 p0246w087 p0246w088 p0246w089 p0246w090 p0246w091 p0246w092 p0246w093 p0246w094 p0246w095 p0246w096 p0246w097 p0246w098 p0246w099 p0246w100 p0246w101 p0246w102 p0246w103 p0246w104 p0246w105 p0246w106 p0246w107 p0246w108 p0246w109 p0246w110 p0246w111 p0246w112 p0246w113 p0246w114 p0246w115 p0246w116 p0246w117 p0246w118 p0246w119 p0246w120 p0246w121 p0246w122 p0246w123 p0246w124 p0246w125 p0246w126 p0246w127 p0246w128 p0246w129 p0246w130 p0246w131 p0246w132 p0246w133 p0246w134 p0246w135 p0246w136 p0246w137 p0246w138 p0246w139 p0246w140 p0246w141 p0246w142 p0246w143 p0246w144 p0246w145 p0246w146 p0246w147 p0246w148 p0246w149 p0246w150 p0246w151 p0246w152",
+      "section": [
+       "h0226w001 h0226w002 h0226w003"
+      ],
+      "place": "Paragraph 272",
+      "page": 101
+     }
+    ],
+    "fields": {}
+   },
+   "revised": {
+    "nodes": [
+     {
+      "id": "n24",
+      "role": "paragraph",
+      "text": "p0023w001 p0023w002 p0023w003 p0023w004 p0023w005 amended0010x001 p0023w007 p0023w008 p0023w009 p0023w010 p0023w011 p0023w012 p0023w013 p0023w014 p0023w015 p0023w016 p0023w017 p0023w018 p0023w019 p0023w020 p0023w021 p0023w022 p0023w023 p0023w024 p0023w025 p0023w026 p0023w027 p0023w028 p0023w029 p0023w030 p0023w031 p0023w032 p0023w033 p0023w034 p0023w035 p0023w036 p0023w037 p0023w038 p0023w039 p0023w040 p0023w041 p0023w042 p0023w043 p0023w044 p0023w045 p0023w046 p0023w047 p0023w048 p0023w049 p0023w050 p0023w051 p0023w052 p0023w053 p0023w054 p0023w055 p0023w056 p0023w057 p0023w058 p0023w059 p0023w060 p0023w061 p0023w062 p0023w063 p0023w064 p0023w065 p0023w066 p0023w067 p0023w068 p0023w069 p0023w070 p0023w071 p0023w072 p0023w073 p0023w074 p0023w075 p0023w076 p0023w077 p0023w078 p0023w079 p0023w080 p0023w081 p0023w082 p0023w083 p0023w084 p0023w085 p0023w086 p0023w087 p0023w088 p0023w089 p0023w090 p0023w091 p0023w092 p0023w093 p0023w094 p0023w095 p0023w096 p0023w097 p0023w098 p0023w099 p0023w100 p0023w101 p0023w102 p0023w103 p0023w104 p0023w105 p0023w106 p0023w107 p0023w108 p0023w109 p0023w110 p0023w111 p0023w112 p0023w113 p0023w114 p0023w115 p0023w116 p0023w117 p0023w118 p0023w119 p0023w120 p0023w121 p0023w122 p0023w123 p0023w124 p0023w125 p0023w126 p0023w127 p0023w128 p0023w129 p0023w130 p0023w131 p0023w132 p0023w133 p0023w134 p0023w135 p0023w136 p0023w137 p0023w138 p0023w139 p0023w140 p0023w141",
+      "section": [
+       "h0001w001 h0001w002 h0001w003"
+      ],
+      "place": "Paragraph 25",
+      "page": 10
+     },
+     {
+      "id": "n74",
+      "role": "paragraph",
+      "text": "p0060w001 p0060w002 p0060w003 p0060w004 p0060w005 p0060w006 p0060w007 p0060w008 p0060w009 p0060w010 p0060w011 p0060w012 p0060w013 p0060w014 p0060w015 p0060w016 p0060w017 p0060w018 p0060w019 p0060w020 Quantity 187 units p0060w021 p0060w022 p0060w023 p0060w024 p0060w025 p0060w026 p0060w027 p0060w028 p0060w029 p0060w030 p0060w031 p0060w032 p0060w033 p0060w034 p0060w035 p0060w036 p0060w037 p0060w038 p0060w039 p0060w040 p0060w041 p0060w042 p0060w043 p0060w044 p0060w045 p0060w046 p0060w047 p0060w048 p0060w049 p0060w050 p0060w051 p0060w052 p0060w053 p0060w054 p0060w055 p0060w056 p0060w057 p0060w058 p0060w059 p0060w060 p0060w061 p0060w062 p0060w063 p0060w064 p0060w065 p0060w066 p0060w067 p0060w068 p0060w069 p0060w070 p0060w071 p0060w072 p0060w073 p0060w074 p0060w075 p0060w076 p0060w077 p0060w078 p0060w079 p0060w080 p0060w081 p0060w082 p0060w083 p0060w084 p0060w085 p0060w086 p0060w087 p0060w088 p0060w089 p0060w090 p0060w091 p0060w092 p0060w093 p0060w094 p0060w095 p0060w096 p0060w097 p0060w098 p0060w099 p0060w100 p0060w101 p0060w102 p0060w103 p0060w104 p0060w105 p0060w106 p0060w107 p0060w108 p0060w109 p0060w110 p0060w111 p0060w112 p0060w113 p0060w114 p0060w115 p0060w116 p0060w117 p0060w118 p0060w119 p0060w120 p0060w121 p0060w122 p0060w123 p0060w124 p0060w125 p0060w126 p0060w127 p0060w128 p0060w129 p0060w130 p0060w131 p0060w132 p0060w133 p0060w134 p0060w135 p0060w136 p0060w137 p0060w138 p0060w139 p0060w140 p0060w141 p0060w142 p0060w143 p0060w144 p0060w145 p0060w146 p0060w147 p0060w148 p0060w149 p0060w150",
+      "section": [
+       "h0051w001 h0051w002 h0051w003"
+      ],
+      "place": "Paragraph 66",
+      "page": 25
+     },
+     {
+      "id": "n160",
+      "role": "paragraph",
+      "text": "added0050w001 added0050w002 added0050w003 added0050w004 added0050w005 added0050w006 added0050w007 added0050w008 added0050w009 added0050w010 added0050w011 added0050w012 added0050w013 added0050w014 added0050w015 added0050w016 added0050w017 added0050w018 added0050w019 added0050w020 added0050w021 added0050w022 added0050w023 added0050w024 added0050w025 added0050w026 added0050w027 added0050w028 added0050w029 added0050w030 added0050w031 added0050w032 added0050w033 added0050w034 added0050w035 added0050w036 added0050w037 added0050w038 added0050w039 added0050w040",
+      "section": [
+       "h0101w001 h0101w002 h0101w003"
+      ],
+      "place": "Paragraph 135",
+      "page": 51
+     },
+     {
+      "id": "n188",
+      "role": "paragraph",
+      "text": "p0147w001 p0147w002 p0147w003 p0147w004 p0147w005 p0147w006 p0147w007 p0147w008 p0147w009 p0147w010 p0147w011 p0147w012 p0147w013 p0147w014 p0147w015 p0147w016 p0147w017 p0147w018 p0147w019 p0147w020 Quantity 247 units p0147w021 p0147w022 p0147w023 p0147w024 p0147w025 p0147w026 p0147w027 p0147w028 p0147w029 p0147w030 p0147w031 p0147w032 amended0060x002 p0147w034 p0147w035 p0147w036 p0147w037 p0147w038 p0147w039 p0147w040 p0147w041 p0147w042 p0147w043 p0147w044 p0147w045 p0147w046 p0147w047 p0147w048 p0147w049 p0147w050 p0147w051 p0147w052 p0147w053 p0147w054 p0147w055 p0147w056 p0147w057 p0147w058 p0147w059 p0147w060 p0147w061 p0147w062 p0147w063 p0147w064 p0147w065 p0147w066 p0147w067 p0147w068 p0147w069 p0147w070 p0147w071 p0147w072 p0147w073 p0147w074 p0147w075 p0147w076 p0147w077 p0147w078 p0147w079 p0147w080 p0147w081 p0147w082 p0147w083 p0147w084 p0147w085 p0147w086 p0147w087 p0147w088 p0147w089 p0147w090 p0147w091 p0147w092 p0147w093 p0147w094 p0147w095 p0147w096 p0147w097 p0147w098 p0147w099 p0147w100 p0147w101 p0147w102 p0147w103 p0147w104 p0147w105 p0147w106 p0147w107 p0147w108 p0147w109 p0147w110 p0147w111 p0147w112 p0147w113 p0147w114 p0147w115 p0147w116 p0147w117 p0147w118 p0147w119 p0147w120 p0147w121 p0147w122 p0147w123 p0147w124 p0147w125 p0147w126 p0147w127 p0147w128 p0147w129 p0147w130 p0147w131 p0147w132 p0147w133 p0147w134 p0147w135 p0147w136 p0147w137 p0147w138 p0147w139 p0147w140 p0147w141 p0147w142 p0147w143 p0147w144 p0147w145 p0147w146 p0147w147 p0147w148 p0147w149 p0147w150 p0147w151 p0147w152 p0147w153 p0147w154 p0147w155 p0147w156 p0147w157 p0147w158 p0147w159 p0147w160 p0147w161 p0147w162 p0147w163 p0147w164 p0147w165 p0147w166 p0147w167 p0147w168 p0147w169",
+      "section": [
+       "h0126w001 h0126w002 h0126w003"
+      ],
+      "place": "Paragraph 163",
+      "page": 61
+     },
+     {
+      "id": "n259",
+      "role": "table_cell",
+      "text": "amended0070x004",
+      "section": [
+       "h0176w001 h0176w002 h0176w003"
+      ],
+      "table": [
+       4,
+       1,
+       1
+      ],
+      "place": "Table 5, row 2, column 2",
+      "page": 82
+     },
+     {
+      "id": "n322",
+      "role": "paragraph",
+      "text": "p0245w001 p0245w002 p0245w003 amended0100x003 p0245w005 p0245w006 p0245w007 p0245w008 p0245w009 p0245w010 p0245w011 p0245w012 p0245w013 p0245w014 p0245w015 p0245w016 p0245w017 p0245w018 p0245w019 p0245w020 p0245w021 p0245w022 p0245w023 p0245w024 p0245w025 p0245w026 p0245w027 p0245w028 p0245w029 p0245w030 p0245w031 p0245w032 p0245w033 p0245w034 p0245w035 p0245w036 p0245w037 p0245w038 p0245w039 p0245w040 p0245w041 p0245w042 p0245w043 p0245w044 p0245w045 p0245w046 p0245w047 p0245w048 p0245w049 p0245w050 p0245w051 p0245w052 p0245w053 p0245w054 p0245w055 p0245w056 p0245w057 p0245w058 p0245w059 p0245w060 p0245w061 p0245w062 p0245w063 p0245w064 p0245w065 p0245w066 p0245w067 p0245w068 p0245w069 p0245w070 p0245w071 p0245w072 p0245w073 p0245w074 p0245w075 p0245w076 p0245w077 p0245w078 p0245w079 p0245w080 p0245w081 p0245w082 p0245w083 p0245w084 p0245w085 p0245w086 p0245w087 p0245w088 p0245w089 p0245w090 p0245w091 p0245w092 p0245w093 p0245w094 p0245w095 p0245w096 p0245w097 p0245w098 p0245w099 p0245w100 p0245w101 p0245w102 p0245w103 p0245w104 p0245w105 p0245w106 p0245w107 p0245w108 p0245w109 p0245w110 p0245w111 p0245w112 p0245w113 p0245w114 p0245w115",
+      "section": [
+       "h0226w001 h0226w002 h0226w003"
+      ],
+      "place": "Paragraph 271",
+      "page": 101
+     },
+     {
+      "id": "n323",
+      "role": "paragraph",
+      "text": "p0246w001 p0246w002 p0246w003 p0246w004 p0246w005 p0246w006 p0246w007 amended0100x005 p0246w009 p0246w010 p0246w011 p0246w012 p0246w013 p0246w014 p0246w015 p0246w016 p0246w017 p0246w018 p0246w019 p0246w020 Quantity 346 units p0246w021 p0246w022 p0246w023 p0246w024 p0246w025 p0246w026 p0246w027 p0246w028 p0246w029 p0246w030 p0246w031 p0246w032 p0246w033 p0246w034 p0246w035 p0246w036 p0246w037 p0246w038 p0246w039 p0246w040 p0246w041 p0246w042 p0246w043 p0246w044 p0246w045 p0246w046 p0246w047 p0246w048 p0246w049 p0246w050 p0246w051 p0246w052 p0246w053 p0246w054 p0246w055 p0246w056 p0246w057 p0246w058 p0246w059 p0246w060 p0246w061 p0246w062 p0246w063 p0246w064 p0246w065 p0246w066 p0246w067 p0246w068 p0246w069 p0246w070 p0246w071 p0246w072 p0246w073 p0246w074 p0246w075 p0246w076 p0246w077 p0246w078 p0246w079 p0246w080 p0246w081 p0246w082 p0246w083 p0246w084 p0246w085 p0246w086 p0246w087 p0246w088 p0246w089 p0246w090 p0246w091 p0246w092 p0246w093 p0246w094 p0246w095 p0246w096 p0246w097 p0246w098 p0246w099 p0246w100 p0246w101 p0246w102 p0246w103 p0246w104 p0246w105 p0246w106 p0246w107 p0246w108 p0246w109 p0246w110 p0246w111 p0246w112 p0246w113 p0246w114 p0246w115 p0246w116 p0246w117 p0246w118 p0246w119 p0246w120 p0246w121 p0246w122 p0246w123 p0246w124 p0246w125 p0246w126 p0246w127 p0246w128 p0246w129 p0246w130 p0246w131 p0246w132 p0246w133 p0246w134 p0246w135 p0246w136 p0246w137 p0246w138 p0246w139 p0246w140 p0246w141 p0246w142 p0246w143 p0246w144 p0246w145 p0246w146 p0246w147 p0246w148 p0246w149 p0246w150 p0246w151 p0246w152",
+      "section": [
+       "h0226w001 h0226w002 h0226w003"
+      ],
+      "place": "Paragraph 272",
+      "page": 101
+     }
+    ],
+    "fields": {}
+   },
+   "marks": [
+    {
+     "change": "c0",
+     "side": "original",
+     "node": "n24",
+     "start": 50,
+     "end": 59
+    },
+    {
+     "change": "c0",
+     "side": "revised",
+     "node": "n24",
+     "start": 50,
+     "end": 65
+    },
+    {
+     "change": "c1",
+     "side": "original",
+     "node": "n74",
+     "start": 209,
+     "end": 212
+    },
+    {
+     "change": "c1",
+     "side": "revised",
+     "node": "n74",
+     "start": 209,
+     "end": 212
+    },
+    {
+     "change": "c2",
+     "side": "revised",
+     "node": "n160",
+     "start": 0,
+     "end": 237
+    },
+    {
+     "change": "c3",
+     "side": "original",
+     "node": "n187",
+     "start": 339,
+     "end": 348
+    },
+    {
+     "change": "c3",
+     "side": "revised",
+     "node": "n188",
+     "start": 339,
+     "end": 354
+    },
+    {
+     "change": "c4",
+     "side": "original",
+     "node": "n235",
+     "start": 0,
+     "end": 239
+    },
+    {
+     "change": "c5",
+     "side": "original",
+     "node": "n259",
+     "start": 0,
+     "end": 9
+    },
+    {
+     "change": "c5",
+     "side": "revised",
+     "node": "n259",
+     "start": 0,
+     "end": 15
+    },
+    {
+     "change": "c6",
+     "side": "original",
+     "node": "n322",
+     "start": 30,
+     "end": 39
+    },
+    {
+     "change": "c6",
+     "side": "revised",
+     "node": "n322",
+     "start": 30,
+     "end": 45
+    },
+    {
+     "change": "c7",
+     "side": "original",
+     "node": "n323",
+     "start": 70,
+     "end": 79
+    },
+    {
+     "change": "c7",
+     "side": "revised",
+     "node": "n323",
+     "start": 70,
+     "end": 85
+    }
+   ]
+  },
+  "diagnostics": {
+   "notes": [],
+   "previousWarnings": [],
+   "revisedWarnings": [],
+   "droppedUntraceable": 0
+  }
+ }
+}

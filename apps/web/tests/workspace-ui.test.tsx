@@ -318,3 +318,15 @@ describe("PDF pages", () => {
     expect(screen.getAllByRole("article")).toHaveLength(PDF.counts.meaningful);
   });
 });
+
+describe("comparison controls", () => {
+  it.each(TOOLS)("appear in $name only where the tool gives them real behaviour", (tool) => {
+    render(<>{tool.render()}</>);
+    // Ignore options, Export and Reverse are passed in by the page that can rerun the comparison.
+    expect(screen.queryByRole("group", { name: "Comparison controls" })).toBeNull();
+    // Linked scrolling is offered by DOCX Compare's side-by-side document view alone.
+    const linked = screen.queryByRole("button", { name: /^Linked/ });
+    if (tool.name === "DOCX Compare") expect(linked?.getAttribute("aria-pressed")).toBe("true");
+    else expect(linked).toBeNull();
+  });
+});

@@ -216,8 +216,11 @@ def _detect_moves(old_blocks: list[BlockT], new_blocks: list[BlockT]) -> list[Bl
 
 def word_segments(old: ContentBlock, new: ContentBlock) -> list[Segment]:
     """The differing runs of words between two paired paragraphs."""
-    old_words = list(old.tokens)
-    new_words = list(new.tokens)
+    # A word whose matching key is empty — a lone dash when punctuation is
+    # being ignored — has nothing left to compare, so it takes no part. With
+    # the default options no word's key is ever empty.
+    old_words = [w for w in old.tokens if normalize_key(w.text)]
+    new_words = [w for w in new.tokens if normalize_key(w.text)]
     old_keys = [normalize_key(w.text) for w in old_words]
     new_keys = [normalize_key(w.text) for w in new_words]
 

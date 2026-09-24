@@ -490,17 +490,41 @@ def _mixed(s):
 
 
 pair("mixed-revision", NOTICE, _mixed)
+pair(
+    "capitalisation-only",
+    AGREEMENT,
+    lambda s: replace(
+        s,
+        "2. Fees and Payment",
+        "Invoices are payable within 30 days of the invoice date.",
+        "Invoices are payable within 30 days of the Invoice Date.",
+    ),
+)
+pair(
+    "punctuation-only",
+    AGREEMENT,
+    lambda s: replace(
+        s,
+        "3. Term and Termination",
+        "Either party may terminate this agreement with 60 days written notice.",
+        "Either party may terminate this agreement, with 60 days written notice.",
+    ),
+)
 
 
 def main() -> int:
+    # Named pairs only, when given; otherwise every pair is rebuilt.
+    wanted = set(sys.argv[1:]) or set(PAIRS)
     for name, (before, after, options) in PAIRS.items():
+        if name not in wanted:
+            continue
         folder = ROOT / name
         folder.mkdir(parents=True, exist_ok=True)
         save(folder / "before.docx", render(before))
         save(folder / "after.docx", render(after, **options))
         if not (folder / "expected.yaml").exists():
             print(f"{name}: write expected.yaml by hand")
-    print(f"Built {len(PAIRS)} pairs in {ROOT}")
+    print(f"Built {len(wanted & set(PAIRS))} pairs in {ROOT}")
     return 0
 
 

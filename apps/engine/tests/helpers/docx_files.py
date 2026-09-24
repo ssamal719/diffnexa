@@ -70,8 +70,12 @@ def package(
     document_rels: str = "",
     extra: dict[str, bytes | str] | None = None,
     members: list[tuple[str, bytes | str]] | None = None,
+    statistics: tuple[int, int] | None = None,
 ) -> bytes:
-    """A minimal but genuine .docx: content types, package rels, the document."""
+    """A minimal but genuine .docx: content types, package rels, the document.
+
+    `statistics` adds docProps/app.xml with (pages, words), as Word writes it.
+    """
     content_types = (
         '<?xml version="1.0" encoding="UTF-8"?>'
         '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
@@ -85,7 +89,13 @@ def package(
         '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
         '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/'
         'relationships/officeDocument" Target="word/document.xml"/>'
-        "</Relationships>"
+        + (
+            '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/'
+            'relationships/extended-properties" Target="docProps/app.xml"/>'
+            if statistics
+            else ""
+        )
+        + "</Relationships>"
     )
     doc_rels = (
         '<?xml version="1.0" encoding="UTF-8"?>'
@@ -98,6 +108,17 @@ def package(
         ("word/document.xml", document_xml),
         ("word/_rels/document.xml.rels", doc_rels),
     ]
+    if statistics:
+        pages, words = statistics
+        entries.append(
+            (
+                "docProps/app.xml",
+                '<?xml version="1.0" encoding="UTF-8"?>'
+                '<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties">'
+                f"<Application>Microsoft Office Word</Application><Pages>{pages}</Pages>"
+                f"<Words>{words}</Words></Properties>",
+            )
+        )
     entries += list((extra or {}).items())
     entries += members or []
     buffer = io.BytesIO()

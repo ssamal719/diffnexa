@@ -1,0 +1,10 @@
+# Written by hand: what really changed between these two Word documents,
+# which group each change belongs to, and where its evidence must point.
+pair: capitalisation-only
+description: >-
+  "the invoice date" becomes "the Invoice Date" and nothing else changes. DOCX Compare ignores
+  capitalisation by default (the Ignore options can turn that off), so nothing is reported.
+expected_changes: []
+must_not_report:
+- text: Invoice Date
+  reason: capitalisation only, ignored by default

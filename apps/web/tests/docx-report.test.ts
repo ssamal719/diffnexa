@@ -181,10 +181,10 @@ describe("in the comparison workspace", () => {
     expect(docxPlace(find((change) => change.category === "metadata"))).toBe("Document properties");
   });
 
-  it("gives Word's own position as a labelled detail, never as a page", () => {
+  it("gives Word's own position as a labelled detail, and no page when the file records none", () => {
     const note = docxPlaceNote(find((change) => change.id === "c9"))!;
     expect(note).toContain("Table 1, row 2, column 2");
-    expect(note).toContain("Word files have no fixed page numbers");
+    expect(note).toContain("this file does not record its pages");
     expect(docxPlaceNote(find((change) => change.category === "metadata"))).toBeNull();
     for (const item of docxWorkspaceChanges(RESULT)) {
       expect(`${item.place} ${item.groupLabel}`).not.toMatch(/\bpage \d|paragraph \d/i);

@@ -67,6 +67,8 @@ def test_two_documents_are_compared(client):
     assert set(payload) == {
         "engineVersion",
         "processingMs",
+        "options",
+        "layout",
         "documents",
         "counts",
         "changes",

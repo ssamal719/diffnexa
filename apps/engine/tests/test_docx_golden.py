@@ -9,6 +9,7 @@ not add up to the changes found.
 
 from __future__ import annotations
 
+import dataclasses
 import json
 from pathlib import Path
 
@@ -48,6 +49,9 @@ def test_the_corpus_covers_the_agreed_ground():
         "link-changed",
         "title-changed",
         "mixed-revision",
+        "capitalisation-only",
+        "punctuation-only",
+        "pages-long-document",
     ):
         assert required in names, required
     assert len(PAIRS) >= 25
@@ -61,7 +65,18 @@ def test_every_group_is_exercised_by_at_least_one_pair():
 def test_every_expected_change_states_where_its_evidence_is():
     for pair in PAIRS:
         for expected in pair.spec.expected_changes:
-            assert expected.locations, f"{pair.name}: {expected.describe()} has no location"
+            where = expected.locations or expected.old_page or expected.new_page
+            assert where, f"{pair.name}: {expected.describe()} has no location"
+
+
+def test_a_change_on_the_wrong_page_fails_its_pair():
+    pair = next(pair for pair in PAIRS if pair.name == "pages-long-document")
+    first = pair.spec.expected_changes[0]
+    wrong = first.model_copy(update={"new_page": first.new_page + 1})
+    spec = pair.spec.model_copy(update={"expected_changes": [wrong, *pair.spec.expected_changes[1:]]})
+    score, _payload = score_docx_pair(dataclasses.replace(pair, spec=spec))
+    assert not score.passed
+    assert any("expected new page" in item for item in score.wrong_locations)
 
 
 @pytest.mark.parametrize("pair", PAIRS, ids=[pair.name for pair in PAIRS])

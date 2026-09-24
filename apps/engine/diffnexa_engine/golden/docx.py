@@ -53,6 +53,10 @@ class ExpectedDocxChange(_Strict):
     match: Literal["exact", "contains"] = "contains"
     #: Places the change's evidence must point to, as the reader sees them.
     locations: list[str] = []
+    #: The page the change's evidence must give in each version, when the files record their pages.
+    #: Taken from a rendering of the documents, never from DiffNexa's own output.
+    old_page: int | None = Field(default=None, ge=1)
+    new_page: int | None = Field(default=None, ge=1)
     note: str | None = None
 
     @model_validator(mode="after")
@@ -226,6 +230,14 @@ def score_docx_pair(pair: DocxGoldenPair) -> tuple[DocxPairScore, dict[str, Any]
             if location not in cited:
                 score.wrong_locations.append(
                     f"{hit['id']}: no evidence at {location!r} (cited {sorted(cited)})"
+                )
+        for side, page in (("old", expected.old_page), ("new", expected.new_page)):
+            if page is None:
+                continue
+            given = sorted({item.get("page") or 0 for item in hit["evidence"] if item["side"] == side})
+            if given != [page]:
+                score.wrong_locations.append(
+                    f"{hit['id']}: expected {side} page {page}, evidence gives {given}"
                 )
 
     # The groups a reader sees must be exactly the changes found.

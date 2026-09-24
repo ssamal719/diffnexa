@@ -12,9 +12,13 @@ evidence and traceability code run on Word documents unchanged. What Word adds
 — which kind of list an item is in, and at what level — is carried on a small
 subclass rather than squeezed into fields meant for something else.
 
-Nothing here refers to a URL, a page number or a bounding box: a Word document
-has none of those, and inventing them would put values in a result that nothing
-could verify.
+Nodes carry no URL, page number or bounding box: a Word document stores none
+of those, and inventing them would put values in a result that nothing could
+verify. The one exception is kept apart from the content, in `layout`: the page
+each node was on when Microsoft Word last saved the file, read from the page
+breaks Word recorded — and only when the file's own statistics confirm that
+record describes this content (see layout.py). It is not part of the content
+fingerprint, because where pages fall is not what the document says.
 """
 
 from __future__ import annotations
@@ -25,6 +29,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from diffnexa_engine.docx.layout import DocxLayout
 from diffnexa_engine.web.snapshot import ContentNode
 
 DOCX_MODEL_VERSION: Literal["1"] = "1"
@@ -75,6 +80,8 @@ class DocxDocument(_Frozen):
     nodes: tuple[DocxNode, ...] = ()
     extraction: DocxExtractionInfo = DocxExtractionInfo()
     content_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    #: Where Word's pages fell, when the file records it; see layout.py.
+    layout: DocxLayout = DocxLayout()
 
     @property
     def node_count(self) -> int:

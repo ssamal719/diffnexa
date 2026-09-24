@@ -224,11 +224,19 @@ export function ComparisonWorkspace({
   const empty = major.length === 0 && !includeMinor;
   const minorWords = `${minorCount} ${minorLabel}${minorCount === 1 ? "" : "s"}`;
 
+  // Compared content is full of long unbroken strings — addresses, cell values,
+  // IDs. `wrap-anywhere` (overflow-wrap: anywhere) is inherited by everything
+  // every tool renders here — evidence, the list, both versions, AI Change
+  // Analyst: such a string breaks to fit its box and, unlike
+  // overflow-wrap: break-word, no longer sets the minimum width of the grid or
+  // flex column it sits in, so it cannot push a panel or the page sideways.
+  // Text that must stay on one line (spreadsheet cells, one-line summaries)
+  // says so with whitespace-nowrap/truncate, which this does not affect.
   return (
     <section
       ref={sectionRef}
       aria-labelledby={`${id}-headline`}
-      className="mt-6 max-w-none! scroll-mt-4 rounded-[var(--radius-panel)] border border-rule bg-paper"
+      className="mt-6 max-w-none! min-w-0 scroll-mt-4 rounded-[var(--radius-panel)] border border-rule bg-paper wrap-anywhere"
     >
       {/* Comparison header */}
       <header className="flex flex-wrap items-start gap-x-6 gap-y-3 border-b border-rule px-4 py-3">
@@ -247,7 +255,7 @@ export function ComparisonWorkspace({
           {facts.map((fact) => (
             <div key={fact.label} className="contents">
               <dt className="text-ink-soft">{fact.label}</dt>
-              <dd className="min-w-0 break-words">{fact.value}</dd>
+              <dd className="min-w-0 wrap-anywhere">{fact.value}</dd>
             </div>
           ))}
         </dl>
@@ -452,7 +460,7 @@ export function ComparisonWorkspace({
               ) : (
                 groups.map((group) => (
                   <div key={group.key}>
-                    <p className="px-3 pt-2.5 pb-1 text-[0.78rem] font-semibold break-words text-ink">{group.label}</p>
+                    <p className="px-3 pt-2.5 pb-1 text-[0.78rem] font-semibold wrap-anywhere text-ink">{group.label}</p>
                     <ul>
                       {group.changes.map((change) => (
                         <li key={change.id}>
@@ -584,11 +592,13 @@ function EvidencePanel({
   children: ReactNode;
 }) {
   const headingId = useId();
+  // The panel repeats the workspace's `wrap-anywhere` so evidence wraps inside
+  // it even if the panel is ever used on its own.
   return (
     <section
       aria-label="Evidence"
       tabIndex={0}
-      className="min-w-0 border-t border-rule p-3 lg:col-start-2 lg:row-start-2 xl:col-start-3 xl:row-start-1 xl:max-h-[46rem] xl:overflow-y-auto xl:border-t-0 xl:border-l"
+      className="max-w-full min-w-0 border-t border-rule p-3 wrap-anywhere lg:col-start-2 lg:row-start-2 xl:col-start-3 xl:row-start-1 xl:max-h-[46rem] xl:overflow-y-auto xl:border-t-0 xl:border-l"
     >
       {!active ? (
         <>
@@ -608,7 +618,7 @@ function EvidencePanel({
             </span>
             {active.title}
           </h3>
-          <p className="text-[0.85rem] break-words">
+          <p className="text-[0.85rem] wrap-anywhere">
             {active.place}
             {active.category && <span className="text-ink-soft"> · {active.category}</span>}
           </p>

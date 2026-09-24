@@ -30,7 +30,7 @@ export function DetectedValues({
   return (
     <dl className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-x-2 gap-y-1 text-[0.85rem]">
       <dt className="text-ink-soft">Original</dt>
-      <dd className="break-words">
+      <dd className="min-w-0 wrap-anywhere">
         {beforeQuoted ? (
           again
         ) : before ? (
@@ -40,7 +40,7 @@ export function DetectedValues({
         )}
       </dd>
       <dt className="text-ink-soft">Revised</dt>
-      <dd className="break-words">
+      <dd className="min-w-0 wrap-anywhere">
         {afterQuoted ? (
           again
         ) : after ? (
@@ -74,7 +74,7 @@ export function EvidenceQuote({
       <figcaption className="text-[0.75rem] font-medium text-ink-soft">
         {side === "original" ? "Original" : "Revised"} · {where}
       </figcaption>
-      <blockquote className="mt-0.5 text-[0.85rem] break-words">{children}</blockquote>
+      <blockquote className="mt-0.5 text-[0.85rem] wrap-anywhere">{children}</blockquote>
     </figure>
   );
 }

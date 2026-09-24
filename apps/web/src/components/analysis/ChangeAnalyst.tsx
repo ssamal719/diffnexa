@@ -380,11 +380,11 @@ function ExplainedChange({
         </span>
       </div>
 
-      <dl className="mt-2 grid gap-x-3 gap-y-1 text-[0.88rem] sm:grid-cols-[8.5rem_1fr]">
+      <dl className="mt-2 grid gap-x-3 gap-y-1 text-[0.88rem] sm:grid-cols-[8.5rem_minmax(0,1fr)]">
         <dt className="text-ink-soft">Original</dt>
-        <dd className="break-words">{comparison.original ?? <span className="text-ink-soft">— (not in the original)</span>}</dd>
+        <dd className="min-w-0 wrap-anywhere">{comparison.original ?? <span className="text-ink-soft">— (not in the original)</span>}</dd>
         <dt className="text-ink-soft">Revised</dt>
-        <dd className="break-words">{comparison.revised ?? <span className="text-ink-soft">— (not in the revised)</span>}</dd>
+        <dd className="min-w-0 wrap-anywhere">{comparison.revised ?? <span className="text-ink-soft">— (not in the revised)</span>}</dd>
         {comparison.difference && (
           <>
             <dt className="text-ink-soft">Difference</dt>
@@ -411,7 +411,7 @@ function ExplainedChange({
           <p className="text-[0.72rem] font-semibold tracking-wide text-ink-soft uppercase">Evidence</p>
           <ul className="text-[0.82rem]">
             {cited.map((evidence) => (
-              <li key={evidence.ref} className="break-words">
+              <li key={evidence.ref} className="wrap-anywhere">
                 <span className="text-ink-soft">
                   {evidence.side === "original" ? "Original" : "Revised"} · {evidence.location}
                   {evidence.excerpt ? ": " : ""}

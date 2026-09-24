@@ -418,10 +418,10 @@ function DiffView({ context, byId }: { context: WorkspaceContext; byId: Map<stri
                     Show in grid
                   </button>
                 </td>
-                <td className="px-2 py-2 break-words">
+                <td className="px-2 py-2 wrap-anywhere">
                   {before ? <span className="rounded-[2px] bg-[#fbe9ea] px-1">{before}</span> : <span className="text-ink-soft">—</span>}
                 </td>
-                <td className="px-2 py-2 break-words">
+                <td className="px-2 py-2 wrap-anywhere">
                   {after ? <span className="rounded-[2px] bg-[#e6f3ea] px-1">{after}</span> : <span className="text-ink-soft">—</span>}
                   {change.delta && <p className="tabular mt-1 text-[0.78rem] text-ink-soft">{change.delta}</p>}
                 </td>
@@ -466,9 +466,9 @@ function DetailsView({
             <h3 id={`details-${side}`} className="text-[0.75rem] font-semibold tracking-wide text-ink-soft uppercase">
               {side === "original" ? "Original workbook" : "Revised workbook"}
             </h3>
-            <dl className="mt-1 grid grid-cols-[9rem_1fr] gap-y-0.5 text-[0.84rem]">
+            <dl className="mt-1 grid grid-cols-[9rem_minmax(0,1fr)] gap-y-0.5 text-[0.84rem]">
               <dt className="text-ink-soft">File</dt>
-              <dd className="break-words">{file.name}</dd>
+              <dd className="wrap-anywhere">{file.name}</dd>
               <dt className="text-ink-soft">Size</dt>
               <dd>{formatFileSize(file.sizeBytes)}</dd>
               <dt className="text-ink-soft">Sheets</dt>
@@ -532,7 +532,7 @@ function ChangeDetails({ change, context }: { change: ExcelChange | null; contex
       <p className="text-[0.8rem] text-ink-soft">
         {headlineFor(change)} · {locationFor(change)}
       </p>
-      <div className="mt-2 grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
+      <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-1">
         <PlaceCard title="Original" place={change.original} value={change.oldValue} tone="removed" />
         <PlaceCard title="Revised" place={change.revised} value={change.newValue} tone="added" />
       </div>
@@ -554,7 +554,7 @@ function ChangeDetails({ change, context }: { change: ExcelChange | null; contex
         {showEvidence && (
           <ul className="mt-1 space-y-0.5 text-[0.82rem]">
             {change.evidence.map((item, index) => (
-              <li key={`${item.side}-${item.cell}-${index}`} className="break-words">
+              <li key={`${item.side}-${item.cell}-${index}`} className="wrap-anywhere">
                 <span className="text-ink-soft">
                   {item.side === "old" ? "Original" : "Revised"} · {item.sheet}
                   {item.cell ? ` · ${item.cell}` : " (sheet)"}:{" "}
@@ -598,14 +598,14 @@ function PlaceCard({
 }) {
   const border = tone === "added" ? "border-added/40" : "border-removed/40";
   return (
-    <div className={`rounded-[3px] border ${border} p-2`}>
+    <div className={`min-w-0 rounded-[3px] border ${border} p-2`}>
       <p className="text-[0.72rem] font-semibold tracking-wide text-ink-soft uppercase">{title}</p>
       {!place ? (
         <p className="text-[0.85rem] text-ink-soft">Not in this workbook.</p>
       ) : (
-        <dl className="grid grid-cols-[5.5rem_1fr] gap-y-0.5 text-[0.85rem]">
+        <dl className="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-y-0.5 text-[0.85rem]">
           <dt className="text-ink-soft">Sheet</dt>
-          <dd className="break-words">{place.sheet}</dd>
+          <dd className="wrap-anywhere">{place.sheet}</dd>
           {place.ref && (
             <>
               <dt className="text-ink-soft">{place.ref.includes(":") ? "Range" : "Cell"}</dt>
@@ -618,23 +618,23 @@ function PlaceCard({
           {place.cell ? (
             <>
               <dt className="text-ink-soft">Value</dt>
-              <dd className="break-words font-medium">{place.cell.display || "(no stored result)"}</dd>
+              <dd className="font-medium wrap-anywhere">{place.cell.display || "(no stored result)"}</dd>
               {place.cell.value && place.cell.value !== place.cell.display && (
                 <>
                   <dt className="text-ink-soft">Stored as</dt>
-                  <dd className="tabular break-words">{place.cell.value}</dd>
+                  <dd className="tabular wrap-anywhere">{place.cell.value}</dd>
                 </>
               )}
               {place.cell.formula && (
                 <>
                   <dt className="text-ink-soft">Formula</dt>
-                  <dd className="font-mono text-[0.8rem] break-words">{place.cell.formula}</dd>
+                  <dd className="font-mono text-[0.8rem] wrap-anywhere">{place.cell.formula}</dd>
                 </>
               )}
               {place.cell.link && (
                 <>
                   <dt className="text-ink-soft">Link</dt>
-                  <dd className="break-all">{place.cell.link}</dd>
+                  <dd className="wrap-anywhere">{place.cell.link}</dd>
                 </>
               )}
             </>
@@ -642,7 +642,7 @@ function PlaceCard({
             value && (
               <>
                 <dt className="text-ink-soft">Content</dt>
-                <dd className="break-words">{value}</dd>
+                <dd className="wrap-anywhere">{value}</dd>
               </>
             )
           )}

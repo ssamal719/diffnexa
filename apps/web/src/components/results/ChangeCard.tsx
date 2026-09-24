@@ -51,13 +51,13 @@ export const ChangeCard = forwardRef<
       ].join(" ")}
     >
       <header className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <h3 className="font-semibold">
+        <h3 className="min-w-0 font-semibold wrap-anywhere">
           <span aria-hidden="true" className={`${TONE[kind]} mr-1.5`}>
             {EDIT_KIND_MARK[kind]}
           </span>
           {headlineFor(change)}
         </h3>
-        {change.label && <p className="text-ink-soft">{change.label}</p>}
+        {change.label && <p className="min-w-0 text-ink-soft wrap-anywhere">{change.label}</p>}
         <p className="tabular ml-auto text-[0.82rem] text-ink-soft">{describeLocation(change)}</p>
       </header>
 
@@ -116,13 +116,13 @@ function Quote({ label, page, text }: { label: string; page: number | null; text
 function ValueComparison({ change }: { change: Change }) {
   return (
     <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
-      <span className="tabular rounded-[3px] bg-[#fdf0f0] px-2 py-1 line-through decoration-removed/60">
+      <span className="tabular min-w-0 rounded-[3px] bg-[#fdf0f0] px-2 py-1 line-through decoration-removed/60 wrap-anywhere">
         {change.oldValue}
       </span>
       <span aria-hidden="true" className="text-ink-soft">
         →
       </span>
-      <span className="tabular rounded-[3px] bg-[#f1f7f3] px-2 py-1 font-medium">
+      <span className="tabular min-w-0 rounded-[3px] bg-[#f1f7f3] px-2 py-1 font-medium wrap-anywhere">
         {change.newValue}
       </span>
       {change.delta && (
@@ -138,7 +138,7 @@ function ValueComparison({ change }: { change: Change }) {
 function TextComparison({ change }: { change: Change }) {
   const both = change.oldValue && change.newValue;
   return (
-    <div className={`mt-3 grid gap-3 ${both ? "md:grid-cols-2" : ""}`}>
+    <div className={`mt-3 grid grid-cols-1 gap-3 ${both ? "md:grid-cols-2" : ""}`}>
       {change.oldValue && (
         <Side label="Previous" tone="removed" text={change.oldValue} />
       )}
@@ -153,9 +153,9 @@ function Side({ label, tone, text }: { label: string; tone: "added" | "removed";
       ? "border-added/30 bg-[#f1f7f3]"
       : "border-removed/30 bg-[#fdf0f0]";
   return (
-    <div className={`rounded-[3px] border ${styles} p-2`}>
+    <div className={`min-w-0 rounded-[3px] border ${styles} p-2`}>
       <p className="text-[0.78rem] font-medium text-ink-soft">{label}</p>
-      <p className="mt-0.5 break-words">{text}</p>
+      <p className="mt-0.5 wrap-anywhere">{text}</p>
     </div>
   );
 }

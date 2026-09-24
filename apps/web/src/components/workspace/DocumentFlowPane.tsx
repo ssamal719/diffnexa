@@ -90,7 +90,7 @@ export function DocumentFlowPane({
               return (
                 <div key={name} className="grid grid-cols-[7.5rem_minmax(0,1fr)] gap-x-2">
                   <dt className="text-ink-soft">{FIELD_LABELS[name] ?? name}</dt>
-                  <dd className="break-words">
+                  <dd className="min-w-0 wrap-anywhere">
                     {cited.length > 0 ? (
                       <Marked side={side} active={active} number={active ? activeNumber : null}>
                         {value}
@@ -113,7 +113,7 @@ export function DocumentFlowPane({
                   {block.rows.map((row) => (
                     <tr key={row[0].id}>
                       {row.map((cell) => (
-                        <td key={cell.id} className="border border-rule px-1.5 py-0.5 align-top break-words">
+                        <td key={cell.id} className="border border-rule px-1.5 py-0.5 align-top wrap-anywhere">
                           <NodeText
                             node={cell}
                             side={side}
@@ -196,11 +196,11 @@ const Block = memo(function Block({
     return (
       <p className="my-1">
         {text}
-        {node.href && <span className="ml-1 text-[0.75rem] break-all text-ink-soft">({node.href})</span>}
+        {node.href && <span className="ml-1 text-[0.75rem] wrap-anywhere text-ink-soft">({node.href})</span>}
       </p>
     );
   }
-  return <p className="my-1.5 break-words">{text}</p>;
+  return <p className="my-1.5 wrap-anywhere">{text}</p>;
 });
 
 function NodeText({

@@ -84,10 +84,13 @@ async function chooseBoth() {
 describe("the page", () => {
   it("names the tool and says what it does", () => {
     render(<DocxComparePage />);
-    expect(screen.getAllByRole("heading", { level: 1 }).map((h) => h.textContent)).toEqual(["DOCX Compare"]);
-    expect(document.body.textContent).toContain(
-      "Compare two Word documents and see exactly what changed, with evidence you can verify.",
-    );
+    expect(screen.getAllByRole("heading", { level: 1 }).map((h) => h.textContent)).toEqual([
+      "Compare two Word documents and see exactly what changed",
+    ]);
+    // The tool is named where the page sits in the site.
+    const breadcrumb = screen.getByRole("navigation", { name: "Breadcrumb" });
+    expect(breadcrumb.querySelector('[aria-current="page"]')?.textContent).toBe("DOCX Compare");
+    expect(document.body.textContent).toContain("Upload an original and a revised .docx file.");
   });
 
   it("labels the two uploads as agreed", () => {

@@ -4,15 +4,21 @@
  * The homepage and the site header, rendered.
  */
 
-import { cleanup, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import HomePage from "@/app/page";
 import { metadata as rootMetadata } from "@/app/layout";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { TOOLS } from "@/lib/tools";
 
+let currentPath = "/";
+vi.mock("next/navigation", () => ({ usePathname: () => currentPath }));
+
 afterEach(cleanup);
+beforeEach(() => {
+  currentPath = "/";
+});
 
 describe("the homepage", () => {
   it("leads with the positioning line", () => {
@@ -25,7 +31,7 @@ describe("the homepage", () => {
   it("says what DiffNexa does without overclaiming", () => {
     render(<HomePage />);
     expect(document.body.textContent).toContain(
-      "compares documents and web pages to show exactly what changed",
+      "DiffNexa compares documents and public web pages, finds the changes that matter, and shows exactly where each change came from.",
     );
     expect(document.body.textContent?.toLowerCase()).not.toContain("ai-powered");
   });
@@ -84,7 +90,7 @@ describe("the homepage", () => {
       .getAllByRole("article")
       .find((element) => element.textContent?.includes("Competitor Monitor"))!;
     expect(card.textContent).toContain(
-      "Track changes on competitor webpages and see exactly what changed.",
+      "Compare a competitor’s public page against your saved baseline and see what changed.",
     );
   });
 
@@ -93,7 +99,9 @@ describe("the homepage", () => {
     const text = (document.body.textContent ?? "").toLowerCase();
     for (const claim of [
       "ai-powered", "artificial intelligence", "we monitor", "we alert", "automatically checks",
-      "risk score", "compliance", "legal advice", "24/7",
+      "risk score", "compliance", "legal advice", "24/7", "ai comparison engine",
+      // No invented social proof or statistics.
+      "trusted by", "customers", "testimonial", "rating", "reviews", "★", "users worldwide", "guarantee",
     ]) {
       expect(text, `claims ${claim}`).not.toContain(claim);
     }
@@ -102,9 +110,9 @@ describe("the homepage", () => {
   it("keeps the existing tools described as before", () => {
     render(<HomePage />);
     const text = document.body.textContent ?? "";
-    expect(text).toContain("Compare two PDF versions and find changes in text, numbers, dates, and pages.");
+    expect(text).toContain("Compare two PDF versions and see changes in text, numbers, dates and pages.");
     expect(text).toContain(
-      "Capture a public webpage and later compare it against your saved baseline to see what changed.",
+      "Compare a public web page against a baseline you saved and see exactly what changed.",
     );
   });
 
@@ -119,8 +127,11 @@ describe("the homepage", () => {
   it("keeps a sensible heading order", () => {
     render(<HomePage />);
     const levels = screen.getAllByRole("heading", { hidden: true }).map((node) => Number(node.tagName.slice(1)));
-    expect(Math.min(...levels)).toBe(1);
-    expect(Math.max(...levels)).toBeLessThanOrEqual(3);
+    expect(levels[0]).toBe(1);
+    for (let i = 1; i < levels.length; i += 1) {
+      expect(levels[i] - levels[i - 1], `jump at heading ${i}`).toBeLessThanOrEqual(1);
+    }
+    expect(Math.max(...levels)).toBeLessThanOrEqual(4);
   });
 });
 
@@ -188,15 +199,15 @@ describe("site navigation", () => {
     return container;
   }
 
-  it("links to every tool from the header", () => {
+  it("links to every tool from the header, once each, in its group", () => {
     const container = renderHeader();
-    const nav = container.querySelector('nav[aria-label="Tools"]')!;
-    const links = Array.from(nav.querySelectorAll("a"));
-
-    expect(links.map((link) => link.getAttribute("href"))).toEqual(
-      TOOLS.map((tool) => tool.href),
+    const nav = container.querySelector('nav[aria-label="Main"]')!;
+    const toolLinks = Array.from(nav.querySelectorAll("a")).filter((link) =>
+      TOOLS.some((tool) => tool.href === link.getAttribute("href")),
     );
-    expect(links.map((link) => link.textContent)).toEqual(TOOLS.map((tool) => tool.name));
+
+    expect(toolLinks.map((link) => link.getAttribute("href"))).toEqual(TOOLS.map((tool) => tool.href));
+    expect(toolLinks.map((link) => link.querySelector("span")?.textContent)).toEqual(TOOLS.map((tool) => tool.name));
   });
 
   it("makes Policy Monitor directly reachable", () => {
@@ -205,27 +216,32 @@ describe("site navigation", () => {
       (anchor) => anchor.getAttribute("href") === "/policy-monitor",
     );
     expect(link).toBeTruthy();
-    expect(link!.textContent).toBe("Policy & Terms Monitor");
+    expect(link!.querySelector("span")?.textContent).toBe("Policy & Terms Monitor");
   });
 
-  it("wraps rather than overflowing on a narrow screen", () => {
+  it("puts the whole list behind one Menu button on a phone, rather than a squeezed row", () => {
     const container = renderHeader();
-    const nav = container.querySelector('nav[aria-label="Tools"]')!;
-    const row = nav.parentElement!;
-    // Both the row and the nav wrap, so three tool names cannot force a
-    // horizontal scrollbar on a phone.
-    expect(row.className).toContain("flex-wrap");
-    expect(nav.className).toContain("flex-wrap");
+    const nav = container.querySelector('nav[aria-label="Main"]')!;
+    const menu = screen.getByRole("button", { name: /Menu/ });
+    expect(menu.getAttribute("aria-controls")).toBe(nav.id);
+    expect(menu.getAttribute("aria-expanded")).toBe("false");
+    expect(nav.className).toContain("hidden");
+    expect(nav.className).toContain("lg:block");
+    fireEvent.click(menu);
+    expect(menu.getAttribute("aria-expanded")).toBe("true");
+    expect(nav.className.split(" ")).toContain("block");
+    // The row wraps, so the open list sits under the brand instead of overflowing.
+    expect(nav.parentElement!.className).toContain("flex-wrap");
   });
 
   it("names the navigation for assistive technology", () => {
     const container = renderHeader();
-    expect(container.querySelector('nav[aria-label="Tools"]')).toBeTruthy();
+    expect(container.querySelector('nav[aria-label="Main"]')).toBeTruthy();
   });
 
-  it("keeps the site-wide metadata unchanged", () => {
+  it("keeps the site-wide description honest", () => {
     expect(rootMetadata.description).toBe(
-      "Compare PDF documents and public web pages to see exactly what changed, with clear evidence you can verify.",
+      "Compare documents and public web pages to see exactly what changed, with clear evidence you can verify.",
     );
   });
 });
@@ -236,7 +252,7 @@ describe("the competitor monitor page", () => {
     const link = Array.from(container.querySelectorAll("a")).find(
       (anchor) => anchor.getAttribute("href") === "/competitor-monitor",
     );
-    expect(link?.textContent).toBe("Competitor Monitor");
+    expect(link?.querySelector("span")?.textContent).toBe("Competitor Monitor");
   });
 
   it("has exactly one H1, saying what the tool does", async () => {
@@ -290,7 +306,7 @@ describe("the price monitor page", () => {
     );
     expect(cards).toHaveLength(1);
     expect(cards[0].textContent).toContain(
-      "Track changes on public pricing and product pages and see exactly what changed.",
+      "Compare a public pricing or product page against your saved baseline and see what changed.",
     );
     const button = within(cards[0]).getByRole("link", { name: "Open Price Monitor" });
     expect(button.getAttribute("href")).toBe("/price-monitor");
@@ -353,7 +369,7 @@ describe("the docx compare card", () => {
     );
     expect(cards).toHaveLength(1);
     expect(cards[0].textContent).toContain(
-      "Compare two Word documents and find changes in text, numbers, dates, lists, and tables.",
+      "Compare two Word documents and find changes in text, numbers, dates, lists and tables.",
     );
     const button = within(cards[0]).getByRole("link", { name: "Open DOCX Compare" });
     expect(button.getAttribute("href")).toBe("/docx-compare");
@@ -372,7 +388,7 @@ describe("the excel compare card", () => {
     const cards = screen.getAllByRole("article").filter((element) => element.textContent?.includes("Excel Compare"));
     expect(cards).toHaveLength(1);
     expect(cards[0].textContent).toContain(
-      "Compare two Excel workbooks side by side and find changed cells, formulas, rows, columns and sheets.",
+      "Compare two Excel workbooks and find changed cells, formulas, rows, columns, sheets and links.",
     );
     const button = within(cards[0]).getByRole("link", { name: "Open Excel Compare" });
     expect(button.getAttribute("href")).toBe("/excel-compare");

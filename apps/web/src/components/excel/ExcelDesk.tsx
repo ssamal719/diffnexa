@@ -149,7 +149,7 @@ export function ExcelDesk() {
 
   return (
     <>
-      <div className="mx-auto max-w-5xl rounded-[var(--radius-panel)] border border-rule bg-paper">
+      <div className="rounded-[var(--radius-panel)] border border-rule bg-paper">
         <div className="grid gap-px bg-rule md:grid-cols-2">
           <div className="bg-paper p-4 md:p-5">
             <OfficeFileSlot
@@ -202,14 +202,14 @@ export function ExcelDesk() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-5xl">
+      <div>
         {phase.name === "working" && (
           <ProcessingState stage={phase.stage} uploadPercent={phase.uploadPercent} stages={STAGES} />
         )}
         {phase.name === "failed" && <ExcelErrorView error={phase.error} onRetry={runComparison} />}
       </div>
       {phase.name === "done" && (
-        <div ref={resultRef} className="scroll-mt-4">
+        <div ref={resultRef} className="max-w-none! scroll-mt-4">
           <ReportWithAnalyst tool="excel" result={phase.result} seal={phase.seal}>
             {({ analyst, focus, analysis }) => (
               <ExcelWorkspace

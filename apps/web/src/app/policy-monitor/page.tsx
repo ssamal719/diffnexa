@@ -1,49 +1,29 @@
 import type { Metadata } from "next";
 
 import { PolicyDesk } from "@/components/policy/PolicyDesk";
+import { RelatedTools, ToolContent, ToolDesk, ToolPageIntro } from "@/components/site/ToolPage";
+import { pageMetadata } from "@/lib/seo";
 
-const TITLE = "Policy & Terms Monitor — Find Changes in Privacy Policies and Terms";
-
-const DESCRIPTION =
-  "Capture a public privacy policy, terms page or subprocessor list, then compare it " +
-  "against your saved baseline to see exactly what changed, with the wording behind " +
-  "every change.";
-
-export const metadata: Metadata = {
-  title: TITLE,
-  description: DESCRIPTION,
-  alternates: { canonical: "/policy-monitor" },
-  openGraph: {
-    type: "website",
-    url: "/policy-monitor",
-    title: TITLE,
-    description: DESCRIPTION,
-  },
-};
+export const metadata: Metadata = pageMetadata("/policy-monitor");
 
 export default function PolicyMonitorPage() {
   return (
-    <div className="mx-auto max-w-[92rem] px-4 py-8 md:py-10">
-      <div className="mx-auto max-w-5xl">
-        {/* One H1, and it says what the tool does rather than implying it watches
-            the page on your behalf. */}
-        <h1 className="text-[1.75rem] font-semibold tracking-tight md:text-[2rem]">
-          See what changed in a policy or terms page
-        </h1>
-        <p className="mt-2 max-w-[62ch] text-ink-soft">
+    <>
+      <ToolPageIntro path="/policy-monitor" title="See what changed in a policy or terms page">
+        <p>
           Capture a supplier&apos;s terms, a privacy policy or a subprocessor list as it reads today.
           Check it whenever you choose and DiffNexa shows exactly what changed, which part of the
           document it sits in, and the wording behind it.
         </p>
-      </div>
+      </ToolPageIntro>
 
-      <div className="mt-6 *:mx-auto *:max-w-5xl">
+      <ToolDesk>
         <PolicyDesk />
-      </div>
+      </ToolDesk>
 
-      <div className="mx-auto max-w-5xl">
+      <ToolContent>
         <section className="mt-10" aria-labelledby="how-it-works">
-          <h2 id="how-it-works" className="text-[1.15rem] font-semibold">
+          <h2 id="how-it-works" className="text-[1.35rem] font-semibold tracking-tight">
             How it works
           </h2>
           <ol className="mt-3 grid gap-3 md:grid-cols-3">
@@ -63,7 +43,7 @@ export default function PolicyMonitorPage() {
         </section>
 
         <section className="mt-10" aria-labelledby="what-it-shows">
-          <h2 id="what-it-shows" className="text-[1.15rem] font-semibold">
+          <h2 id="what-it-shows" className="text-[1.35rem] font-semibold tracking-tight">
             What DiffNexa shows you
           </h2>
           <div className="mt-3 grid gap-3 md:grid-cols-2">
@@ -80,7 +60,7 @@ export default function PolicyMonitorPage() {
         </section>
 
         <section className="mt-10" aria-labelledby="which-tool">
-          <h2 id="which-tool" className="text-[1.15rem] font-semibold">
+          <h2 id="which-tool" className="text-[1.35rem] font-semibold tracking-tight">
             Policy Monitor or Website Change Detector?
           </h2>
           <div className="mt-3 grid max-w-[70ch] gap-4 md:grid-cols-2">
@@ -104,7 +84,7 @@ export default function PolicyMonitorPage() {
         </section>
 
         <section className="mt-10" aria-labelledby="limits">
-          <h2 id="limits" className="text-[1.15rem] font-semibold">
+          <h2 id="limits" className="text-[1.35rem] font-semibold tracking-tight">
             What this does not do
           </h2>
           <ul className="mt-3 max-w-[70ch] space-y-2 text-[0.95rem] text-ink-soft">
@@ -124,7 +104,7 @@ export default function PolicyMonitorPage() {
         </section>
 
         <section className="mt-10" aria-labelledby="questions">
-          <h2 id="questions" className="text-[1.15rem] font-semibold">
+          <h2 id="questions" className="text-[1.35rem] font-semibold tracking-tight">
             Questions
           </h2>
           <dl className="mt-3 max-w-[65ch] space-y-4 text-[0.95rem]">
@@ -136,8 +116,9 @@ export default function PolicyMonitorPage() {
             ))}
           </dl>
         </section>
-      </div>
-    </div>
+        <RelatedTools path="/policy-monitor" />
+      </ToolContent>
+    </>
   );
 }
 

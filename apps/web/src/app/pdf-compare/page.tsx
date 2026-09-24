@@ -2,20 +2,10 @@ import type { Metadata } from "next";
 
 import { CompareDesk } from "@/components/upload/CompareDesk";
 import { Panel } from "@/components/ui/Panel";
+import { RelatedTools, ToolContent, ToolDesk, ToolPageIntro } from "@/components/site/ToolPage";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "PDF Compare — Find What Changed Between Two PDF Versions",
-  description:
-    "Compare two versions of a PDF and find changes in text, numbers, dates and pages, with the page number and wording behind every change.",
-  alternates: { canonical: "/pdf-compare" },
-  openGraph: {
-    type: "website",
-    url: "/pdf-compare",
-    title: "PDF Compare — Find What Changed Between Two PDF Versions",
-    description:
-      "Compare two versions of a PDF and find changes in text, numbers, dates and pages, with the page number and wording behind every change.",
-  },
-};
+export const metadata: Metadata = pageMetadata("/pdf-compare");
 
 /**
  * The tool is the page. The written sections below it exist to answer the
@@ -24,24 +14,21 @@ export const metadata: Metadata = {
  */
 export default function PdfComparePage() {
   return (
-    <div className="mx-auto max-w-[92rem] px-4 py-8 md:py-10">
-      <div className="mx-auto max-w-5xl">
-        <h1 className="text-[1.75rem] font-semibold tracking-tight md:text-[2rem]">
-          Compare two documents and see exactly what changed
-        </h1>
-        <p className="mt-2 max-w-[60ch] text-ink-soft">
+    <>
+      <ToolPageIntro path="/pdf-compare" title="Compare two PDF files and see exactly what changed">
+        <p>
           Upload two versions of a contract, report, policy or proposal. DiffNexa shows you what
           changed, where it changed, and the exact wording behind every difference.
         </p>
-      </div>
+      </ToolPageIntro>
 
-      <div className="mt-6 *:mx-auto *:max-w-5xl">
+      <ToolDesk>
         <CompareDesk />
-      </div>
+      </ToolDesk>
 
-      <div className="mx-auto max-w-5xl">
+      <ToolContent>
         <section className="mt-10" aria-labelledby="what-it-finds">
-          <h2 id="what-it-finds" className="text-[1.15rem] font-semibold">
+          <h2 id="what-it-finds" className="text-[1.35rem] font-semibold tracking-tight">
             What DiffNexa finds
           </h2>
           <p className="mt-1 max-w-[65ch] text-[0.95rem] text-ink-soft">
@@ -68,19 +55,19 @@ export default function PdfComparePage() {
         </section>
 
         <section className="mt-10" aria-labelledby="privacy">
-          <h2 id="privacy" className="text-[1.15rem] font-semibold">
+          <h2 id="privacy" className="text-[1.35rem] font-semibold tracking-tight">
             What happens to your files
           </h2>
           <div className="mt-3 max-w-[65ch] space-y-2 text-[0.95rem]">
             <p>
-              <strong>Today:</strong> the PDFs you choose above never leave your device. Your browser
-              opens them locally to confirm they are readable and to count their pages.
+              <strong>Checking the files:</strong> before anything is sent, your browser opens each PDF locally to
+              confirm it is readable and to count its pages.
             </p>
             <p>
-              <strong>When comparison arrives:</strong> files will be uploaded over an encrypted
-              connection into private storage that only your session can read, processed, and then
-              deleted automatically according to a published retention period. You will be able to
-              delete them yourself at any time.
+              <strong>Comparing:</strong> when you choose Compare, both files are sent over an encrypted connection
+              to DiffNexa&apos;s comparison service, compared in memory, and discarded as soon as the result comes
+              back. Nothing is stored and there is no account. The pages you see in the result are drawn from your
+              own files, in your browser.
             </p>
             <p>
               <strong>On AI:</strong> the comparison itself never uses AI. Where this site offers AI
@@ -92,7 +79,7 @@ export default function PdfComparePage() {
         </section>
 
         <section className="mt-10" aria-labelledby="faq">
-          <h2 id="faq" className="text-[1.15rem] font-semibold">
+          <h2 id="faq" className="text-[1.35rem] font-semibold tracking-tight">
             Questions
           </h2>
           <dl className="mt-3 max-w-[65ch] space-y-4 text-[0.95rem]">
@@ -104,8 +91,9 @@ export default function PdfComparePage() {
             ))}
           </dl>
         </section>
-      </div>
-    </div>
+        <RelatedTools path="/pdf-compare" />
+      </ToolContent>
+    </>
   );
 }
 

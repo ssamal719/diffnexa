@@ -1,32 +1,40 @@
 import type { Metadata } from "next";
+
 import { Analytics } from "@/components/site/Analytics";
+import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 export { TOOLS } from "@/lib/tools";
 
 import "./globals.css";
 
+/**
+ * Defaults for any page that does not set its own. Every public page does
+ * (see lib/seo.ts); these cover the 404 page and anything added later.
+ */
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  metadataBase: new URL(SITE_URL),
+  applicationName: SITE_NAME,
   title: {
-    default: "DiffNexa — Compare Documents and Web Pages",
+    default: "DiffNexa — Document & Web Page Comparison Tools",
     template: "%s | DiffNexa",
   },
   description:
-    "Compare PDF documents and public web pages to see exactly what changed, with clear evidence you can verify.",
+    "Compare documents and public web pages to see exactly what changed, with clear evidence you can verify.",
   openGraph: {
     type: "website",
-    siteName: "DiffNexa",
-    title: "DiffNexa — Compare Documents and Web Pages",
+    siteName: SITE_NAME,
+    title: "DiffNexa — Document & Web Page Comparison Tools",
     description:
-      "Compare PDF documents and public web pages to see exactly what changed, with clear evidence you can verify.",
+      "Compare documents and public web pages to see exactly what changed, with clear evidence you can verify.",
   },
+  twitter: { card: "summary" },
 };
-
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-dvh bg-surface text-ink antialiased">
+      <body className="flex min-h-dvh flex-col bg-surface text-ink antialiased">
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded-[3px] focus:bg-paper focus:px-3 focus:py-2 focus:outline-2 focus:outline-signal"
@@ -36,20 +44,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <SiteHeader />
 
-        <main id="main">{children}</main>
+        <main id="main" className="flex-1">
+          {children}
+        </main>
 
-        <footer className="mt-12 border-t border-rule bg-paper">
-          <div className="mx-auto max-w-5xl px-4 py-6 text-[0.85rem] text-ink-soft">
-            <p>
-              DiffNexa helps you compare documents and public web pages, and verify what changed.
-              Every change points back to the page or page number it came from.
-            </p>
-            <p className="mt-2">
-              Comparison is deterministic: the same two files always produce the same result, and
-              no AI is used to decide what changed.
-            </p>
-          </div>
-        </footer>
+        <SiteFooter />
 
         {/* The one place analytics is added, so every page has it exactly once. */}
         <Analytics />

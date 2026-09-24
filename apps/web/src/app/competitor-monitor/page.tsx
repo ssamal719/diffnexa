@@ -1,50 +1,29 @@
 import type { Metadata } from "next";
 
 import { CompetitorDesk } from "@/components/competitor/CompetitorDesk";
+import { RelatedTools, ToolContent, ToolDesk, ToolPageIntro } from "@/components/site/ToolPage";
+import { pageMetadata } from "@/lib/seo";
 
-const TITLE = "Competitor Monitor — Track What Changes on Competitor Websites";
-
-const DESCRIPTION =
-  "Compare a competitor’s public webpage with your saved baseline and see exactly what changed, " +
-  "with evidence for every detected change.";
-
-export const metadata: Metadata = {
-  // Absolute, because the agreed title already names the product and the site
-  // template would otherwise append " | DiffNexa" to it.
-  title: { absolute: TITLE },
-  description: DESCRIPTION,
-  alternates: { canonical: "/competitor-monitor" },
-  openGraph: {
-    type: "website",
-    url: "/competitor-monitor",
-    title: TITLE,
-    description: DESCRIPTION,
-  },
-};
+export const metadata: Metadata = pageMetadata("/competitor-monitor");
 
 export default function CompetitorMonitorPage() {
   return (
-    <div className="mx-auto max-w-[92rem] px-4 py-8 md:py-10">
-      <div className="mx-auto max-w-5xl">
-        {/* One H1, and it says what the tool does rather than implying it watches
-            the page on your behalf. */}
-        <h1 className="text-[1.75rem] font-semibold tracking-tight md:text-[2rem]">
-          See what changed on a competitor&apos;s webpage
-        </h1>
-        <p className="mt-2 max-w-[62ch] text-ink-soft">
+    <>
+      <ToolPageIntro path="/competitor-monitor" title="See what changed on a competitor's webpage">
+        <p>
           Capture a competitor&apos;s pricing, product or features page as it reads today. Check it
           whenever you choose and DiffNexa shows exactly what changed — prices, plans, features,
           buttons and wording — with the evidence behind every change.
         </p>
-      </div>
+      </ToolPageIntro>
 
-      <div className="mt-6 *:mx-auto *:max-w-5xl">
+      <ToolDesk>
         <CompetitorDesk />
-      </div>
+      </ToolDesk>
 
-      <div className="mx-auto max-w-5xl">
+      <ToolContent>
         <section className="mt-10" aria-labelledby="how-it-works">
-          <h2 id="how-it-works" className="text-[1.15rem] font-semibold">
+          <h2 id="how-it-works" className="text-[1.35rem] font-semibold tracking-tight">
             How it works
           </h2>
           <ol className="mt-3 grid gap-3 md:grid-cols-3">
@@ -64,7 +43,7 @@ export default function CompetitorMonitorPage() {
         </section>
 
         <section className="mt-10" aria-labelledby="what-it-groups">
-          <h2 id="what-it-groups" className="text-[1.15rem] font-semibold">
+          <h2 id="what-it-groups" className="text-[1.35rem] font-semibold tracking-tight">
             How changes are grouped
           </h2>
           <p className="mt-2 max-w-[70ch] text-[0.95rem] text-ink-soft">
@@ -86,7 +65,7 @@ export default function CompetitorMonitorPage() {
         </section>
 
         <section className="mt-10" aria-labelledby="which-tool">
-          <h2 id="which-tool" className="text-[1.15rem] font-semibold">
+          <h2 id="which-tool" className="text-[1.35rem] font-semibold tracking-tight">
             Competitor Monitor or Website Change Detector?
           </h2>
           <div className="mt-3 grid max-w-[70ch] gap-4 md:grid-cols-2">
@@ -109,7 +88,7 @@ export default function CompetitorMonitorPage() {
         </section>
 
         <section className="mt-10" aria-labelledby="limits">
-          <h2 id="limits" className="text-[1.15rem] font-semibold">
+          <h2 id="limits" className="text-[1.35rem] font-semibold tracking-tight">
             What this does not do
           </h2>
           <ul className="mt-3 max-w-[70ch] space-y-2 text-[0.95rem] text-ink-soft">
@@ -133,7 +112,7 @@ export default function CompetitorMonitorPage() {
         </section>
 
         <section className="mt-10" aria-labelledby="questions">
-          <h2 id="questions" className="text-[1.15rem] font-semibold">
+          <h2 id="questions" className="text-[1.35rem] font-semibold tracking-tight">
             Questions
           </h2>
           <dl className="mt-3 max-w-[65ch] space-y-4 text-[0.95rem]">
@@ -145,8 +124,9 @@ export default function CompetitorMonitorPage() {
             ))}
           </dl>
         </section>
-      </div>
-    </div>
+        <RelatedTools path="/competitor-monitor" />
+      </ToolContent>
+    </>
   );
 }
 

@@ -1,44 +1,28 @@
 import type { Metadata } from "next";
 
 import { ExcelDesk } from "@/components/excel/ExcelDesk";
+import { RelatedTools, ToolContent, ToolDesk, ToolPageIntro } from "@/components/site/ToolPage";
+import { pageMetadata } from "@/lib/seo";
 
-// The site template adds " | DiffNexa", giving the full agreed title:
-// "Excel Compare — Find Changes Between Two Excel Files | DiffNexa".
-const TITLE = "Excel Compare — Find Changes Between Two Excel Files";
-
-const DESCRIPTION =
-  "Compare two Excel files and see changed cells, values, formulas, rows, columns and sheets with clear visual evidence.";
-
-export const metadata: Metadata = {
-  title: TITLE,
-  description: DESCRIPTION,
-  alternates: { canonical: "/excel-compare" },
-  openGraph: {
-    type: "website",
-    url: "/excel-compare",
-    title: `${TITLE} | DiffNexa`,
-    description: DESCRIPTION,
-  },
-};
+export const metadata: Metadata = pageMetadata("/excel-compare");
 
 export default function ExcelComparePage() {
   return (
-    <div className="mx-auto max-w-[92rem] px-4 py-8 md:py-10">
-      <div className="mx-auto max-w-5xl">
-        <h1 className="text-[1.75rem] font-semibold tracking-tight md:text-[2rem]">Excel Compare</h1>
-        <p className="mt-2 max-w-[64ch] text-ink-soft">
+    <>
+      <ToolPageIntro path="/excel-compare" title="Compare two Excel workbooks and see exactly what changed">
+        <p>
           Compare two Excel workbooks side by side. Every changed cell, formula, row, column and sheet is listed, and
           choosing one takes both workbooks to that exact cell.
         </p>
-      </div>
+      </ToolPageIntro>
 
-      <div className="mt-6">
+      <ToolDesk>
         <ExcelDesk />
-      </div>
+      </ToolDesk>
 
-      <div className="mx-auto max-w-5xl">
+      <ToolContent>
         <section className="mt-10" aria-labelledby="what-is-compared">
-          <h2 id="what-is-compared" className="text-[1.15rem] font-semibold">
+          <h2 id="what-is-compared" className="text-[1.35rem] font-semibold tracking-tight">
             What is compared
           </h2>
           <dl className="mt-3 grid gap-3 md:grid-cols-2">
@@ -52,7 +36,7 @@ export default function ExcelComparePage() {
         </section>
 
         <section className="mt-10" aria-labelledby="not-compared">
-          <h2 id="not-compared" className="text-[1.15rem] font-semibold">
+          <h2 id="not-compared" className="text-[1.35rem] font-semibold tracking-tight">
             What this version does not compare
           </h2>
           <ul className="mt-3 max-w-[70ch] space-y-2 text-[0.95rem] text-ink-soft">
@@ -70,7 +54,7 @@ export default function ExcelComparePage() {
         </section>
 
         <section className="mt-10" aria-labelledby="questions">
-          <h2 id="questions" className="text-[1.15rem] font-semibold">
+          <h2 id="questions" className="text-[1.35rem] font-semibold tracking-tight">
             Questions
           </h2>
           <dl className="mt-3 max-w-[65ch] space-y-4 text-[0.95rem]">
@@ -82,8 +66,9 @@ export default function ExcelComparePage() {
             ))}
           </dl>
         </section>
-      </div>
-    </div>
+        <RelatedTools path="/excel-compare" />
+      </ToolContent>
+    </>
   );
 }
 

@@ -1,43 +1,29 @@
 import type { Metadata } from "next";
 
 import { DocxDesk } from "@/components/docx/DocxDesk";
+import { RelatedTools, ToolContent, ToolDesk, ToolPageIntro } from "@/components/site/ToolPage";
+import { pageMetadata } from "@/lib/seo";
 
-// The site template adds " | DiffNexa", giving the full agreed title:
-// "DOCX Compare — Compare Word Documents and Find Changes | DiffNexa".
-const TITLE = "DOCX Compare — Compare Word Documents and Find Changes";
-
-const DESCRIPTION =
-  "Compare two DOCX documents and see exactly what changed, with evidence you can verify.";
-
-export const metadata: Metadata = {
-  title: TITLE,
-  description: DESCRIPTION,
-  alternates: { canonical: "/docx-compare" },
-  openGraph: {
-    type: "website",
-    url: "/docx-compare",
-    title: `${TITLE} | DiffNexa`,
-    description: DESCRIPTION,
-  },
-};
+export const metadata: Metadata = pageMetadata("/docx-compare");
 
 export default function DocxComparePage() {
   return (
-    <div className="mx-auto max-w-[92rem] px-4 py-8 md:py-10">
-      <div className="mx-auto max-w-5xl">
-        <h1 className="text-[1.75rem] font-semibold tracking-tight md:text-[2rem]">DOCX Compare</h1>
-        <p className="mt-2 max-w-[62ch] text-ink-soft">
-          Compare two Word documents and see exactly what changed, with evidence you can verify.
+    <>
+      <ToolPageIntro path="/docx-compare" title="Compare two Word documents and see exactly what changed">
+        <p>
+          Upload an original and a revised .docx file. DiffNexa lists every change in the text, headings, lists,
+          tables, numbers and dates — placed under the document&apos;s own headings, with the wording from both
+          versions as evidence.
         </p>
-      </div>
+      </ToolPageIntro>
 
-      <div className="mt-6 *:mx-auto *:max-w-5xl">
+      <ToolDesk>
         <DocxDesk />
-      </div>
+      </ToolDesk>
 
-      <div className="mx-auto max-w-5xl">
+      <ToolContent>
         <section className="mt-10" aria-labelledby="what-is-compared">
-          <h2 id="what-is-compared" className="text-[1.15rem] font-semibold">
+          <h2 id="what-is-compared" className="text-[1.35rem] font-semibold tracking-tight">
             What is compared
           </h2>
           <dl className="mt-3 grid gap-3 md:grid-cols-2">
@@ -51,7 +37,7 @@ export default function DocxComparePage() {
         </section>
 
         <section className="mt-10" aria-labelledby="not-compared">
-          <h2 id="not-compared" className="text-[1.15rem] font-semibold">
+          <h2 id="not-compared" className="text-[1.35rem] font-semibold tracking-tight">
             What this version does not compare
           </h2>
           <ul className="mt-3 max-w-[70ch] space-y-2 text-[0.95rem] text-ink-soft">
@@ -72,7 +58,7 @@ export default function DocxComparePage() {
         </section>
 
         <section className="mt-10" aria-labelledby="questions">
-          <h2 id="questions" className="text-[1.15rem] font-semibold">
+          <h2 id="questions" className="text-[1.35rem] font-semibold tracking-tight">
             Questions
           </h2>
           <dl className="mt-3 max-w-[65ch] space-y-4 text-[0.95rem]">
@@ -84,8 +70,9 @@ export default function DocxComparePage() {
             ))}
           </dl>
         </section>
-      </div>
-    </div>
+        <RelatedTools path="/docx-compare" />
+      </ToolContent>
+    </>
   );
 }
 

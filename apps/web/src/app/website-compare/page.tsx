@@ -1,20 +1,10 @@
 import type { Metadata } from "next";
 
 import { WebsiteDesk } from "@/components/website/WebsiteDesk";
+import { RelatedTools, ToolContent, ToolDesk, ToolPageIntro } from "@/components/site/ToolPage";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Website Change Detector — Compare a Web Page With Your Baseline",
-  description:
-    "Capture a public web page, then compare it against your saved baseline to find changes in wording, numbers, dates, tables, links and page details.",
-  alternates: { canonical: "/website-compare" },
-  openGraph: {
-    type: "website",
-    url: "/website-compare",
-    title: "Website Change Detector — Compare a Web Page With Your Baseline",
-    description:
-      "Capture a public web page, then compare it against your saved baseline to find changes in wording, numbers, dates, tables, links and page details.",
-  },
-};
+export const metadata: Metadata = pageMetadata("/website-compare");
 
 /**
  * The tool is the page. The short sections below answer the questions a
@@ -23,24 +13,21 @@ export const metadata: Metadata = {
  */
 export default function WebsiteComparePage() {
   return (
-    <div className="mx-auto max-w-[92rem] px-4 py-8 md:py-10">
-      <div className="mx-auto max-w-5xl">
-        <h1 className="text-[1.75rem] font-semibold tracking-tight md:text-[2rem]">
-          Find out what changed on a web page
-        </h1>
-        <p className="mt-2 max-w-[60ch] text-ink-soft">
+    <>
+      <ToolPageIntro path="/website-compare" title="Find out what changed on a web page">
+        <p>
           Capture a page today — a supplier&apos;s terms, a competitor&apos;s pricing, a policy you
           rely on. Come back whenever you like and DiffNexa shows you exactly what is different.
         </p>
-      </div>
+      </ToolPageIntro>
 
-      <div className="mt-6 *:mx-auto *:max-w-5xl">
+      <ToolDesk>
         <WebsiteDesk />
-      </div>
+      </ToolDesk>
 
-      <div className="mx-auto max-w-5xl">
+      <ToolContent>
         <section className="mt-10" aria-labelledby="how-it-works">
-          <h2 id="how-it-works" className="text-[1.15rem] font-semibold">
+          <h2 id="how-it-works" className="text-[1.35rem] font-semibold tracking-tight">
             How it works
           </h2>
           <ol className="mt-3 grid gap-3 md:grid-cols-3">
@@ -57,7 +44,7 @@ export default function WebsiteComparePage() {
         </section>
 
         <section className="mt-10" aria-labelledby="what-it-finds">
-          <h2 id="what-it-finds" className="text-[1.15rem] font-semibold">
+          <h2 id="what-it-finds" className="text-[1.35rem] font-semibold tracking-tight">
             What DiffNexa finds
           </h2>
           <div className="mt-3 grid gap-3 md:grid-cols-2">
@@ -80,7 +67,7 @@ export default function WebsiteComparePage() {
         </section>
 
         <section className="mt-10" aria-labelledby="questions">
-          <h2 id="questions" className="text-[1.15rem] font-semibold">
+          <h2 id="questions" className="text-[1.35rem] font-semibold tracking-tight">
             Questions
           </h2>
           <dl className="mt-3 max-w-[65ch] space-y-4 text-[0.95rem]">
@@ -92,8 +79,9 @@ export default function WebsiteComparePage() {
             ))}
           </dl>
         </section>
-      </div>
-    </div>
+        <RelatedTools path="/website-compare" />
+      </ToolContent>
+    </>
   );
 }
 

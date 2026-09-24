@@ -104,7 +104,11 @@ const counter = () => screen.getByText(/^(Change .+ of \d+|No changes)/, { selec
 describe("the page", () => {
   it("names the tool once and says what it does", () => {
     render(<ExcelComparePage />);
-    expect(screen.getAllByRole("heading", { level: 1 }).map((h) => h.textContent)).toEqual(["Excel Compare"]);
+    expect(screen.getAllByRole("heading", { level: 1 }).map((h) => h.textContent)).toEqual([
+      "Compare two Excel workbooks and see exactly what changed",
+    ]);
+    const breadcrumb = screen.getByRole("navigation", { name: "Breadcrumb" });
+    expect(breadcrumb.querySelector('[aria-current="page"]')?.textContent).toBe("Excel Compare");
     expect(document.body.textContent).toContain("Compare two Excel workbooks side by side.");
   });
 

@@ -1,50 +1,29 @@
 import type { Metadata } from "next";
 
 import { PriceDesk } from "@/components/price/PriceDesk";
+import { RelatedTools, ToolContent, ToolDesk, ToolPageIntro } from "@/components/site/ToolPage";
+import { pageMetadata } from "@/lib/seo";
 
-// The site template adds " | DiffNexa", giving the full agreed title:
-// "Price Monitor — Track Changes on Public Pricing Pages | DiffNexa".
-const TITLE = "Price Monitor — Track Changes on Public Pricing Pages";
-
-const DESCRIPTION =
-  "Compare a public pricing or product page with your saved baseline and see exactly what " +
-  "changed, with evidence you can verify.";
-
-export const metadata: Metadata = {
-  title: TITLE,
-  description: DESCRIPTION,
-  alternates: { canonical: "/price-monitor" },
-  openGraph: {
-    type: "website",
-    url: "/price-monitor",
-    title: `${TITLE} | DiffNexa`,
-    description: DESCRIPTION,
-  },
-};
+export const metadata: Metadata = pageMetadata("/price-monitor");
 
 export default function PriceMonitorPage() {
   return (
-    <div className="mx-auto max-w-[92rem] px-4 py-8 md:py-10">
-      <div className="mx-auto max-w-5xl">
-        {/* One H1, saying what the tool does — and not implying it watches prices
-            on anyone's behalf. */}
-        <h1 className="text-[1.75rem] font-semibold tracking-tight md:text-[2rem]">
-          See what changed on a pricing or product page
-        </h1>
-        <p className="mt-2 max-w-[62ch] text-ink-soft">
+    <>
+      <ToolPageIntro path="/price-monitor" title="See what changed on a pricing or product page">
+        <p>
           Capture a public pricing or product page as it reads today. Check it whenever you choose
           and DiffNexa shows exactly what changed — prices, currencies, billing periods, plans,
           availability and everything else on the page — with the evidence behind every change.
         </p>
-      </div>
+      </ToolPageIntro>
 
-      <div className="mt-6 *:mx-auto *:max-w-5xl">
+      <ToolDesk>
         <PriceDesk />
-      </div>
+      </ToolDesk>
 
-      <div className="mx-auto max-w-5xl">
+      <ToolContent>
         <section className="mt-10" aria-labelledby="how-it-works">
-          <h2 id="how-it-works" className="text-[1.15rem] font-semibold">
+          <h2 id="how-it-works" className="text-[1.35rem] font-semibold tracking-tight">
             How it works
           </h2>
           <ol className="mt-3 grid gap-3 md:grid-cols-3">
@@ -64,7 +43,7 @@ export default function PriceMonitorPage() {
         </section>
 
         <section className="mt-10" aria-labelledby="what-counts">
-          <h2 id="what-counts" className="text-[1.15rem] font-semibold">
+          <h2 id="what-counts" className="text-[1.35rem] font-semibold tracking-tight">
             What counts as a price
           </h2>
           <p className="mt-2 max-w-[70ch] text-[0.95rem] text-ink-soft">
@@ -88,7 +67,7 @@ export default function PriceMonitorPage() {
         </section>
 
         <section className="mt-10" aria-labelledby="limits">
-          <h2 id="limits" className="text-[1.15rem] font-semibold">
+          <h2 id="limits" className="text-[1.35rem] font-semibold tracking-tight">
             What this does not do
           </h2>
           <ul className="mt-3 max-w-[70ch] space-y-2 text-[0.95rem] text-ink-soft">
@@ -109,7 +88,7 @@ export default function PriceMonitorPage() {
         </section>
 
         <section className="mt-10" aria-labelledby="questions">
-          <h2 id="questions" className="text-[1.15rem] font-semibold">
+          <h2 id="questions" className="text-[1.35rem] font-semibold tracking-tight">
             Questions
           </h2>
           <dl className="mt-3 max-w-[65ch] space-y-4 text-[0.95rem]">
@@ -121,8 +100,9 @@ export default function PriceMonitorPage() {
             ))}
           </dl>
         </section>
-      </div>
-    </div>
+        <RelatedTools path="/price-monitor" />
+      </ToolContent>
+    </>
   );
 }
 

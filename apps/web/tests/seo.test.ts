@@ -1,9 +1,11 @@
 /**
- * Metadata, sitemap and robots.
+ * Metadata, structured data, sitemap and robots.
  *
  * The rule these enforce is the same one that governs the product: say only
- * what is true. V1 comparison is deterministic, so nothing may describe it as
- * AI-powered, and no page may promise a capability that does not exist.
+ * what is true. Comparison is deterministic, so nothing may describe it as
+ * AI-powered; the web tools compare against a baseline the person saved, so
+ * none may promise watching, alerts or schedules; and no page may claim a
+ * rating, review, price or user count that does not exist.
  */
 
 import { describe, expect, it, vi } from "vitest";
@@ -19,6 +21,9 @@ import { metadata as priceMetadata } from "@/app/price-monitor/page";
 import { metadata as webMetadata } from "@/app/website-compare/page";
 import robots from "@/app/robots";
 import sitemap from "@/app/sitemap";
+import { PAGE_SEO, serializeJsonLd, toolJsonLd, websiteJsonLd } from "@/lib/seo";
+import { SITE_URL } from "@/lib/site";
+import { toolByHref } from "@/lib/tools";
 
 const PAGES = [
   { name: "home", metadata: homeMetadata, path: "/" },
@@ -31,37 +36,47 @@ const PAGES = [
   { name: "excel-compare", metadata: excelMetadata, path: "/excel-compare" },
 ];
 
-function titleOf(metadata: (typeof PAGES)[number]["metadata"]): string {
+type PageMetadata = (typeof PAGES)[number]["metadata"];
+
+function titleOf(metadata: PageMetadata): string {
   const title = metadata.title;
   if (typeof title === "string") return title;
   if (title && typeof title === "object" && "absolute" in title) return String(title.absolute);
   return "";
 }
 
+function og(metadata: PageMetadata): Record<string, unknown> {
+  return (metadata.openGraph ?? {}) as Record<string, unknown>;
+}
+
+function twitter(metadata: PageMetadata): Record<string, unknown> {
+  return (metadata.twitter ?? {}) as Record<string, unknown>;
+}
+
 describe("the tools", () => {
-  it("are listed once, so the header and homepage cannot disagree", () => {
+  it("are listed once, grouped as files to compare and web pages to check", () => {
     expect(TOOLS.map((tool) => tool.href)).toEqual([
       "/pdf-compare",
+      "/docx-compare",
+      "/excel-compare",
       "/website-compare",
       "/policy-monitor",
       "/competitor-monitor",
       "/price-monitor",
-      "/docx-compare",
-      "/excel-compare",
     ]);
     expect(TOOLS.map((tool) => tool.name)).toEqual([
       "PDF Compare",
+      "DOCX Compare",
+      "Excel Compare",
       "Website Change Detector",
       "Policy & Terms Monitor",
       "Competitor Monitor",
       "Price Monitor",
-      "DOCX Compare",
-      "Excel Compare",
+    ]);
+    expect(TOOLS.map((tool) => tool.group)).toEqual([
+      "compare", "compare", "compare", "monitor", "monitor", "monitor", "monitor",
     ]);
     for (const tool of TOOLS) expect(tool.summary.length).toBeGreaterThan(30);
-    expect(TOOLS.find((tool) => tool.href === "/competitor-monitor")?.summary).toBe(
-      "Track changes on competitor webpages and see exactly what changed.",
-    );
   });
 
   it("have one entry per public tool page", () => {
@@ -69,25 +84,56 @@ describe("the tools", () => {
     expect(TOOLS.map((tool) => tool.href).sort()).toEqual(toolPages.sort());
   });
 
-  it("describe the policy tool without claiming more than it does", () => {
-    const policy = TOOLS.find((tool) => tool.href === "/policy-monitor")!;
-    expect(policy.summary).toMatch(/baseline/i);
-    const wording = policy.summary.toLowerCase();
-    for (const claim of [
-      "\\bai\\b", "automatic", "automated", "alerts?", "scheduled?", "monitors? for you",
-      "legal advice", "compliance", "risks?", "history",
-    ]) {
-      expect(wording, `claims ${claim}`).not.toMatch(new RegExp(claim));
+  it("describe the web tools as comparisons against a saved baseline, never as watching", () => {
+    for (const tool of TOOLS.filter((item) => item.group === "monitor")) {
+      expect(tool.summary, tool.name).toMatch(/baseline/i);
+      const wording = `${tool.summary} ${tool.menuLine}`.toLowerCase();
+      for (const claim of [
+        "\\bai\\b", "automatic", "automated", "alerts?", "scheduled?", "monitors? for you", "real-time",
+        "legal advice", "compliance", "risks?", "history",
+      ]) {
+        expect(wording, `${tool.name} claims ${claim}`).not.toMatch(new RegExp(claim));
+      }
     }
+  });
+
+  it("link each tool to related tools that exist, never to itself", () => {
+    for (const tool of TOOLS) {
+      expect(tool.related.length, tool.name).toBeGreaterThanOrEqual(2);
+      for (const href of tool.related) {
+        expect(href).not.toBe(tool.href);
+        expect(() => toolByHref(href)).not.toThrow();
+      }
+    }
+    expect(toolByHref("/pdf-compare").related).toEqual(["/docx-compare", "/excel-compare"]);
+    expect(toolByHref("/website-compare").related).toEqual(["/policy-monitor", "/competitor-monitor", "/price-monitor"]);
+    expect(toolByHref("/policy-monitor").related).toEqual(["/website-compare", "/competitor-monitor"]);
   });
 });
 
 describe("page metadata", () => {
-  it("gives the homepage the agreed title and description", () => {
-    expect(titleOf(homeMetadata)).toBe("DiffNexa — Compare Documents and Web Pages");
-    expect(homeMetadata.description).toBe(
-      "Compare PDF documents and public web pages to see exactly what changed, with clear evidence you can verify.",
-    );
+  it("gives every page the title and description written for it", () => {
+    for (const page of PAGES) {
+      const seo = PAGE_SEO[page.path as keyof typeof PAGE_SEO];
+      expect(titleOf(page.metadata), page.name).toBe(seo.title);
+      expect(page.metadata.description, page.name).toBe(seo.description);
+    }
+    expect(titleOf(homeMetadata)).toBe("DiffNexa — Document & Web Page Comparison Tools");
+    expect(titleOf(pdfMetadata)).toBe("PDF Compare — Compare Two PDF Files and Find Changes | DiffNexa");
+    expect(titleOf(docxMetadata)).toBe("DOCX Compare — Compare Word Documents and Find Changes | DiffNexa");
+    expect(titleOf(excelMetadata)).toBe("Excel Compare — Compare Two Excel Files for Changes | DiffNexa");
+    expect(titleOf(webMetadata)).toBe("Website Change Detector — Find Changes on a Web Page | DiffNexa");
+    expect(titleOf(policyMetadata)).toBe("Policy & Terms Monitor — Find Changes to Policy Pages | DiffNexa");
+    expect(titleOf(competitorMetadata)).toBe("Competitor Monitor — Track Changes on Competitor Web Pages | DiffNexa");
+    expect(titleOf(priceMetadata)).toBe("Price Monitor — Track Changes to Public Pricing Pages | DiffNexa");
+  });
+
+  it("names DiffNexa exactly once in every title, and never lets the template add it again", () => {
+    for (const page of PAGES) {
+      expect(page.metadata.title, page.name).toEqual({ absolute: titleOf(page.metadata) });
+      expect(titleOf(page.metadata).match(/DiffNexa/g)?.length, page.name).toBe(1);
+      expect(titleOf(page.metadata).length, page.name).toBeLessThanOrEqual(70);
+    }
   });
 
   it("gives every public page a canonical URL", () => {
@@ -96,31 +142,40 @@ describe("page metadata", () => {
     }
   });
 
-  it("gives every public page a distinct title and description", () => {
+  it("gives every public page a distinct title and description of a useful length", () => {
     const titles = PAGES.map((page) => titleOf(page.metadata));
     const descriptions = PAGES.map((page) => String(page.metadata.description));
     expect(new Set(titles).size).toBe(titles.length);
     expect(new Set(descriptions).size).toBe(descriptions.length);
     for (const description of descriptions) {
-      expect(description.length).toBeGreaterThan(70);
-      expect(description.length).toBeLessThan(200);
+      expect(description.length).toBeGreaterThan(110);
+      expect(description.length).toBeLessThanOrEqual(160);
     }
   });
 
-  it("gives every public page Open Graph details", () => {
+  it("gives every public page matching Open Graph and Twitter details", () => {
     for (const page of PAGES) {
-      const openGraph = page.metadata.openGraph as Record<string, unknown> | undefined;
-      expect(openGraph?.type).toBe("website");
-      expect(String(openGraph?.title).length).toBeGreaterThan(10);
-      expect(String(openGraph?.description).length).toBeGreaterThan(40);
+      expect(og(page.metadata).type, page.name).toBe("website");
+      expect(og(page.metadata).url, page.name).toBe(page.path);
+      expect(og(page.metadata).siteName, page.name).toBe("DiffNexa");
+      expect(og(page.metadata).title, page.name).toBe(titleOf(page.metadata));
+      expect(og(page.metadata).description, page.name).toBe(page.metadata.description);
+      expect(twitter(page.metadata).card, page.name).toBe("summary");
+      expect(twitter(page.metadata).title, page.name).toBe(titleOf(page.metadata));
+      expect(twitter(page.metadata).description, page.name).toBe(page.metadata.description);
     }
+  });
+
+  it("resolves every address against the real domain, never localhost", () => {
+    expect(SITE_URL).toBe("https://diffnexa.com");
+    expect(String(rootMetadata.metadataBase)).toBe("https://diffnexa.com/");
   });
 
   it("never claims the comparison uses AI", () => {
     const wording = [
       ...PAGES.map((page) => `${titleOf(page.metadata)} ${page.metadata.description}`),
       String(rootMetadata.description),
-      ...TOOLS.map((tool) => tool.summary),
+      ...TOOLS.map((tool) => `${tool.summary} ${tool.menuLine}`),
     ]
       .join(" ")
       .toLowerCase();
@@ -129,10 +184,16 @@ describe("page metadata", () => {
     expect(wording).not.toContain("machine learning");
   });
 
-  it("does not repeat the site name inside the homepage title template", () => {
-    // The layout appends " | DiffNexa"; the homepage title is absolute so it
-    // does not become "DiffNexa ... | DiffNexa".
-    expect(titleOf(homeMetadata).match(/DiffNexa/g)?.length).toBe(1);
+  it("does not repeat words for the sake of it", () => {
+    for (const page of PAGES) {
+      const counts = new Map<string, number>();
+      for (const word of String(page.metadata.description).toLowerCase().split(/\W+/).filter((w) => w.length > 4)) {
+        counts.set(word, (counts.get(word) ?? 0) + 1);
+      }
+      for (const [word, count] of counts) {
+        expect(count, `${page.name}: "${word}" repeats ${count} times`).toBeLessThanOrEqual(2);
+      }
+    }
   });
 
   it("keeps the site-wide description honest and short", () => {
@@ -140,251 +201,127 @@ describe("page metadata", () => {
   });
 });
 
-describe("the policy monitor page", () => {
-  it("has a title naming the product and what it finds", () => {
-    const title = titleOf(policyMetadata);
-    expect(title).toContain("Policy");
-    expect(title.length).toBeLessThan(70);
-  });
+describe("what each tool page claims", () => {
+  function wording(metadata: PageMetadata): string {
+    return `${titleOf(metadata)} ${metadata.description} ${og(metadata).title} ${og(metadata).description}`.toLowerCase();
+  }
 
-  it("describes the real workflow in its description", () => {
-    const description = String(policyMetadata.description);
-    expect(description).toContain("baseline");
-    expect(description).toMatch(/compare/i);
-  });
-
-  it("claims no capability the product does not have", () => {
-    const wording = [
-      titleOf(policyMetadata),
-      String(policyMetadata.description),
-      String((policyMetadata.openGraph as Record<string, unknown>)?.title),
-      String((policyMetadata.openGraph as Record<string, unknown>)?.description),
-    ]
-      .join(" ")
-      .toLowerCase();
-
-    const forbidden = [
-      "ai",
-      "ai-powered",
-      "automatic",
-      "automatically",
-      "automated",
-      "alerts?",
-      "scheduled?",
-      "continuous",
-      "legal advice",
-      "compliance",
-      "risks?",
-      "crawls?",
-      "history",
-    ];
-    for (const claim of forbidden) {
-      expect(wording, `claims ${claim}`).not.toMatch(new RegExp(`\\b${claim}\\b`));
+  function claimsNone(metadata: PageMetadata, claims: string[]) {
+    for (const claim of claims) {
+      expect(wording(metadata), `claims ${claim}`).not.toMatch(new RegExp(`\\b${claim}\\b`));
     }
+  }
+
+  it("policy: describes the baseline workflow, and claims no watching, verdicts or advice", () => {
+    expect(String(policyMetadata.description)).toContain("baseline");
+    expect(String(policyMetadata.description)).toMatch(/compare/i);
+    claimsNone(policyMetadata, [
+      "ai", "ai-powered", "automatic", "automatically", "automated", "alerts?", "scheduled?", "continuous",
+      "legal advice", "compliance", "risks?", "crawls?", "history",
+    ]);
   });
 
-  it("does not repeat the same phrase for the sake of it", () => {
-    const description = String(policyMetadata.description).toLowerCase();
-    const counts = new Map<string, number>();
-    for (const word of description.split(/\W+/).filter((w) => w.length > 4)) {
-      counts.set(word, (counts.get(word) ?? 0) + 1);
-    }
-    for (const [word, count] of counts) {
-      expect(count, `"${word}" repeats ${count} times`).toBeLessThanOrEqual(2);
-    }
-  });
-});
-
-describe("the competitor monitor page", () => {
-  it("has exactly the agreed title and description", () => {
-    expect(titleOf(competitorMetadata)).toBe(
-      "Competitor Monitor — Track What Changes on Competitor Websites",
-    );
-    expect(competitorMetadata.description).toBe(
-      "Compare a competitor’s public webpage with your saved baseline and see exactly what changed, with evidence for every detected change.",
-    );
-  });
-
-  it("is canonical at its own address, with matching Open Graph details", () => {
-    expect(competitorMetadata.alternates?.canonical).toBe("/competitor-monitor");
-    const openGraph = competitorMetadata.openGraph as Record<string, unknown>;
-    expect(openGraph.url).toBe("/competitor-monitor");
-    expect(openGraph.title).toBe(titleOf(competitorMetadata));
-    expect(openGraph.description).toBe(competitorMetadata.description);
-  });
-
-  it("does not have the site name appended to a title that already names the product", () => {
-    expect(competitorMetadata.title).toEqual({ absolute: titleOf(competitorMetadata) });
-  });
-
-  it("claims no capability the product does not have", () => {
-    const wording = `${titleOf(competitorMetadata)} ${competitorMetadata.description}`.toLowerCase();
-    for (const claim of [
+  it("competitor: claims no watching, screenshots or verdicts", () => {
+    expect(String(competitorMetadata.description)).toContain("baseline");
+    claimsNone(competitorMetadata, [
       "ai", "automatic", "automatically", "automated", "alerts?", "scheduled?", "continuous",
       "real-time", "crawls?", "history", "screenshots?", "threats?", "risks?", "opportunit(y|ies)",
-    ]) {
-      expect(wording, `claims ${claim}`).not.toMatch(new RegExp(`\\b${claim}\\b`));
-    }
-  });
-});
-
-describe("the price monitor page", () => {
-  it("has the agreed title, with the site name added once by the template", async () => {
-    expect(titleOf(priceMetadata)).toBe("Price Monitor — Track Changes on Public Pricing Pages");
-    const openGraph = priceMetadata.openGraph as Record<string, unknown>;
-    expect(openGraph.title).toBe("Price Monitor — Track Changes on Public Pricing Pages | DiffNexa");
-    const { metadata: root } = await import("@/app/layout");
-    const template = (root.title as { template: string }).template;
-    expect(template.replace("%s", titleOf(priceMetadata))).toBe(
-      "Price Monitor — Track Changes on Public Pricing Pages | DiffNexa",
-    );
+    ]);
   });
 
-  it("has the agreed description, canonical and Open Graph address", () => {
-    expect(priceMetadata.description).toBe(
-      "Compare a public pricing or product page with your saved baseline and see exactly what changed, with evidence you can verify.",
-    );
-    expect(priceMetadata.alternates?.canonical).toBe("/price-monitor");
-    expect((priceMetadata.openGraph as Record<string, unknown>).url).toBe("/price-monitor");
-  });
-
-  it("claims no capability the product does not have and judges no price", () => {
-    const openGraph = priceMetadata.openGraph as Record<string, unknown>;
-    const wording = `${titleOf(priceMetadata)} ${priceMetadata.description} ${openGraph.title} ${openGraph.description}`.toLowerCase();
-    for (const claim of [
+  it("price: claims no watching and judges no price", () => {
+    expect(String(priceMetadata.description)).toContain("baseline");
+    claimsNone(priceMetadata, [
       "ai", "automatic", "automatically", "alerts?", "scheduled?", "real-time", "notifications?",
       "cheapest", "best price", "deals?", "forecast", "predict", "amazon", "history",
-    ]) {
-      expect(wording, `claims ${claim}`).not.toMatch(new RegExp(`\\b${claim}\\b`));
-    }
+    ]);
   });
 
-  it("describes the tool card in the agreed words", () => {
-    expect(TOOLS.find((tool) => tool.href === "/price-monitor")?.summary).toBe(
-      "Track changes on public pricing and product pages and see exactly what changed.",
-    );
-  });
-});
-
-describe("the docx compare page", () => {
-  it("has the agreed title, with the site name added once by the template", async () => {
-    expect(titleOf(docxMetadata)).toBe("DOCX Compare — Compare Word Documents and Find Changes");
-    const openGraph = docxMetadata.openGraph as Record<string, unknown>;
-    expect(openGraph.title).toBe("DOCX Compare — Compare Word Documents and Find Changes | DiffNexa");
-    const { metadata: root } = await import("@/app/layout");
-    const template = (root.title as { template: string }).template;
-    expect(template.replace("%s", titleOf(docxMetadata))).toBe(
-      "DOCX Compare — Compare Word Documents and Find Changes | DiffNexa",
-    );
+  it("docx: claims no visual, formatting or legacy .doc comparison", () => {
+    claimsNone(docxMetadata, ["ai", "automatic", "visual", "images?", "formatting", "\\.doc\\b", "legacy", "pdf", "important"]);
   });
 
-  it("has the agreed description, canonical and Open Graph address", () => {
-    expect(docxMetadata.description).toBe(
-      "Compare two DOCX documents and see exactly what changed, with evidence you can verify.",
-    );
-    expect(docxMetadata.alternates?.canonical).toBe("/docx-compare");
-    expect((docxMetadata.openGraph as Record<string, unknown>).url).toBe("/docx-compare");
+  it("excel: claims no formatting, chart, macro or .xls comparison", () => {
+    claimsNone(excelMetadata, ["ai", "automatic", "formatting", "charts?", "images?", "macros?", "xls", "xlsm", "important"]);
   });
 
-  it("claims no capability the product does not have", () => {
-    const openGraph = docxMetadata.openGraph as Record<string, unknown>;
-    const wording = `${titleOf(docxMetadata)} ${docxMetadata.description} ${openGraph.title} ${openGraph.description}`.toLowerCase();
-    for (const claim of [
-      "ai", "automatic", "visual", "images?", "formatting", "\\.doc\\b", "legacy", "pdf", "important",
-    ]) {
-      expect(wording, `claims ${claim}`).not.toMatch(new RegExp(`\\b${claim}\\b`));
-    }
-  });
-
-  it("describes the tool card in the agreed words", () => {
-    const tool = TOOLS.find((item) => item.href === "/docx-compare");
-    expect(tool?.name).toBe("DOCX Compare");
-    expect(tool?.summary).toBe(
-      "Compare two Word documents and find changes in text, numbers, dates, lists, and tables.",
-    );
-  });
-
-  it("is in the sitemap once", () => {
-    const urls = sitemap().map((entry) => entry.url);
-    expect(urls.filter((url) => url.endsWith("/docx-compare"))).toHaveLength(1);
+  it("pdf: claims no table, image or scanned-page comparison", () => {
+    claimsNone(pdfMetadata, ["ai", "automatic", "tables?", "images?", "scanned", "ocr"]);
   });
 });
 
-describe("the excel compare page", () => {
-  it("has the agreed title, with the site name added once by the template", async () => {
-    expect(titleOf(excelMetadata)).toBe("Excel Compare — Find Changes Between Two Excel Files");
-    const { metadata: root } = await import("@/app/layout");
-    const template = (root.title as { template: string }).template;
-    expect(template.replace("%s", titleOf(excelMetadata))).toBe(
-      "Excel Compare — Find Changes Between Two Excel Files | DiffNexa",
-    );
-    expect((excelMetadata.openGraph as Record<string, unknown>).title).toBe(
-      "Excel Compare — Find Changes Between Two Excel Files | DiffNexa",
-    );
-  });
+describe("structured data", () => {
+  const FORBIDDEN = ["aggregateRating", "review", "offers", "price", "ratingValue", "userInteractionCount", "author", "founder"];
 
-  it("has the agreed description, canonical and Open Graph address", () => {
-    expect(excelMetadata.description).toBe(
-      "Compare two Excel files and see changed cells, values, formulas, rows, columns and sheets with clear visual evidence.",
-    );
-    expect(excelMetadata.alternates?.canonical).toBe("/excel-compare");
-    expect((excelMetadata.openGraph as Record<string, unknown>).url).toBe("/excel-compare");
-  });
+  function keysOf(value: unknown): string[] {
+    if (Array.isArray(value)) return value.flatMap(keysOf);
+    if (value && typeof value === "object") {
+      return Object.entries(value).flatMap(([key, inner]) => [key, ...keysOf(inner)]);
+    }
+    return [];
+  }
 
-  it("claims no capability the product does not have", () => {
-    const openGraph = excelMetadata.openGraph as Record<string, unknown>;
-    const wording = `${titleOf(excelMetadata)} ${excelMetadata.description} ${openGraph.title} ${openGraph.description}`.toLowerCase();
-    for (const claim of ["ai", "automatic", "formatting", "charts?", "images?", "macros?", "xls", "xlsm", "important"]) {
-      expect(wording, `claims ${claim}`).not.toMatch(new RegExp(`\\b${claim}\\b`));
+  it("describes the site and every tool as valid JSON-LD with real addresses", () => {
+    const blocks = [websiteJsonLd(), ...TOOLS.flatMap((tool) => toolJsonLd(tool.href as never))];
+    for (const block of blocks) {
+      const parsed = JSON.parse(serializeJsonLd(block));
+      expect(parsed["@context"]).toBe("https://schema.org");
+      expect(["WebSite", "WebApplication", "BreadcrumbList"]).toContain(parsed["@type"]);
+      for (const url of JSON.stringify(parsed).match(/https?:\/\/[^"]+/g) ?? []) {
+        if (url.startsWith("https://schema.org")) continue;
+        expect(url.startsWith("https://diffnexa.com/")).toBe(true);
+      }
     }
   });
 
-  it("describes the tool card truthfully", () => {
-    const tool = TOOLS.find((item) => item.href === "/excel-compare");
-    expect(tool?.name).toBe("Excel Compare");
-    expect(tool?.summary).toBe(
-      "Compare two Excel workbooks side by side and find changed cells, formulas, rows, columns and sheets.",
-    );
+  it("states only facts: no ratings, reviews, prices, people or user counts", () => {
+    const keys = keysOf([websiteJsonLd(), ...TOOLS.flatMap((tool) => toolJsonLd(tool.href as never))]);
+    for (const key of FORBIDDEN) expect(keys, key).not.toContain(key);
   });
 
-  it("is in the sitemap once", () => {
-    const urls = sitemap().map((entry) => entry.url);
-    expect(urls.filter((url) => url.endsWith("/excel-compare"))).toHaveLength(1);
+  it("gives each tool a breadcrumb from the homepage", () => {
+    const [app, crumbs] = toolJsonLd("/docx-compare");
+    expect(app.name).toBe("DOCX Compare");
+    expect(app.url).toBe("https://diffnexa.com/docx-compare");
+    expect(crumbs.itemListElement).toEqual([
+      { "@type": "ListItem", position: 1, name: "DiffNexa", item: "https://diffnexa.com/" },
+      { "@type": "ListItem", position: 2, name: "DOCX Compare", item: "https://diffnexa.com/docx-compare" },
+    ]);
+  });
+
+  it("cannot be broken out of its script tag", () => {
+    expect(serializeJsonLd({ name: "</script><script>alert(1)</script>" })).not.toContain("<");
   });
 });
 
 describe("the sitemap", () => {
-  it("lists exactly the public pages", () => {
+  it("lists exactly the public pages, each once", () => {
     const paths = sitemap().map((entry) => new URL(entry.url).pathname);
-    expect(paths.sort()).toEqual([
-      "/",
-      "/competitor-monitor",
-      "/docx-compare",
-      "/excel-compare",
-      "/pdf-compare",
-      "/policy-monitor",
-      "/price-monitor",
-      "/website-compare",
-    ].sort());
+    expect(paths.sort()).toEqual(
+      [
+        "/",
+        "/competitor-monitor",
+        "/docx-compare",
+        "/excel-compare",
+        "/pdf-compare",
+        "/policy-monitor",
+        "/price-monitor",
+        "/website-compare",
+      ].sort(),
+    );
+    expect(new Set(paths).size).toBe(paths.length);
   });
 
-  it("includes the price monitor route once", () => {
-    const urls = sitemap().map((entry) => entry.url);
-    expect(urls.filter((url) => url.endsWith("/price-monitor"))).toHaveLength(1);
+  it("uses the real domain by default, never localhost", () => {
+    for (const entry of sitemap()) {
+      expect(entry.url.startsWith("https://diffnexa.com/")).toBe(true);
+      expect(entry.url).not.toContain("localhost");
+      expect(entry.url).not.toContain("onrender.com");
+    }
+    expect(String(robots().sitemap)).toBe("https://diffnexa.com/sitemap.xml");
   });
 
-  it("includes the competitor monitor route", () => {
-    const urls = sitemap().map((entry) => entry.url);
-    expect(urls).toContain("http://localhost:3000/competitor-monitor");
-    expect(urls.filter((url) => url.endsWith("/competitor-monitor"))).toHaveLength(1);
-  });
-
-  it("includes the policy monitor route", () => {
-    const paths = sitemap().map((entry) => new URL(entry.url).pathname);
-    expect(paths).toContain("/policy-monitor");
-  });
-
-  it("uses the configured site address rather than a hard-coded one", async () => {
+  it("uses the configured site address when a build sets one", async () => {
     vi.resetModules();
     vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://diffnexa.example");
     const { default: configuredSitemap } = await import("@/app/sitemap");
@@ -392,7 +329,6 @@ describe("the sitemap", () => {
 
     for (const entry of configuredSitemap()) {
       expect(entry.url.startsWith("https://diffnexa.example/")).toBe(true);
-      expect(entry.url).not.toContain("localhost");
     }
     expect(String(configuredRobots().sitemap)).toBe("https://diffnexa.example/sitemap.xml");
     vi.unstubAllEnvs();

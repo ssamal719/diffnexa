@@ -55,19 +55,19 @@ export const PAGE_SEO: Record<PagePath, { title: string; description: string }> 
       "Compare PDF, Word and Excel files, or check a public web page against a saved baseline. DiffNexa shows every change with evidence you can verify.",
   },
   "/pdf-compare": {
-    title: "PDF Compare — Compare Two PDF Files and Find Changes | DiffNexa",
+    title: "Compare Two PDF Files and Highlight Differences Online | DiffNexa",
     description:
-      "Compare two PDF files and find changed text, numbers, dates and pages, with the page and the exact wording behind every change. No account needed.",
+      "Compare two PDF files for differences. Changed text, numbers, dates and pages are outlined side by side, each with its page and exact wording. No account.",
   },
   "/docx-compare": {
-    title: "DOCX Compare — Compare Word Documents and Find Changes | DiffNexa",
+    title: "Compare Two Word Documents and Highlight Differences | DiffNexa",
     description:
-      "Compare two Word (.docx) documents and find changes in text, headings, numbers, dates, lists and tables, with the exact wording behind each one.",
+      "Compare two Word (.docx) documents and see every difference marked side by side: text, headings, numbers, dates, lists and tables. Files are never stored.",
   },
   "/excel-compare": {
-    title: "Excel Compare — Compare Two Excel Files for Changes | DiffNexa",
+    title: "Compare Two Excel Sheets and Highlight Differences | DiffNexa",
     description:
-      "Compare two Excel (.xlsx) workbooks side by side and find changed cells, values, formulas, rows, columns, sheets and links, with evidence for each.",
+      "Compare two Excel sheets or workbooks and find the differences: changed cells, values, formulas, rows, columns and sheets, with evidence for each. No account.",
   },
   "/website-compare": {
     title: "Website Change Detector — Find Changes on a Web Page | DiffNexa",

@@ -137,9 +137,9 @@ describe("page metadata", () => {
       expect(page.metadata.description, page.name).toBe(seo.description);
     }
     expect(titleOf(homeMetadata)).toBe("DiffNexa — Document & Web Page Comparison Tools");
-    expect(titleOf(pdfMetadata)).toBe("PDF Compare — Compare Two PDF Files and Find Changes | DiffNexa");
-    expect(titleOf(docxMetadata)).toBe("DOCX Compare — Compare Word Documents and Find Changes | DiffNexa");
-    expect(titleOf(excelMetadata)).toBe("Excel Compare — Compare Two Excel Files for Changes | DiffNexa");
+    expect(titleOf(pdfMetadata)).toBe("Compare Two PDF Files and Highlight Differences Online | DiffNexa");
+    expect(titleOf(docxMetadata)).toBe("Compare Two Word Documents and Highlight Differences | DiffNexa");
+    expect(titleOf(excelMetadata)).toBe("Compare Two Excel Sheets and Highlight Differences | DiffNexa");
     expect(titleOf(webMetadata)).toBe("Website Change Detector — Find Changes on a Web Page | DiffNexa");
     expect(titleOf(policyMetadata)).toBe("Policy & Terms Monitor — Find Changes to Policy Pages | DiffNexa");
     expect(titleOf(competitorMetadata)).toBe("Competitor Monitor — Track Changes on Competitor Web Pages | DiffNexa");

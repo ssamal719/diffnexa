@@ -8,6 +8,20 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/pdf-worker": ["./node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs"],
   },
+
+  // One address for the whole site. Visitors and search engines that arrive on
+  // www.diffnexa.com are sent permanently to the same page on diffnexa.com, so
+  // Google indexes a single copy of each page instead of two.
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.diffnexa.com" }],
+        destination: "https://diffnexa.com/:path*",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { sealHeaders } from "@/lib/analysis-seal";
+import { forwardOptions } from "@/lib/form-options";
 import {
   COMPARE_TIMEOUT_MS,
   DOCX_MAX_UPLOAD_BYTES,
@@ -71,15 +72,11 @@ export async function POST(request: Request) {
   const outgoing = new FormData();
   outgoing.append("original", original, "original.docx");
   outgoing.append("revised", revised, "revised.docx");
-  // Matching options (Ignore options), passed on only as an explicit "true" or
-  // "false"; anything else is left out and the engine uses its defaults.
-  for (const [field, engineField] of [
+  // Matching options (Ignore options).
+  forwardOptions(form, outgoing, [
     ["ignoreCase", "ignore_case"],
     ["ignorePunctuation", "ignore_punctuation"],
-  ] as const) {
-    const value = form.get(field);
-    if (value === "true" || value === "false") outgoing.append(engineField, value);
-  }
+  ]);
 
   let response: Response;
   try {

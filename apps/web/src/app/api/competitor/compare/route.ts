@@ -25,6 +25,12 @@ export async function POST(request: Request) {
   const parsed = await readJsonBody(request);
   if (!parsed.ok) return parsed.response;
 
+  // "Try example": the engine compares its own two saved versions of a
+  // fictional page. Nothing is fetched, and nothing else in the request is sent.
+  if (parsed.body.example === true) {
+    return callEngine("/v1/competitor/compare", { example: true }, "competitor");
+  }
+
   const url = parsed.body.url;
   if (typeof url !== "string" || url.trim() === "") {
     return failure(400, "bad_request", webErrorMessage("bad_request")!);

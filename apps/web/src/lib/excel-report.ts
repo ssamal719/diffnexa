@@ -79,11 +79,17 @@ export type WorkbookSummary = {
   warnings: string[];
 };
 
+export type ExcelOptions = { ignoreCase: boolean; ignoreWhitespace: boolean };
+
+export const DEFAULT_EXCEL_OPTIONS: ExcelOptions = { ignoreCase: false, ignoreWhitespace: false };
+
 export type ExcelComparison = {
   engineVersion: string;
   processingMs: number;
   workbooks: { original: WorkbookSummary; revised: WorkbookSummary };
   counts: { total: number };
+  /** The Ignore options the comparison applied (absent from older results). */
+  options?: ExcelOptions;
   groups: { id: string; label: string; changeCount: number; changeIds: string[] }[];
   changes: ExcelChange[];
   sheets: SheetPairing[];

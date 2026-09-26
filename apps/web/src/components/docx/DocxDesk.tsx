@@ -1,44 +1,28 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 import { ReportWithAnalyst } from "@/components/analysis/ReportWithAnalyst";
 import { DocxReport } from "@/components/docx/DocxReport";
 import { DocxUploadSlot, type DocxSlotFile } from "@/components/docx/DocxUploadSlot";
-import { ProcessingState, type ProcessingStage, type StageText } from "@/components/results/ProcessingState";
+import { ExampleGuide } from "@/components/examples/ExampleGuide";
+import { TryExample } from "@/components/examples/TryExample";
+import { ProcessingState, type StageText } from "@/components/results/ProcessingState";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import type { WorkspaceControls } from "@/components/workspace/WorkspaceControls";
 import { docxExportFormats } from "@/lib/docx-export";
 import { DEFAULT_DOCX_OPTIONS, type DocxComparison, type DocxFailure, type DocxOptions } from "@/lib/docx-report";
+import { EXAMPLE_FILES, EXAMPLE_GUIDES, loadExampleFile } from "@/lib/examples";
+import { runStatus, useComparisonRun, type RunFiles } from "@/lib/use-comparison-run";
 import { docxErrorMessage } from "@/lib/validation";
-import { SEAL_HEADER } from "@/lib/analysis";
-
-type EngineStatus = { checked: boolean; available: boolean };
-
-type Phase =
-  | { name: "idle" }
-  | { name: "working"; stage: ProcessingStage; uploadPercent: number | null }
-  | {
-      name: "done";
-      /** Which comparison this is; every run gets a new one, so nothing from an earlier run is reused. */
-      run: number;
-      result: DocxComparison;
-      original: DocxSlotFile;
-      revised: DocxSlotFile;
-      seal: string | null;
-    }
-  | { name: "failed"; error: DocxFailure };
 
 /**
  * The built-in example: a short, fictional services agreement and a revision
  * of it, served with the site (see apps/engine/tests/fixtures/docx_pages/
  * build_example.py). They are compared exactly like uploaded files.
  */
-export const DOCX_EXAMPLE = {
-  original: { url: "/examples/service-agreement-original.docx", name: "Example - service agreement (original).docx" },
-  revised: { url: "/examples/service-agreement-revised.docx", name: "Example - service agreement (revised).docx" },
-} as const;
+export const DOCX_EXAMPLE = EXAMPLE_FILES.docx;
 
 const DOCX_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 
@@ -88,27 +72,11 @@ export function DocxDesk() {
   const [original, setOriginal] = useState<DocxSlotFile | null>(null);
   const [revised, setRevised] = useState<DocxSlotFile | null>(null);
   const [options, setOptions] = useState<DocxOptions>(DEFAULT_DOCX_OPTIONS);
-  const [engine, setEngine] = useState<EngineStatus>({ checked: false, available: false });
-  const [phase, setPhase] = useState<Phase>({ name: "idle" });
-  const [exampleProblem, setExampleProblem] = useState(false);
-  const requestRef = useRef<XMLHttpRequest | null>(null);
-  const runRef = useRef(0);
-
-  useEffect(() => {
-    let cancelled = false;
-    fetch("/api/engine-status")
-      .then((response) => response.json())
-      .then((body) => {
-        if (!cancelled) setEngine({ checked: true, available: Boolean(body.available) });
-      })
-      .catch(() => {
-        if (!cancelled) setEngine({ checked: true, available: false });
-      });
-    return () => {
-      cancelled = true;
-      requestRef.current?.abort();
-    };
-  }, []);
+  const { engine, phase, run, cancel } = useComparisonRun<DocxComparison, DocxSlotFile, DocxFailure>({
+    endpoint: "/api/docx/compare",
+    fields: ["original", "revised"],
+    filenames: ["original.docx", "revised.docx"],
+  });
 
   const bothReady = original !== null && revised !== null;
   const working = phase.name === "working";
@@ -116,117 +84,44 @@ export function DocxDesk() {
   const sameFile =
     bothReady && original.sizeBytes === revised.sizeBytes && original.displayName === revised.displayName;
 
-  /**
-   * Compares two files with the given matching options. Every run — a first
-   * comparison, Reverse, new Ignore options, the example — goes through here,
-   * the same request an ordinary upload makes.
-   */
-  function runComparison(
-    files: { original: DocxSlotFile; revised: DocxSlotFile } | null = bothReady ? { original, revised } : null,
-    matching: DocxOptions = options,
-  ) {
-    if (!files) return;
-    requestRef.current?.abort();
-    const { original: first, revised: second } = files;
-
-    const form = new FormData();
-    form.append("original", first.file, "original.docx");
-    form.append("revised", second.file, "revised.docx");
-    form.append("ignoreCase", String(matching.ignoreCase));
-    form.append("ignorePunctuation", String(matching.ignorePunctuation));
-
-    // XMLHttpRequest rather than fetch, because it reports real upload progress.
-    const request = new XMLHttpRequest();
-    requestRef.current = request;
-    setPhase({ name: "working", stage: "sending", uploadPercent: 0 });
-
-    request.upload.addEventListener("progress", (event) => {
-      if (!event.lengthComputable) return;
-      const percent = Math.round((event.loaded / event.total) * 100);
-      setPhase({ name: "working", stage: percent >= 100 ? "comparing" : "sending", uploadPercent: percent });
-    });
-    request.upload.addEventListener("load", () => {
-      setPhase({ name: "working", stage: "comparing", uploadPercent: 100 });
-    });
-
-    request.addEventListener("load", () => {
-      let body: unknown = null;
-      try {
-        body = JSON.parse(request.responseText);
-      } catch {
-        body = null;
-      }
-      if (request.status >= 200 && request.status < 300 && body) {
-        setPhase({ name: "working", stage: "preparing", uploadPercent: 100 });
-        const seal = request.getResponseHeader?.(SEAL_HEADER) ?? null;
-        runRef.current += 1;
-        const run = runRef.current;
-        requestAnimationFrame(() =>
-          setPhase({ name: "done", run, result: body as DocxComparison, original: first, revised: second, seal }),
-        );
-        return;
-      }
-      const error = (body as { error?: DocxFailure } | null)?.error;
-      setPhase({
-        name: "failed",
-        error: error ?? { code: "comparison_failed", message: "The comparison could not be completed." },
-      });
-    });
-
-    request.addEventListener("error", () => {
-      setPhase({
-        name: "failed",
-        error: { code: "network", message: "The connection dropped before the comparison finished." },
-      });
-    });
-    request.addEventListener("abort", () => {
-      if (requestRef.current === request) setPhase({ name: "idle" });
-    });
-
-    request.open("POST", "/api/docx/compare");
-    request.send(form);
+  /** Every comparison — the first, Reverse, new Ignore options, the example — is this one request. */
+  function compare(files: RunFiles<DocxSlotFile>, matching: DocxOptions = options) {
+    run(files, { ...matching }, Boolean(files.original.example && files.revised.example));
   }
 
   /** Swaps which file is the original and which the revision, then compares them again. */
-  function reverse(done: { original: DocxSlotFile; revised: DocxSlotFile }) {
+  function reverse(done: RunFiles<DocxSlotFile>) {
     const swapped = { original: done.revised, revised: done.original };
     setOriginal(swapped.original);
     setRevised(swapped.revised);
-    runComparison(swapped);
+    compare(swapped);
   }
 
   /** Compares the same two files again with different Ignore options. */
-  function applyOptions(done: { original: DocxSlotFile; revised: DocxSlotFile }, values: Record<string, boolean>) {
+  function applyOptions(done: RunFiles<DocxSlotFile>, values: Record<string, boolean>) {
     const next: DocxOptions = {
       ignoreCase: Boolean(values.ignoreCase),
       ignorePunctuation: Boolean(values.ignorePunctuation),
     };
     setOptions(next);
-    runComparison(done, next);
+    compare(done, next);
   }
 
   /** Loads the built-in example documents into both slots and compares them. */
   async function tryExample() {
-    setExampleProblem(false);
-    try {
-      const [first, second] = await Promise.all(
-        [DOCX_EXAMPLE.original, DOCX_EXAMPLE.revised].map(async (example) => {
-          const response = await fetch(example.url);
-          if (!response.ok) throw new Error("example unavailable");
-          const file = new File([await response.arrayBuffer()], example.name, { type: DOCX_TYPE });
-          return { file, displayName: example.name, sizeBytes: file.size, example: true } satisfies DocxSlotFile;
-        }),
-      );
-      setOriginal(first);
-      setRevised(second);
-      if (engine.available) runComparison({ original: first, revised: second });
-      else setPhase({ name: "idle" });
-    } catch {
-      setExampleProblem(true);
-    }
+    const [first, second] = await Promise.all(
+      [DOCX_EXAMPLE.original, DOCX_EXAMPLE.revised].map(async (example) => {
+        const file = await loadExampleFile(example, DOCX_TYPE);
+        return { file, displayName: example.name, sizeBytes: file.size, example: true } satisfies DocxSlotFile;
+      }),
+    );
+    setOriginal(first);
+    setRevised(second);
+    if (engine.available) compare({ original: first, revised: second });
+    else cancel();
   }
 
-  function controlsFor(done: { original: DocxSlotFile; revised: DocxSlotFile; result: DocxComparison }): WorkspaceControls {
+  function controlsFor(done: RunFiles<DocxSlotFile> & { result: DocxComparison }): WorkspaceControls {
     const applied = done.result.options ?? DEFAULT_DOCX_OPTIONS;
     return {
       ignore: {
@@ -251,8 +146,7 @@ export function DocxDesk() {
   function replaceFile(setter: (value: DocxSlotFile | null) => void) {
     return (value: DocxSlotFile | null) => {
       setter(value);
-      requestRef.current?.abort();
-      setPhase({ name: "idle" }); // a result never lingers beside different files
+      cancel(); // a result never lingers beside different files
     };
   }
 
@@ -287,31 +181,23 @@ export function DocxDesk() {
           )}
 
           <div className="flex flex-wrap items-center gap-3">
-            <Button disabled={!canCompare} onClick={() => runComparison()} aria-describedby="docx-compare-state">
+            <Button
+              disabled={!canCompare}
+              onClick={() => bothReady && compare({ original, revised })}
+              aria-describedby="docx-compare-state"
+            >
               {working ? "Comparing…" : "Compare documents"}
             </Button>
-            <Button
-              variant="secondary"
-              disabled={working}
-              onClick={() => void tryExample()}
-              aria-describedby="docx-example-note"
-            >
-              Try example
-            </Button>
             <p id="docx-compare-state" role="status" aria-live="polite" className="text-[0.85rem] text-ink-soft">
-              {stateMessage({ bothReady, engine, phase })}
+              {runStatus(phase, engine, bothReady)}
             </p>
           </div>
 
-          <p id="docx-example-note" className="text-[0.8rem] text-ink-soft">
-            Try example loads two short, fictional versions of a services agreement into the slots above and
-            compares them — no account and no files of your own needed. Replace either one to compare your own.
-          </p>
-          {exampleProblem && (
-            <Alert tone="problem" title="The example couldn't be loaded" role="alert">
-              Please try again in a moment, or choose your own documents.
-            </Alert>
-          )}
+          <TryExample
+            disabled={working}
+            onTry={tryExample}
+            note="Loads two short, fictional versions of a services agreement into the slots above and compares them — no account and no files of your own needed. Replace either one to compare your own."
+          />
 
           {engine.checked && !engine.available && (
             <Alert tone="planned" title="Comparison service not reachable">
@@ -337,7 +223,10 @@ export function DocxDesk() {
       {phase.name === "working" && (
         <ProcessingState stage={phase.stage} uploadPercent={phase.uploadPercent} stages={STAGES} />
       )}
-      {phase.name === "failed" && <DocxError error={phase.error} onRetry={() => runComparison()} />}
+      {phase.name === "failed" && (
+        <DocxError error={phase.error} onRetry={() => bothReady && compare({ original, revised })} />
+      )}
+      {phase.name === "done" && phase.example && <ExampleGuide guide={EXAMPLE_GUIDES.docx} />}
       {phase.name === "done" && (
         <ReportWithAnalyst key={phase.run} tool="docx" result={phase.result} seal={phase.seal}>
           {({ analyst, focus, analysis }) => (
@@ -407,13 +296,4 @@ function DocxError({ error, onRetry }: { error: DocxFailure; onRetry: () => void
       </div>
     </section>
   );
-}
-
-function stateMessage({ bothReady, engine, phase }: { bothReady: boolean; engine: EngineStatus; phase: Phase }): string {
-  if (phase.name === "working") return "Working on it — progress is shown below.";
-  if (!bothReady) return "Add both documents to continue.";
-  if (!engine.checked) return "Checking the comparison service…";
-  if (!engine.available) return "The comparison service is unavailable.";
-  if (phase.name === "done") return "Your report is ready below.";
-  return "Both documents are ready.";
 }

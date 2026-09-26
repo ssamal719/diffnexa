@@ -94,6 +94,7 @@ export function ComparisonWorkspace({
   focus = null,
   controls,
   linkable = [],
+  linkedUnit = "paragraph",
 }: {
   /** The tool's name: "PDF Compare". */
   tool: string;
@@ -130,6 +131,8 @@ export function ComparisonWorkspace({
   controls?: WorkspaceControls;
   /** The views (mode ids) in which the two versions can scroll together; the Linked switch appears there. */
   linkable?: string[];
+  /** What Linked keeps in step in this tool: "paragraph", "page", "row". */
+  linkedUnit?: string;
 }) {
   const id = useId();
   const [mode, setMode] = useState<string>(
@@ -345,7 +348,7 @@ export function ComparisonWorkspace({
                   ))}
                 </div>
               )}
-              {linkable.includes(mode) && <LinkedToggle linked={linked} onChange={setLinked} />}
+              {linkable.includes(mode) && <LinkedToggle linked={linked} onChange={setLinked} unit={linkedUnit} />}
               <label className="min-w-[9rem] flex-1 sm:max-w-[16rem]">
                 <span className="sr-only">Search changes</span>
                 <input

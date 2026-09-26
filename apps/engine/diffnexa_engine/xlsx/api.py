@@ -150,6 +150,10 @@ def serialize_excel_comparison(outcome: ExcelComparisonOutcome, processing_ms: i
         "processingMs": processing_ms,
         "workbooks": {"original": _workbook(outcome.previous), "revised": _workbook(outcome.current)},
         "counts": {"total": len(changes)},
+        "options": {
+            "ignoreCase": outcome.options.ignore_case,
+            "ignoreWhitespace": outcome.options.ignore_whitespace,
+        },
         "groups": [
             {
                 "id": group_id,

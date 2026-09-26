@@ -43,6 +43,30 @@ export type WorkspaceControls = {
 /** The widest a control's panel is; on a narrow screen it is the screen's width less a margin. */
 const PANEL_WIDTH = 352;
 
+/** Small line icons for the controls; decorative, so hidden from screen readers. */
+function Icon({ name }: { name: "filter" | "download" | "swap" | "link" }) {
+  const paths: Record<typeof name, string> = {
+    filter: "M3 4h14l-5.5 6.5V16l-3 1.5v-7L3 4z",
+    download: "M10 3v9m0 0l-3.5-3.5M10 12l3.5-3.5M4 14.5V17h12v-2.5",
+    swap: "M6 4L3 7l3 3M3 7h11M14 10l3 3-3 3M17 13H6",
+    link: "M8.5 11.5a3 3 0 004.2 0l2.6-2.6a3 3 0 00-4.2-4.2l-1 1M11.5 8.5a3 3 0 00-4.2 0l-2.6 2.6a3 3 0 004.2 4.2l1-1",
+  };
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 20 20"
+      className="h-4 w-4 shrink-0"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d={paths[name]} />
+    </svg>
+  );
+}
+
 const BUTTON =
   "inline-flex items-center gap-1.5 rounded-[3px] border border-rule-strong bg-paper px-2.5 py-1 text-[0.85rem] font-medium hover:bg-surface";
 
@@ -199,12 +223,28 @@ export function ComparisonControls({ controls }: { controls?: WorkspaceControls 
   return (
     <div role="group" aria-label="Comparison controls" className="flex flex-wrap items-center gap-2 self-center">
       {controls.ignore && (
-        <Popover label="Ignore options" title="Ignore options">
+        <Popover
+          label={
+            <>
+              <Icon name="filter" />
+              Ignore options
+            </>
+          }
+          title="Ignore options"
+        >
           {(close) => <IgnorePanel control={controls.ignore!} close={close} />}
         </Popover>
       )}
       {controls.exports && controls.exports.length > 0 && (
-        <Popover label="Export" title="Export this comparison">
+        <Popover
+          label={
+            <>
+              <Icon name="download" />
+              Export
+            </>
+          }
+          title="Export this comparison"
+        >
           {(close) => (
             <div>
               <p className="font-semibold">Export this comparison</p>
@@ -235,7 +275,7 @@ export function ComparisonControls({ controls }: { controls?: WorkspaceControls 
       )}
       {controls.reverse && (
         <button type="button" onClick={controls.reverse.onReverse} title={controls.reverse.detail} className={BUTTON}>
-          <span aria-hidden="true">⇄</span>
+          <Icon name="swap" />
           Reverse
           <span className="sr-only">: {controls.reverse.detail}</span>
         </button>
@@ -245,7 +285,16 @@ export function ComparisonControls({ controls }: { controls?: WorkspaceControls 
 }
 
 /** The Linked scrolling switch: pressed means scrolling one version moves the other. */
-export function LinkedToggle({ linked, onChange }: { linked: boolean; onChange: (value: boolean) => void }) {
+export function LinkedToggle({
+  linked,
+  onChange,
+  unit = "paragraph",
+}: {
+  linked: boolean;
+  onChange: (value: boolean) => void;
+  /** What is kept in step: "paragraph", "page", "row". */
+  unit?: string;
+}) {
   return (
     <button
       type="button"
@@ -253,14 +302,12 @@ export function LinkedToggle({ linked, onChange }: { linked: boolean; onChange: 
       onClick={() => onChange(!linked)}
       title={
         linked
-          ? "Linked: scrolling one version scrolls the other to the matching paragraph. Choosing a change always shows it in both."
-          : "Not linked: each version scrolls on its own. Choosing a change still shows it in both."
+          ? `Linked: moving through one version moves the other to the matching ${unit}. Choosing a change always shows it in both.`
+          : "Not linked: each version moves on its own. Choosing a change still shows it in both."
       }
-      className={[
-        BUTTON,
-        linked ? "border-signal bg-signal-soft text-signal" : "",
-      ].join(" ")}
+      className={[BUTTON, linked ? "border-signal bg-signal-soft text-signal" : ""].join(" ")}
     >
+      <Icon name="link" />
       Linked
       <span className="text-[0.78rem] font-normal">{linked ? "On" : "Off"}</span>
     </button>

@@ -6,6 +6,7 @@ import { Alert } from "@/components/ui/Alert";
 import { WebChangeCard } from "@/components/website/WebChangeCard";
 import { ChangeList } from "@/components/workspace/ChangeList";
 import { ComparisonWorkspace, type WorkspaceContext } from "@/components/workspace/ComparisonWorkspace";
+import { webExportFormats } from "@/lib/tool-exports";
 import { DetectedValues } from "@/components/workspace/EvidenceBits";
 import { CitedPassages, FlowView } from "@/components/workspace/FlowView";
 import type { ChangeAnalysis } from "@/lib/analysis";
@@ -41,6 +42,8 @@ export function WebWorkspace({
   analyst,
   analysis = null,
   focus = null,
+  exportPage,
+  exportLabel,
 }: {
   tool: string;
   result: WebComparison;
@@ -60,6 +63,10 @@ export function WebWorkspace({
   analyst?: ReactNode;
   analysis?: ChangeAnalysis | null;
   focus?: FocusRequest;
+  /** The page, for the exported report: its address, and when the baseline was captured. */
+  exportPage?: { url: string; baseline: string | null };
+  /** The tool's own label for a change in the export: a policy topic, competitor signal or price category. */
+  exportLabel?: (change: WebChange) => string | null;
 }) {
   const view = useMemo(() => readView(result.view), [result]);
   const byId = useMemo(() => new Map(result.changes.map((change) => [change.id, change])), [result]);
@@ -81,6 +88,8 @@ export function WebWorkspace({
       changes={changes}
       modes={modes}
       initialMode={modes[0].id}
+      linkable={["page"]}
+      controls={exportPage ? { exports: webExportFormats(tool, result, exportPage, exportLabel) } : undefined}
       filters={filters}
       overview={overview}
       overviewTitle={overviewTitle}

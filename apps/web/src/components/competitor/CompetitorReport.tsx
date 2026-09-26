@@ -129,6 +129,8 @@ export function CompetitorReport({
       analyst={analyst}
       analysis={analysis}
       focus={focus}
+      exportPage={{ url, baseline: baselineCapturedAt ? formatCapturedAt(baselineCapturedAt) : null }}
+      exportLabel={(change) => (change as CompetitorChange).competitorSignal?.label ?? null}
     />
   );
 }

@@ -1,0 +1,217 @@
+{
+ "engineVersion": "0.1.0",
+ "processingMs": 0,
+ "documents": {
+  "previous": {
+   "pageCount": 3,
+   "sha256": "1aebd189e3fe6836b1236b9fb4b63d11eff75b1ab8c2135665d86a77073c3380"
+  },
+  "revised": {
+   "pageCount": 3,
+   "sha256": "4c215cb3736e005262840fdbf3a46872855df0a294a47b701d64294c1411be2f"
+  }
+ },
+ "counts": {
+  "total": 4,
+  "meaningful": 4,
+  "noise": 0
+ },
+ "changes": [
+  {
+   "id": "c0",
+   "seq": 0,
+   "type": "NUMBER_CHANGED",
+   "kind": "modified",
+   "category": "number",
+   "label": "Total Vacancies",
+   "oldValue": "627",
+   "newValue": "654",
+   "delta": "+27 (+4.31%)",
+   "confidence": 0.609,
+   "isNoise": false,
+   "noiseReason": null,
+   "oldPages": [
+    2
+   ],
+   "newPages": [
+    2
+   ],
+   "evidence": [
+    {
+     "side": "old",
+     "page": 2,
+     "excerpt": "Total Vacancies: 627",
+     "bbox": {
+      "x0": 156.37,
+      "y0": 102.28,
+      "x1": 174.72,
+      "y1": 113.28
+     },
+     "wordCount": 1
+    },
+    {
+     "side": "new",
+     "page": 2,
+     "excerpt": "Total Vacancies: 654",
+     "bbox": {
+      "x0": 156.37,
+      "y0": 102.28,
+      "x1": 174.72,
+      "y1": 113.28
+     },
+     "wordCount": 1
+    }
+   ]
+  },
+  {
+   "id": "c1",
+   "seq": 1,
+   "type": "NUMBER_CHANGED",
+   "kind": "modified",
+   "category": "number",
+   "label": "Maximum age",
+   "oldValue": "30",
+   "newValue": "32",
+   "delta": "+2 (+6.67%)",
+   "confidence": 0.609,
+   "isNoise": false,
+   "noiseReason": null,
+   "oldPages": [
+    2
+   ],
+   "newPages": [
+    2
+   ],
+   "evidence": [
+    {
+     "side": "old",
+     "page": 2,
+     "excerpt": "Maximum age: 30 years",
+     "bbox": {
+      "x0": 147.19,
+      "y0": 125.28,
+      "x1": 159.42,
+      "y1": 136.28
+     },
+     "wordCount": 1
+    },
+    {
+     "side": "new",
+     "page": 2,
+     "excerpt": "Maximum age: 32 years",
+     "bbox": {
+      "x0": 147.19,
+      "y0": 125.28,
+      "x1": 159.42,
+      "y1": 136.28
+     },
+     "wordCount": 1
+    }
+   ]
+  },
+  {
+   "id": "c2",
+   "seq": 2,
+   "type": "TEXT_ADDED",
+   "kind": "added",
+   "category": "text",
+   "label": null,
+   "oldValue": null,
+   "newValue": "Reservation for reserved categories will follow the rules issued by the state government and in force on the last date of application.",
+   "delta": null,
+   "confidence": 0.609,
+   "isNoise": false,
+   "noiseReason": null,
+   "oldPages": [],
+   "newPages": [
+    2
+   ],
+   "evidence": [
+    {
+     "side": "new",
+     "page": 2,
+     "excerpt": "Reservation for reserved categories will follow the rules issued by the state government and in force on the last date of application.",
+     "bbox": {
+      "x0": 72.0,
+      "y0": 171.28,
+      "x1": 518.29,
+      "y1": 197.28
+     },
+     "wordCount": 22
+    }
+   ]
+  },
+  {
+   "id": "c3",
+   "seq": 3,
+   "type": "DATE_CHANGED",
+   "kind": "modified",
+   "category": "date",
+   "label": "Last date to apply",
+   "oldValue": "30 September 2026",
+   "newValue": "15 October 2026",
+   "delta": "15 days later",
+   "confidence": 0.97,
+   "isNoise": false,
+   "noiseReason": null,
+   "oldPages": [
+    3
+   ],
+   "newPages": [
+    3
+   ],
+   "evidence": [
+    {
+     "side": "old",
+     "page": 3,
+     "excerpt": "Last date to apply: 30 September 2026",
+     "bbox": {
+      "x0": 164.95,
+      "y0": 102.28,
+      "x1": 261.56,
+      "y1": 113.28
+     },
+     "wordCount": 3
+    },
+    {
+     "side": "new",
+     "page": 3,
+     "excerpt": "Last date to apply: 15 October 2026",
+     "bbox": {
+      "x0": 164.95,
+      "y0": 102.28,
+      "x1": 246.89,
+      "y1": 113.28
+     },
+     "wordCount": 3
+    }
+   ]
+  }
+ ],
+ "pageLinks": [
+  {
+   "previous": 1,
+   "revised": 1
+  },
+  {
+   "previous": 2,
+   "revised": 2
+  },
+  {
+   "previous": 3,
+   "revised": 3
+  }
+ ],
+ "options": {
+  "ignoreCase": true,
+  "ignorePunctuation": false
+ },
+ "diagnostics": {
+  "ocrRequired": false,
+  "previousScannedPages": [],
+  "revisedScannedPages": [],
+  "previousPagesWithoutText": [],
+  "revisedPagesWithoutText": [],
+  "notes": []
+ }
+}

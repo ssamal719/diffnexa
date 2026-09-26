@@ -117,6 +117,8 @@ export function PolicyReport({
       analyst={analyst}
       analysis={analysis}
       focus={focus}
+      exportPage={{ url, baseline: baselineCapturedAt ? formatCapturedAt(baselineCapturedAt) : null }}
+      exportLabel={(change) => topicsOf(change as PolicyChange).map((topic) => topic.label).join(", ") || null}
     />
   );
 }

@@ -7,7 +7,13 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { formatFileSize, sanitizeFilename } from "@/lib/validation";
 
-export type SlotFile = { file: File; displayName: string; sizeBytes: number };
+export type SlotFile = {
+  file: File;
+  displayName: string;
+  sizeBytes: number;
+  /** One of DiffNexa's built-in example files rather than the person's own. */
+  example?: boolean;
+};
 
 export type FileCheck = { ok: true } | { ok: false; message: string };
 
@@ -51,6 +57,15 @@ export function OfficeFileSlot({
   const inputRef = useRef<HTMLInputElement>(null);
   const [state, setState] = useState<State>(value ? { status: "ready", value } : { status: "empty" });
   const [dragging, setDragging] = useState(false);
+
+  // The desk can also fill the slot itself — the example, or Reverse swapping
+  // the two files — so the slot follows a value set from outside.
+  const [shown, setShown] = useState<SlotFile | null>(value);
+  if (value !== shown) {
+    setShown(value);
+    if (value) setState({ status: "ready", value });
+    else if (state.status === "ready") setState({ status: "empty" });
+  }
 
   async function accept_(file: File) {
     const displayName = sanitizeFilename(file.name);
@@ -135,6 +150,11 @@ export function OfficeFileSlot({
             {state.status === "ready" && (
               <p className="tabular text-[0.85rem] text-ink-soft">
                 <Badge tone="ready">Ready</Badge>{" "}
+                {state.value.example && (
+                  <>
+                    <Badge tone="neutral">Example file</Badge>{" "}
+                  </>
+                )}
                 <span className="ml-1">
                   {formatFileSize(state.value.sizeBytes)} · {kindNote}
                 </span>
@@ -162,7 +182,8 @@ export function OfficeFileSlot({
       <p id={statusId} role="status" aria-live="polite" className="sr-only">
         {state.status === "empty" && `${label}: no file chosen.`}
         {state.status === "checking" && `${label}: checking ${state.displayName}.`}
-        {state.status === "ready" && `${label}: ${state.value.displayName} ready.`}
+        {state.status === "ready" &&
+          `${label}: ${state.value.displayName} ready.${state.value.example ? " This is an example file." : ""}`}
         {state.status === "rejected" && `${label}: ${state.displayName} rejected. ${state.message}`}
       </p>
     </section>

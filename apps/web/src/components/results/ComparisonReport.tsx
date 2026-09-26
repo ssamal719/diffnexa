@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 
 import { ChangeCard } from "@/components/results/ChangeCard";
 import { PageMap } from "@/components/results/PageMap";
@@ -8,7 +8,8 @@ import { Alert } from "@/components/ui/Alert";
 import { ChangeList } from "@/components/workspace/ChangeList";
 import { ComparisonWorkspace, type WorkspaceContext } from "@/components/workspace/ComparisonWorkspace";
 import { DetectedValues, EvidenceQuote } from "@/components/workspace/EvidenceBits";
-import { PdfPagePane, type PdfBox } from "@/components/workspace/PdfPagePane";
+import { PdfPagePane, type PaneFollow, type PdfBox, type ScrollFollow, type Zoom } from "@/components/workspace/PdfPagePane";
+import type { WorkspaceControls } from "@/components/workspace/WorkspaceControls";
 import { SideBySide, preferredSide } from "@/components/workspace/SideBySide";
 import type { ChangeAnalysis } from "@/lib/analysis";
 import type { Change, ComparisonResponse } from "@/lib/comparison";
@@ -22,9 +23,12 @@ import {
   toWorkspaceChanges,
   workspaceFilters,
 } from "@/lib/report";
+import { counterpartPage } from "@/lib/pdf-links";
 import type { FocusRequest } from "@/lib/use-change-focus";
 
 type Files = { original: File | null; revised: File | null };
+
+type Side = "original" | "revised";
 
 /**
  * PDF Compare in the Comparison Workspace.
@@ -42,6 +46,7 @@ export function ComparisonReport({
   analyst,
   analysis = null,
   focus = null,
+  controls,
 }: {
   result: ComparisonResponse;
   /** The two PDFs the person chose, still in their browser, for drawing pages. */
@@ -52,6 +57,8 @@ export function ComparisonReport({
   analysis?: ChangeAnalysis | null;
   /** A change to show, asked for from outside the report ("View change"). */
   focus?: FocusRequest;
+  /** Ignore options, Export and Reverse, passed in by the page that can compare again. */
+  controls?: WorkspaceControls;
 }) {
   const report = useMemo(() => buildReport(result), [result]);
   const changes = useMemo(() => toWorkspaceChanges(result), [result]);
@@ -75,6 +82,9 @@ export function ComparisonReport({
       changes={changes}
       modes={modes}
       initialMode={modes[0].id}
+      linkable={["pages"]}
+      linkedUnit="page"
+      controls={controls}
       filters={filters}
       overviewTitle="Page map"
       overview={(context) => (
@@ -165,6 +175,34 @@ function PagesView({
     return out;
   }, [context.visible, byId, numbers]);
 
+  // Linked: turning a page, zooming or scrolling one version moves the other to match.
+  const [follow, setFollow] = useState<Record<Side, PaneFollow | null>>({ original: null, revised: null });
+  const [scrollFollow, setScrollFollow] = useState<Record<Side, ScrollFollow | null>>({ original: null, revised: null });
+  const [token, setToken] = useState(0);
+  const counts: Record<Side, number> = {
+    original: result.documents.previous.pageCount,
+    revised: result.documents.revised.pageCount,
+  };
+
+  function navigated(side: Side, page: number, zoom: Zoom) {
+    if (!context.linked) return;
+    const other: Side = side === "original" ? "revised" : "original";
+    const next = token + 1;
+    setToken(next);
+    setFollow((current) => ({
+      ...current,
+      [other]: { page: counterpartPage(result.pageLinks, side, page, counts[other]), zoom, token: next },
+    }));
+  }
+
+  function scrolled(side: Side, top: number, left: number) {
+    if (!context.linked) return;
+    const other: Side = side === "original" ? "revised" : "original";
+    const next = token + 1;
+    setToken(next);
+    setScrollFollow((current) => ({ ...current, [other]: { top, left, token: next } }));
+  }
+
   return (
     <SideBySide
       activation={context.activation}
@@ -177,13 +215,17 @@ function PagesView({
         <PdfPagePane
           side={side}
           file={files[side]}
-          pageCount={side === "original" ? result.documents.previous.pageCount : result.documents.revised.pageCount}
+          pageCount={counts[side]}
           boxes={boxes[side]}
           activeId={change?.id ?? null}
           activePage={change ? pageOn(change, side) : null}
           activeKind={context.active?.kind ?? null}
           activation={context.activation}
           reveal={reveal}
+          follow={follow[side]}
+          onNavigate={(page, zoom) => navigated(side, page, zoom)}
+          scrollFollow={scrollFollow[side]}
+          onScrolled={(top, left) => scrolled(side, top, left)}
         />
       )}
     />

@@ -51,6 +51,10 @@ export type Change = {
   evidence: EvidenceItem[];
 };
 
+export type PdfOptions = { ignoreCase: boolean; ignorePunctuation: boolean };
+
+export const DEFAULT_PDF_OPTIONS: PdfOptions = { ignoreCase: true, ignorePunctuation: false };
+
 export type ComparisonResponse = {
   engineVersion: string;
   processingMs: number;
@@ -60,6 +64,14 @@ export type ComparisonResponse = {
   };
   counts: { total: number; meaningful: number; noise: number };
   changes: Change[];
+  /** The Ignore options the comparison applied (absent from older results). */
+  options?: PdfOptions;
+  /**
+   * The pages the comparison paired, in reading order: an original page and
+   * the revised page matched with it, or null where a page is only in one
+   * version. Used to turn both versions to matching pages together.
+   */
+  pageLinks?: { previous: number | null; revised: number | null }[];
   diagnostics: {
     ocrRequired: boolean;
     previousScannedPages: number[];

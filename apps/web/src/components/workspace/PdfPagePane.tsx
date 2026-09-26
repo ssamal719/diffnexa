@@ -14,7 +14,13 @@ export type PdfBox = {
   bbox: { x0: number; y0: number; x1: number; y1: number };
 };
 
-type Zoom = "fit" | number;
+export type Zoom = "fit" | number;
+
+/** A page and zoom the other version asked this one to follow (Linked). */
+export type PaneFollow = { page: number; zoom: Zoom; token: number };
+
+/** Where the other version is scrolled within its page, as fractions of the scrollable distance (Linked). */
+export type ScrollFollow = { top: number; left: number; token: number };
 
 type Drawn = { page: number; scale: number; width: number; height: number };
 
@@ -38,6 +44,10 @@ export function PdfPagePane({
   activeKind,
   activation,
   reveal,
+  follow = null,
+  onNavigate,
+  scrollFollow = null,
+  onScrolled,
 }: {
   side: Side;
   file: File | null;
@@ -49,6 +59,14 @@ export function PdfPagePane({
   activeKind: string | null;
   activation: number;
   reveal: number;
+  /** Linked: turn to this page and zoom, when the reader moved the other version. */
+  follow?: PaneFollow | null;
+  /** The reader turned the page or zoomed this version. */
+  onNavigate?: (page: number, zoom: Zoom) => void;
+  /** Linked: scroll to the same place within the page as the other version. */
+  scrollFollow?: ScrollFollow | null;
+  /** The reader scrolled within this version's page. */
+  onScrolled?: (top: number, left: number) => void;
 }) {
   const [page, setPage] = useState(() => clamp(activePage ?? 1, pageCount));
   const [handled, setHandled] = useState(activation);
@@ -60,10 +78,52 @@ export function PdfPagePane({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const name = side === "original" ? "original" : "revised";
 
+  const [followed, setFollowed] = useState(follow?.token ?? 0);
+  const expectedScroll = useRef<{ top: number; left: number } | null>(null);
+
   // Choosing a change turns this version to the change's page, in the same render.
   if (handled !== activation) {
     setHandled(activation);
     if (activePage !== null) setPage(clamp(activePage, pageCount));
+  }
+
+  // Linked: the other version turned the page or zoomed, so this one follows.
+  if (follow && follow.token !== followed) {
+    setFollowed(follow.token);
+    setPage(clamp(follow.page, pageCount));
+    setZoom(follow.zoom);
+  }
+
+  function navigate(nextPage: number, nextZoom: Zoom) {
+    setPage(nextPage);
+    setZoom(nextZoom);
+    onNavigate?.(nextPage, nextZoom);
+  }
+
+  // Linked: move to the same place within the page as the other version.
+  useEffect(() => {
+    const element = scrollRef.current;
+    if (!scrollFollow || !element) return;
+    const top = Math.round(scrollFollow.top * Math.max(0, element.scrollHeight - element.clientHeight));
+    const left = Math.round(scrollFollow.left * Math.max(0, element.scrollWidth - element.clientWidth));
+    expectedScroll.current = { top, left };
+    element.scrollTop = top;
+    element.scrollLeft = left;
+  }, [scrollFollow]);
+
+  function scrolled() {
+    const element = scrollRef.current;
+    if (!element || !onScrolled) return;
+    const expected = expectedScroll.current;
+    if (expected && Math.abs(element.scrollTop - expected.top) < 2 && Math.abs(element.scrollLeft - expected.left) < 2) {
+      expectedScroll.current = null; // this version moved because the other one did
+      return;
+    }
+    const fraction = (position: number, room: number) => (room > 0 ? position / room : 0);
+    onScrolled(
+      fraction(element.scrollTop, element.scrollHeight - element.clientHeight),
+      fraction(element.scrollLeft, element.scrollWidth - element.clientWidth),
+    );
   }
 
   // The width available decides the "fit width" scale. A hidden pane has none, and draws nothing until shown.
@@ -142,7 +202,7 @@ export function PdfPagePane({
       <div className="flex flex-wrap items-center gap-1.5 pb-1.5 text-[0.8rem]">
         <button
           type="button"
-          onClick={() => setPage((value) => clamp(value - 1, pageCount))}
+          onClick={() => navigate(clamp(page - 1, pageCount), zoom)}
           disabled={page <= 1}
           aria-label={`Previous page of the ${name} document`}
           className="rounded-[3px] border border-rule-strong bg-paper px-2 py-0.5 hover:bg-surface disabled:text-ink-soft/60"
@@ -154,7 +214,7 @@ export function PdfPagePane({
         </span>
         <button
           type="button"
-          onClick={() => setPage((value) => clamp(value + 1, pageCount))}
+          onClick={() => navigate(clamp(page + 1, pageCount), zoom)}
           disabled={page >= pageCount}
           aria-label={`Next page of the ${name} document`}
           className="rounded-[3px] border border-rule-strong bg-paper px-2 py-0.5 hover:bg-surface disabled:text-ink-soft/60"
@@ -164,7 +224,7 @@ export function PdfPagePane({
         <span className="ml-auto flex gap-1">
           <button
             type="button"
-            onClick={() => setZoom(Math.max(0.5, Math.round(currentScale() * 80) / 100))}
+            onClick={() => navigate(page, Math.max(0.5, Math.round(currentScale() * 80) / 100))}
             aria-label={`Zoom out of the ${name} document`}
             className="rounded-[3px] border border-rule-strong bg-paper px-2 py-0.5 hover:bg-surface"
           >
@@ -172,7 +232,7 @@ export function PdfPagePane({
           </button>
           <button
             type="button"
-            onClick={() => setZoom("fit")}
+            onClick={() => navigate(page, "fit")}
             aria-pressed={zoom === "fit"}
             aria-label={`Fit the ${name} page to the width`}
             className={[
@@ -184,7 +244,7 @@ export function PdfPagePane({
           </button>
           <button
             type="button"
-            onClick={() => setZoom(Math.min(4, Math.round(currentScale() * 125) / 100))}
+            onClick={() => navigate(page, Math.min(4, Math.round(currentScale() * 125) / 100))}
             aria-label={`Zoom in to the ${name} document`}
             className="rounded-[3px] border border-rule-strong bg-paper px-2 py-0.5 hover:bg-surface"
           >
@@ -197,7 +257,7 @@ export function PdfPagePane({
         <p className="mb-1.5 text-[0.78rem]">
           <button
             type="button"
-            onClick={() => setPage(clamp(activePage!, pageCount))}
+            onClick={() => navigate(clamp(activePage!, pageCount), zoom)}
             className="font-medium text-signal underline underline-offset-2"
           >
             Go to the change on page {activePage}
@@ -216,6 +276,7 @@ export function PdfPagePane({
 
       <div
         ref={scrollRef}
+        onScroll={scrolled}
         role="region"
         aria-label={`${side === "original" ? "Original" : "Revised"} document, page ${page}`}
         tabIndex={0}

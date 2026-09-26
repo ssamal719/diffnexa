@@ -66,6 +66,7 @@ def test_two_workbooks_are_compared(client):
         "processingMs",
         "workbooks",
         "counts",
+        "options",
         "groups",
         "changes",
         "sheets",

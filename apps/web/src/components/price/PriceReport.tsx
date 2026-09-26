@@ -126,6 +126,8 @@ export function PriceReport({
       analyst={analyst}
       analysis={analysis}
       focus={focus}
+      exportPage={{ url, baseline: baselineCapturedAt ? formatCapturedAt(baselineCapturedAt) : null }}
+      exportLabel={(change) => (change as PriceChange).priceCategory?.label ?? null}
     />
   );
 }

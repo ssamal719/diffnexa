@@ -64,6 +64,7 @@ export function WebReport({
       analyst={analyst}
       analysis={analysis}
       focus={focus}
+      exportPage={{ url, baseline: null }}
     />
   );
 }

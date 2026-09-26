@@ -49,3 +49,7 @@ Add 33 AI Change Analyst golden cases: grounded explanations shown, ungrounded s
 ## 2026-09-24
 
 Add three DOCX pairs: capitalisation-only and punctuation-only pin the default matching options behind Ignore options; pages-long-document checks every change's page against a LibreOffice rendering of two 135-page documents.
+
+## 2026-09-26
+
+Add policy pair terms-revision: a realistic terms update (refund window, cancellation notice, governing law, new clause, freshness line) that is also Policy and Terms Monitor's built-in Try example.

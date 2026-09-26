@@ -5,6 +5,7 @@ import { useMemo, useState, type ReactNode } from "react";
 import { SheetGrid, type GridTarget } from "@/components/excel/SheetGrid";
 import { Alert } from "@/components/ui/Alert";
 import { ComparisonWorkspace, type WorkspaceContext } from "@/components/workspace/ComparisonWorkspace";
+import type { WorkspaceControls } from "@/components/workspace/WorkspaceControls";
 import type { ChangeAnalysis } from "@/lib/analysis";
 import {
   NO_CHANGES_NOTE,
@@ -53,6 +54,7 @@ export function ExcelWorkspace({
   analyst,
   analysis = null,
   focus = null,
+  controls,
 }: {
   result: ExcelComparison;
   original: FileSummary;
@@ -62,6 +64,8 @@ export function ExcelWorkspace({
   analysis?: ChangeAnalysis | null;
   /** A change to show, asked for from outside (AI Change Analyst's "View change"). */
   focus?: FocusRequest;
+  /** Ignore options, Export and Reverse, passed in by the page that can compare again. */
+  controls?: WorkspaceControls;
 }) {
   const changes = useMemo(() => toWorkspaceChanges(result), [result]);
   const filters = useMemo(
@@ -100,6 +104,9 @@ export function ExcelWorkspace({
       changes={changes}
       modes={MODES}
       initialMode="grid"
+      linkable={["grid"]}
+      linkedUnit="row"
+      controls={controls}
       filters={filters}
       showMainWhenEmpty
       focus={focus}
@@ -166,7 +173,7 @@ function GridView({
     original: null,
     revised: null,
   });
-  const [together, setTogether] = useState(true);
+  const together = context.linked;
   const [mobileSide, setMobileSide] = useState<Side>("revised");
   const [followCount, setFollowCount] = useState(0);
   const [handled, setHandled] = useState<number | null>(null);
@@ -208,8 +215,8 @@ function GridView({
 
   return (
     <div className="border-b border-rule">
-      <div className="flex flex-wrap items-center gap-3 border-b border-rule bg-surface px-3 py-1.5 text-[0.82rem]">
-        <div role="group" aria-label="Show on small screens" className="flex rounded-[3px] border border-rule-strong md:hidden">
+      <div className="flex flex-wrap items-center gap-3 border-b border-rule bg-surface px-3 py-1.5 text-[0.82rem] md:hidden">
+        <div role="group" aria-label="Show on small screens" className="flex rounded-[3px] border border-rule-strong">
           {(["original", "revised"] as const).map((side) => (
             <button
               key={side}
@@ -229,10 +236,6 @@ function GridView({
             </button>
           ))}
         </div>
-        <label className="ml-auto flex items-center gap-1.5">
-          <input type="checkbox" checked={together} onChange={(event) => setTogether(event.target.checked)} />
-          Scroll both workbooks together
-        </label>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2">
         {panes.map((pane) => {

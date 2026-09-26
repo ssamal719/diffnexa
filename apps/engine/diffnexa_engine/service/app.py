@@ -31,7 +31,7 @@ from diffnexa_engine.ai.config import AIConfig
 from diffnexa_engine.ai.errors import AIAnalysisError, AIErrorCode
 from diffnexa_engine.ai.providers import AIAnalysisProvider, provider_from_config
 from diffnexa_engine.compare import compare_documents_verbose
-from diffnexa_engine.compare.normalize import MatchOptions
+from diffnexa_engine.compare.normalize import MatchOptions, matching
 from diffnexa_engine.competitor.api import serialize_competitor_comparison
 from diffnexa_engine.competitor.classify import classify_changes as classify_competitor_changes
 from diffnexa_engine.config import EngineLimits
@@ -42,6 +42,7 @@ from diffnexa_engine.docx.errors import DocxError, DocxErrorCode
 from diffnexa_engine.docx.extract import extract_docx
 from diffnexa_engine.docx.package import DocxLimits
 from diffnexa_engine.errors import USER_MESSAGES, DocumentError, ErrorCode
+from diffnexa_engine.examples import ExampleTool, example_comparison
 from diffnexa_engine.policy.api import serialize_policy_comparison
 from diffnexa_engine.policy.classify import classify_changes
 from diffnexa_engine.price.api import serialize_price_comparison
@@ -56,9 +57,11 @@ from diffnexa_engine.web.api import (
     serialize_snapshot,
     serialize_web_comparison,
 )
+from diffnexa_engine.web.compare import WebComparisonOutcome
 from diffnexa_engine.web.errors import WebErrorCode, WebRequestError
+from diffnexa_engine.web.snapshot import Snapshot
 from diffnexa_engine.xlsx.api import serialize_excel_comparison
-from diffnexa_engine.xlsx.compare import compare_xlsx
+from diffnexa_engine.xlsx.compare import ExcelOptions, compare_xlsx
 from diffnexa_engine.xlsx.errors import ExcelError, ExcelErrorCode
 from diffnexa_engine.xlsx.extract import ExcelLimits, extract_xlsx
 
@@ -195,8 +198,7 @@ def build_app(ai_provider: AIAnalysisProvider | None = None, ai_config: AIConfig
         started = time.perf_counter()
         try:
             payload = await _read_json(request)
-            previous = read_snapshot(payload.get("previous_snapshot"))
-            outcome = compare_against(payload.get("url", ""), previous)
+            _previous, outcome = _web_outcome(payload, "web")
         except WebRequestError as exc:
             return web_error(exc)
         elapsed_ms = int((time.perf_counter() - started) * 1000)
@@ -214,8 +216,7 @@ def build_app(ai_provider: AIAnalysisProvider | None = None, ai_config: AIConfig
         started = time.perf_counter()
         try:
             payload = await _read_json(request)
-            previous = read_snapshot(payload.get("previous_snapshot"))
-            outcome = compare_against(payload.get("url", ""), previous)
+            previous, outcome = _web_outcome(payload, "policy")
         except WebRequestError as exc:
             return web_error(exc)
 
@@ -241,8 +242,7 @@ def build_app(ai_provider: AIAnalysisProvider | None = None, ai_config: AIConfig
         started = time.perf_counter()
         try:
             payload = await _read_json(request)
-            previous = read_snapshot(payload.get("previous_snapshot"))
-            outcome = compare_against(payload.get("url", ""), previous)
+            previous, outcome = _web_outcome(payload, "competitor")
         except WebRequestError as exc:
             return web_error(exc)
 
@@ -267,8 +267,7 @@ def build_app(ai_provider: AIAnalysisProvider | None = None, ai_config: AIConfig
         started = time.perf_counter()
         try:
             payload = await _read_json(request)
-            previous = read_snapshot(payload.get("previous_snapshot"))
-            outcome = compare_against(payload.get("url", ""), previous)
+            previous, outcome = _web_outcome(payload, "price")
         except WebRequestError as exc:
             return web_error(exc)
 
@@ -311,12 +310,7 @@ def build_app(ai_provider: AIAnalysisProvider | None = None, ai_config: AIConfig
                     content={"error": {"code": exc.code.value, "message": exc.user_message, "side": side}},
                 )
 
-        # Optional matching options; anything but an explicit "true"/"false"
-        # keeps the default, so an old client gets the result it always got.
-        options = MatchOptions(
-            ignore_case=ignore_case.strip().lower() != "false",
-            ignore_punctuation=ignore_punctuation.strip().lower() == "true",
-        )
+        options = _match_options(ignore_case, ignore_punctuation)
         outcome = compare_docx(documents["original"], documents["revised"], options)
         elapsed_ms = int((time.perf_counter() - started) * 1000)
         return JSONResponse(content=serialize_docx_comparison(outcome, elapsed_ms))
@@ -327,6 +321,8 @@ def build_app(ai_provider: AIAnalysisProvider | None = None, ai_config: AIConfig
     async def excel_compare(
         original: UploadFile = File(...),
         revised: UploadFile = File(...),
+        ignore_case: str = Form("false"),
+        ignore_whitespace: str = Form("false"),
     ) -> Any:
         """Compare two Excel (.xlsx) workbooks.
 
@@ -349,7 +345,12 @@ def build_app(ai_provider: AIAnalysisProvider | None = None, ai_config: AIConfig
                     content={"error": {"code": exc.code.value, "message": exc.user_message, "side": side}},
                 )
 
-        outcome = compare_xlsx(workbooks["original"], workbooks["revised"])
+        # Optional ignore options; anything but an explicit "true" keeps exact matching.
+        options = ExcelOptions(
+            ignore_case=ignore_case.strip().lower() == "true",
+            ignore_whitespace=ignore_whitespace.strip().lower() == "true",
+        )
+        outcome = compare_xlsx(workbooks["original"], workbooks["revised"], options)
         elapsed_ms = int((time.perf_counter() - started) * 1000)
         return JSONResponse(content=serialize_excel_comparison(outcome, elapsed_ms))
 
@@ -397,6 +398,8 @@ def build_app(ai_provider: AIAnalysisProvider | None = None, ai_config: AIConfig
     async def compare_endpoint(
         previous: UploadFile = File(...),
         revised: UploadFile = File(...),
+        ignore_case: str = Form("true"),
+        ignore_punctuation: str = Form("false"),
     ) -> Any:
         started = time.perf_counter()
 
@@ -411,11 +414,39 @@ def build_app(ai_provider: AIAnalysisProvider | None = None, ai_config: AIConfig
                 # exc.detail stays in the server log; the user sees the friendly text.
                 return error_response(exc.code, side)
 
-        outcome = compare_documents_verbose(documents["previous"], documents["revised"])
+        options = _match_options(ignore_case, ignore_punctuation)
+        with matching(options):
+            outcome = compare_documents_verbose(documents["previous"], documents["revised"])
         elapsed_ms = int((time.perf_counter() - started) * 1000)
-        return JSONResponse(content=serialize_outcome(outcome, elapsed_ms))
+        return JSONResponse(content=serialize_outcome(outcome, elapsed_ms, options))
 
     return app
+
+
+def _match_options(ignore_case: str, ignore_punctuation: str) -> MatchOptions:
+    """Ignore options sent with a document comparison.
+
+    Anything but an explicit "true" or "false" keeps the default, so a client
+    that sends nothing gets the result it always got.
+    """
+    return MatchOptions(
+        ignore_case=ignore_case.strip().lower() != "false",
+        ignore_punctuation=ignore_punctuation.strip().lower() == "true",
+    )
+
+
+def _web_outcome(payload: dict[str, Any], tool: ExampleTool) -> tuple[Snapshot, WebComparisonOutcome]:
+    """The baseline and the comparison a web monitoring request asks for.
+
+    Ordinarily the page is read now and compared with the baseline sent. When
+    the request asks for the tool's built-in example ("example": true), the
+    example's two saved pages are compared instead and nothing is fetched; any
+    address or baseline sent with it is ignored.
+    """
+    if payload.get("example") is True:
+        return example_comparison(tool)
+    previous = read_snapshot(payload.get("previous_snapshot"))
+    return previous, compare_against(payload.get("url", ""), previous)
 
 
 async def _read_json(request: Any) -> dict[str, Any]:
@@ -469,7 +500,9 @@ def _parse_ai_body(raw: bytes) -> dict[str, Any]:
     return payload
 
 
-def serialize_outcome(outcome: Any, processing_ms: int) -> dict[str, Any]:
+def serialize_outcome(
+    outcome: Any, processing_ms: int, options: MatchOptions | None = None
+) -> dict[str, Any]:
     """Shape the result for the website. Values come straight from the engine."""
     result = outcome.result
     diagnostics = outcome.diagnostics
@@ -532,6 +565,18 @@ def serialize_outcome(outcome: Any, processing_ms: int) -> dict[str, Any]:
             "noise": sum(1 for change in changes if change["isNoise"]),
         },
         "changes": changes,
+        # Which pages the comparison paired, in reading order: the original's
+        # page and the revised page it was matched with (null for a page only
+        # one version has). Presentation data, for turning both versions to
+        # matching pages together.
+        "pageLinks": [
+            {"previous": link.old_page, "revised": link.new_page}
+            for link in getattr(outcome, "page_links", [])
+        ],
+        "options": {
+            "ignoreCase": (options or MatchOptions()).ignore_case,
+            "ignorePunctuation": (options or MatchOptions()).ignore_punctuation,
+        },
         "diagnostics": {
             "ocrRequired": diagnostics.ocr_required,
             "previousScannedPages": diagnostics.old_scanned_pages,

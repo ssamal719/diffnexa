@@ -27,8 +27,11 @@ checks each citation against the two workbooks before the result is returned.
 from __future__ import annotations
 
 import datetime as dt
+import re
 from collections import Counter
-from collections.abc import Hashable
+from collections.abc import Hashable, Iterator
+from contextlib import contextmanager
+from contextvars import ContextVar
 from dataclasses import dataclass, field
 from decimal import Decimal
 from typing import Literal
@@ -57,6 +60,50 @@ PREVIEW_CELLS = 8
 COLUMN_THRESHOLD = 0.34
 ROW_THRESHOLD = 0.5
 RENAME_THRESHOLD = 0.5
+
+
+# ---------------------------------------------------------------- options
+
+
+@dataclass(frozen=True)
+class ExcelOptions:
+    """What counts as the same text in two cells.
+
+    By default text is compared exactly, as it always has been: "Paid" and
+    "paid", or "Paid" and "Paid ", are different. A comparison may choose to
+    ignore capitalisation, or extra spaces (at either end of the text, and
+    repeated spaces inside it). Numbers, dates and formulas are unaffected, and
+    what is shown and quoted is always what the cell holds.
+    """
+
+    ignore_case: bool = False
+    ignore_whitespace: bool = False
+
+
+_OPTIONS: ContextVar[ExcelOptions | None] = ContextVar("diffnexa_excel_options", default=None)
+_SPACES = re.compile(r"\s+")
+
+
+@contextmanager
+def excel_matching(options: ExcelOptions) -> Iterator[None]:
+    token = _OPTIONS.set(options)
+    try:
+        yield
+    finally:
+        _OPTIONS.reset(token)
+
+
+def _text_key(cell: Cell) -> str:
+    """A cell's stored value in the form used to decide whether two cells match."""
+    value = cell.value
+    if cell.kind != "text" or not value:
+        return value
+    options = _OPTIONS.get() or ExcelOptions()
+    if options.ignore_whitespace:
+        value = _SPACES.sub(" ", value).strip()
+    if options.ignore_case:
+        value = value.casefold()
+    return value
 
 
 # ---------------------------------------------------------------- results
@@ -117,6 +164,7 @@ class ExcelComparisonOutcome:
     diagnostics: ExcelDiagnostics
     previous: Workbook
     current: Workbook
+    options: ExcelOptions = field(default_factory=ExcelOptions)
 
 
 # ---------------------------------------------------------------- evidence
@@ -267,7 +315,7 @@ def _same_value(old: Cell, new: Cell) -> bool:
         a, b = _number_value(old), _number_value(new)
         if a is not None and b is not None:
             return a == b  # the same stored value; a format change is not compared
-    return old.kind == new.kind and old.value == new.value
+    return old.kind == new.kind and _text_key(old) == _text_key(new)
 
 
 def _category_for(cell: Cell) -> ChangeCategory:
@@ -407,7 +455,7 @@ def _formula_moved_with_row(old: Cell, new: Cell) -> bool:
 
 
 def _signature(cell: Cell) -> Hashable:
-    return (cell.kind, cell.value, cell.formula if not cell.value else None)
+    return (cell.kind, _text_key(cell), cell.formula if not cell.value else None)
 
 
 def _content_similarity(a: Sheet, b: Sheet) -> float:
@@ -493,8 +541,8 @@ def _align_sheets(old: Sheet, new: Sheet) -> tuple[list[tuple[int, int]], list[t
     new_col_values = {col: Counter(_signature(cell) for cell in cells) for col, cells in new_cols.items()}
     old_col_keys = {col: tuple(_signature(cell) for cell in cells) for col, cells in old_cols.items()}
     new_col_keys = {col: tuple(_signature(cell) for cell in cells) for col, cells in new_cols.items()}
-    old_tops = {col: cells[0].value for col, cells in old_cols.items()}
-    new_tops = {col: cells[0].value for col, cells in new_cols.items()}
+    old_tops = {col: _text_key(cells[0]) for col, cells in old_cols.items()}
+    new_tops = {col: _text_key(cells[0]) for col, cells in new_cols.items()}
 
     def column_key(side: str, col: int) -> Hashable:
         return ("col", old_col_keys[col]) if side == "old" else ("col", new_col_keys[col])
@@ -512,7 +560,7 @@ def _align_sheets(old: Sheet, new: Sheet) -> tuple[list[tuple[int, int]], list[t
         values = []
         for old_col, new_col in columns:
             cell = grid.get((row, old_col if side == "old" else new_col))
-            values.append(None if cell is None else (cell.kind, cell.value or cell.formula))
+            values.append(None if cell is None else (cell.kind, _text_key(cell) or cell.formula))
         return tuple(values)
 
     old_rows = sorted({cell.row for cell in old.cells})
@@ -598,10 +646,12 @@ def _compare_sheet_pair(
         for cell in cells:
             if side == "old" and cell.col in col_of:
                 mapped.append(
-                    (col_of[cell.col], cell.kind, cell.value, cell.formula if not cell.value else None)
+                    (col_of[cell.col], cell.kind, _text_key(cell), cell.formula if not cell.value else None)
                 )
             elif side == "new" and cell.col in new_col_matched:
-                mapped.append((cell.col, cell.kind, cell.value, cell.formula if not cell.value else None))
+                mapped.append(
+                    (cell.col, cell.kind, _text_key(cell), cell.formula if not cell.value else None)
+                )
         return tuple(sorted(mapped))
 
     old_by_row, new_by_row = by_row(old), by_row(new)
@@ -749,8 +799,16 @@ def _compare_sheet_pair(
 # ---------------------------------------------------------------- entry point
 
 
-def compare_xlsx(old: Workbook, new: Workbook) -> ExcelComparisonOutcome:
-    """Compare two workbooks. Deterministic: the same two workbooks, the same result."""
+def compare_xlsx(old: Workbook, new: Workbook, options: ExcelOptions | None = None) -> ExcelComparisonOutcome:
+    """Compare two workbooks. Deterministic: the same two workbooks and options, the same result."""
+    chosen = options or ExcelOptions()
+    with excel_matching(chosen):
+        outcome = _compare_xlsx(old, new)
+    outcome.options = chosen
+    return outcome
+
+
+def _compare_xlsx(old: Workbook, new: Workbook) -> ExcelComparisonOutcome:
     from diffnexa_engine.contracts.xlsx_traceability import verify_xlsx_traceability
 
     builder = _Builder()

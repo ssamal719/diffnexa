@@ -1,0 +1,36 @@
+# Written by hand: what really changed between these two policy pages,
+# and which part of the agreement each change belongs to.
+#
+# This pair is also Policy and Terms Monitor's built-in "Try example"
+# (apps/engine/diffnexa_engine/examples/pages.py is a copy of these pages).
+pair: terms-revision
+description: >-
+  A realistic terms update: the refund window is cut from 14 to 7 days, the cancellation notice
+  doubles to 60 days, the governing law moves to Ireland (named twice, so reported twice) and a
+  Service levels clause is added. The "Last updated" line also changes; it is a freshness line,
+  set aside rather than reported.
+url: https://example.com/terms
+expected_changes:
+- old: '14'
+  new: '7'
+  topics:
+  - refunds
+- old: '30'
+  new: '60'
+  topics:
+  - cancellation
+- new: Ireland
+  topics:
+  - governing_law
+  match: contains
+- new: Ireland
+  topics:
+  - governing_law
+  match: contains
+- new: Service levels
+  kind: added
+  subtype: heading
+  expect_no_topic: true
+- new: 99.9% availability
+  kind: added
+max_unexpected_changes: 0

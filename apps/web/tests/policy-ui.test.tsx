@@ -123,12 +123,15 @@ function stubFetch(status: number, body: unknown) {
 // ---------------------------------------------------------------- first run
 
 describe("the first screen", () => {
-  it("offers capturing a policy and explains the baseline", () => {
+  it("shows the baseline and the policy page side by side, and explains the baseline", () => {
     render(<PolicyDesk />);
-    expect(screen.getByRole("button", { name: "Capture baseline" })).toBeTruthy();
-    expect(screen.getByLabelText("Policy page address")).toBeTruthy();
-    expect(document.body.textContent).toContain("baseline");
-    expect(document.body.textContent).toContain("file you keep");
+    const baseline = screen.getByRole("region", { name: "Baseline" });
+    expect(within(baseline).getByRole("button", { name: "Capture baseline" })).toBeTruthy();
+    expect(within(baseline).getByText("Choose baseline file")).toBeTruthy();
+    const page = screen.getByRole("region", { name: "Policy page to check" });
+    expect(within(page).getByLabelText("Policy page address")).toBeTruthy();
+    expect(within(page).getByLabelText("What kind of document is this?")).toBeTruthy();
+    expect(document.body.textContent).toContain("No baseline yet? Capture the page as it is today.");
   });
 
   it("offers exactly the agreed policy types", () => {
@@ -182,11 +185,12 @@ describe("capturing a baseline", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: "Capture baseline" }));
 
-    expect(await screen.findByText("Baseline captured")).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "Privacy Policy — Example" })).toBeTruthy();
-    expect(document.body.textContent).toContain("https://example.com/privacy");
-    expect(document.body.textContent).toMatch(/2026/);
-    expect(screen.getByRole("button", { name: "Download baseline" })).toBeTruthy();
+    const panel = screen.getByRole("region", { name: "Baseline" });
+    expect(await within(panel).findByText("Captured now")).toBeTruthy();
+    expect(panel.textContent).toContain("Privacy Policy — Example");
+    expect(panel.textContent).toContain("example.com");
+    expect(panel.textContent).toMatch(/2026/);
+    expect(within(panel).getByRole("button", { name: "Download baseline" })).toBeTruthy();
   });
 
   it("records the chosen policy type with the capture", async () => {
@@ -200,9 +204,9 @@ describe("capturing a baseline", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: "Capture baseline" }));
 
-    await screen.findByText("Baseline captured");
-    const details = document.querySelector("dl")!;
-    expect(within(details).getByText("Subprocessor List")).toBeTruthy();
+    const panel = screen.getByRole("region", { name: "Baseline" });
+    await within(panel).findByText("Captured now");
+    expect(within(panel.querySelector("dl")!).getByText("Subprocessor List")).toBeTruthy();
   });
 
   it("makes clear the file is the user's to keep", async () => {
@@ -213,9 +217,9 @@ describe("capturing a baseline", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: "Capture baseline" }));
 
-    await screen.findByText("Baseline captured");
+    await screen.findByText("Captured now");
     expect(document.body.textContent).toContain("not an account");
-    expect(document.body.textContent).toContain("upload this file");
+    expect(document.body.textContent).toContain("Keep this file — you will need it");
   });
 
   it("downloads the baseline when asked", async () => {
@@ -242,13 +246,42 @@ describe("checking for changes", () => {
   it("asks for the baseline file and refuses without it", async () => {
     vi.stubGlobal("fetch", vi.fn());
     render(<PolicyDesk />);
-    fireEvent.click(screen.getByRole("button", { name: "Check for changes" }));
     fireEvent.change(screen.getByLabelText("Policy page address"), {
       target: { value: "example.com/privacy" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Check this page now" }));
+    fireEvent.click(screen.getByRole("button", { name: "Check for changes" }));
 
     expect((await screen.findByRole("alert")).textContent).toContain("baseline file");
+  });
+
+  it("fills the form from a baseline file, then checks the page against it", async () => {
+    const sent: { url: string; body: unknown }[] = [];
+    vi.stubGlobal("fetch", (url: string, init?: RequestInit) => {
+      sent.push({ url, body: init?.body ? JSON.parse(String(init.body)) : null });
+      return Promise.resolve(new Response(JSON.stringify(comparison([change()])), { status: 200 }));
+    });
+    const file = {
+      diffnexa: "policy-baseline",
+      version: 1,
+      policyType: "subprocessor_list",
+      capturedAt: SNAPSHOT.source.fetched_at,
+      url: SNAPSHOT.source.final_url,
+      title: SNAPSHOT.metadata.title,
+      snapshot: SNAPSHOT,
+    };
+    render(<PolicyDesk />);
+    const input = document.getElementById("policy-baseline-file") as HTMLInputElement;
+    fireEvent.change(input, { target: { files: [new File([JSON.stringify(file)], "privacy.json")] } });
+    expect(await screen.findByText("privacy.json")).toBeTruthy();
+    expect((screen.getByLabelText("Policy page address") as HTMLInputElement).value).toBe("https://example.com/privacy");
+    expect((screen.getByLabelText("What kind of document is this?") as HTMLSelectElement).value).toBe("subprocessor_list");
+
+    fireEvent.click(screen.getByRole("button", { name: "Check for changes" }));
+    await waitFor(() => expect(sent).toHaveLength(1));
+    expect(sent[0]).toEqual({
+      url: "/api/policy/compare",
+      body: { url: "https://example.com/privacy", previous_snapshot: SNAPSHOT },
+    });
   });
 
   it("explains an address it cannot check, before asking the server", async () => {
@@ -259,6 +292,23 @@ describe("checking for changes", () => {
 
     expect((await screen.findByRole("alert")).textContent).toContain("Enter the address");
     expect(calls).not.toHaveBeenCalled();
+  });
+});
+
+// ---------------------------------------------------------------- the example
+
+describe("Try example", () => {
+  it("asks for the built-in example and explains how the tool works", async () => {
+    const sent: { url: string; body: unknown }[] = [];
+    vi.stubGlobal("fetch", (url: string, init?: RequestInit) => {
+      sent.push({ url, body: init?.body ? JSON.parse(String(init.body)) : null });
+      return Promise.resolve(new Response(JSON.stringify(comparison([change()])), { status: 200 }));
+    });
+    render(<PolicyDesk />);
+    fireEvent.click(screen.getByRole("button", { name: "Try example" }));
+    expect(await screen.findByText("How this tool works")).toBeTruthy();
+    expect(sent).toEqual([{ url: "/api/policy/compare", body: { example: true } }]);
+    expect(document.body.textContent).toContain("Terms of Service");
   });
 });
 

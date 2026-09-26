@@ -86,12 +86,16 @@ function stubFetch(status: number, body: unknown) {
 // ---------------------------------------------------------------- first run
 
 describe("the first screen", () => {
-  it("offers capturing a page and explains what a baseline is for", () => {
+  it("shows the baseline and the page to check side by side, and explains what a baseline is for", () => {
     render(<WebsiteDesk />);
-    expect(screen.getByRole("button", { name: "Capture baseline" })).toBeTruthy();
-    expect(screen.getByLabelText("Web page address")).toBeTruthy();
-    expect(document.body.textContent).toContain("baseline");
-    expect(document.body.textContent).toContain("what has changed");
+    const baseline = screen.getByRole("region", { name: "Baseline" });
+    const page = screen.getByRole("region", { name: "Page to check" });
+    expect(baseline.textContent).toContain("The page as it was");
+    expect(within(baseline).getByText("Choose baseline file")).toBeTruthy();
+    expect(within(baseline).getByRole("button", { name: "Capture baseline" })).toBeTruthy();
+    expect(within(page).getByLabelText("Web page address")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Check for changes" })).toBeTruthy();
+    expect(document.body.textContent).toContain("No baseline yet? Capture the page as it is today.");
   });
 
   it("uses no implementation words anywhere on screen", () => {
@@ -102,12 +106,9 @@ describe("the first screen", () => {
     }
   });
 
-  it("lets a returning visitor switch to checking for changes", () => {
+  it("says what is needed next", () => {
     render(<WebsiteDesk />);
-    fireEvent.click(screen.getByRole("button", { name: "Check for changes" }));
-    expect(screen.getByRole("button", { name: "Check for changes", pressed: true })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Check this page now" })).toBeTruthy();
-    expect(screen.getByText("Choose baseline file")).toBeTruthy();
+    expect(screen.getByRole("status").textContent).toContain("choose the file you saved, or capture the page now");
   });
 });
 
@@ -135,32 +136,33 @@ describe("address validation", () => {
     expect(alert.textContent).toContain("publicly on the internet");
   });
 
-  it("refuses to compare without a baseline file", async () => {
-    vi.stubGlobal("fetch", vi.fn());
+  it("refuses to compare without a baseline", async () => {
+    const calls = vi.fn();
+    vi.stubGlobal("fetch", calls);
     render(<WebsiteDesk />);
-    fireEvent.click(screen.getByRole("button", { name: "Check for changes" }));
     fireEvent.change(screen.getByLabelText("Web page address"), { target: { value: "example.com" } });
-    fireEvent.click(screen.getByRole("button", { name: "Check this page now" }));
+    fireEvent.click(screen.getByRole("button", { name: "Check for changes" }));
 
     expect((await screen.findByRole("alert")).textContent).toContain("baseline file");
+    expect(calls).not.toHaveBeenCalled();
   });
 });
 
 // ---------------------------------------------------------------- baseline
 
 describe("capturing a baseline", () => {
-  it("confirms the capture and offers the download", async () => {
+  it("confirms the capture in the baseline panel and offers the download", async () => {
     stubFetch(200, { snapshot: BASELINE });
     render(<WebsiteDesk />);
     fireEvent.change(screen.getByLabelText("Web page address"), { target: { value: "example.com/pricing" } });
     fireEvent.click(screen.getByRole("button", { name: "Capture baseline" }));
 
-    expect(await screen.findByText("Baseline captured")).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "Pricing — Example" })).toBeTruthy();
-    expect(screen.getByText("https://example.com/pricing")).toBeTruthy();
-    expect(document.body.textContent).toMatch(/2026/);
-    expect(screen.getByRole("button", { name: "Download baseline" })).toBeTruthy();
-    expect(document.body.textContent).toContain("not an account");
+    const panel = screen.getByRole("region", { name: "Baseline" });
+    expect(await within(panel).findByText("Captured now")).toBeTruthy();
+    expect(panel.textContent).toContain("Pricing — Example");
+    expect(panel.textContent).toMatch(/2026/);
+    expect(within(panel).getByRole("button", { name: "Download baseline" })).toBeTruthy();
+    expect(panel.textContent).toContain("not an account");
   });
 
   it("downloads the baseline as a file when asked", async () => {
@@ -176,6 +178,50 @@ describe("capturing a baseline", () => {
 
     expect(createObjectURL).toHaveBeenCalled();
     expect(revokeObjectURL).toHaveBeenCalled();
+  });
+
+  it("takes a saved baseline file, fills in the address and checks the page against it", async () => {
+    const sent: { url: string; body: unknown }[] = [];
+    vi.stubGlobal("fetch", (url: string, init?: RequestInit) => {
+      sent.push({ url, body: init?.body ? JSON.parse(String(init.body)) : null });
+      return Promise.resolve(new Response(JSON.stringify(comparison([change()])), { status: 200 }));
+    });
+    render(<WebsiteDesk />);
+    const input = document.getElementById("baseline-file") as HTMLInputElement;
+    fireEvent.change(input, { target: { files: [new File([JSON.stringify(BASELINE)], "saved.diffnexa.json")] } });
+    const panel = screen.getByRole("region", { name: "Baseline" });
+    expect(await within(panel).findByText("saved.diffnexa.json")).toBeTruthy();
+    expect((screen.getByLabelText("Web page address") as HTMLInputElement).value).toBe("https://example.com/pricing");
+
+    fireEvent.click(screen.getByRole("button", { name: "Check for changes" }));
+    await screen.findByText(/change/, { selector: "h2" });
+    expect(sent[0].url).toBe("/api/web/compare");
+    expect(sent[0].body).toEqual({ url: "https://example.com/pricing", previous_snapshot: BASELINE });
+  });
+
+  it("says plainly when a chosen file is not a baseline", async () => {
+    render(<WebsiteDesk />);
+    const input = document.getElementById("baseline-file") as HTMLInputElement;
+    fireEvent.change(input, { target: { files: [new File(["not json"], "notes.txt")] } });
+    expect((await screen.findByRole("alert")).textContent).toContain("isn't a DiffNexa baseline");
+  });
+});
+
+// ---------------------------------------------------------------- the example
+
+describe("Try example", () => {
+  it("asks for the built-in example, fetches nothing else, and explains how the tool works", async () => {
+    const sent: { url: string; body: unknown }[] = [];
+    vi.stubGlobal("fetch", (url: string, init?: RequestInit) => {
+      sent.push({ url, body: init?.body ? JSON.parse(String(init.body)) : null });
+      return Promise.resolve(new Response(JSON.stringify(comparison([change()])), { status: 200 }));
+    });
+    render(<WebsiteDesk />);
+    fireEvent.click(screen.getByRole("button", { name: "Try example" }));
+    expect(await screen.findByText("How this tool works")).toBeTruthy();
+    expect(sent).toEqual([{ url: "/api/web/compare", body: { example: true } }]);
+    expect(document.body.textContent).toContain("nothing is fetched from the internet");
+    expect(listed()).toHaveLength(1);
   });
 });
 

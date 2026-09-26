@@ -320,13 +320,26 @@ describe("PDF pages", () => {
 });
 
 describe("comparison controls", () => {
+  const WEB_TOOLS = ["Website Change Detector", "Policy and Terms Monitor", "Competitor Monitor", "Price Monitor"];
+
   it.each(TOOLS)("appear in $name only where the tool gives them real behaviour", (tool) => {
     render(<>{tool.render()}</>);
-    // Ignore options, Export and Reverse are passed in by the page that can rerun the comparison.
-    expect(screen.queryByRole("group", { name: "Comparison controls" })).toBeNull();
-    // Linked scrolling is offered by DOCX Compare's side-by-side document view alone.
-    const linked = screen.queryByRole("button", { name: /^Linked/ });
-    if (tool.name === "DOCX Compare") expect(linked?.getAttribute("aria-pressed")).toBe("true");
-    else expect(linked).toBeNull();
+    // Every tool's side-by-side view can keep both versions in step.
+    expect(screen.getByRole("button", { name: /^Linked/ }).getAttribute("aria-pressed")).toBe("true");
+    const group = screen.queryByRole("group", { name: "Comparison controls" });
+    if (WEB_TOOLS.includes(tool.name)) {
+      // A web check can be exported; Ignore options and Reverse would need a page read again, so are not offered.
+      expect(within(group!).getByRole("button", { name: /^Export/ })).toBeTruthy();
+      expect(within(group!).queryByRole("button", { name: /^Ignore options|^Reverse/ })).toBeNull();
+    } else {
+      // Ignore options, Export and Reverse are passed in by the page that can compare the files again.
+      expect(group).toBeNull();
+    }
+  });
+
+  it("offers no Linked switch in the list view, where there is nothing to keep in step", () => {
+    render(<WebReport result={WEB} url="https://example.com/agreement" />);
+    fireEvent.click(screen.getByRole("tab", { name: "List" }));
+    expect(screen.queryByRole("button", { name: /^Linked/ })).toBeNull();
   });
 });

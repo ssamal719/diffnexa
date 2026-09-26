@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { sealHeaders } from "@/lib/analysis-seal";
+import { forwardOptions } from "@/lib/form-options";
 import {
   COMPARE_TIMEOUT_MS,
   ENGINE_URL,
@@ -74,6 +75,11 @@ export async function POST(request: Request) {
   const outgoing = new FormData();
   outgoing.append("previous", previous, "previous.pdf");
   outgoing.append("revised", revised, "revised.pdf");
+  // Ignore options.
+  forwardOptions(form, outgoing, [
+    ["ignoreCase", "ignore_case"],
+    ["ignorePunctuation", "ignore_punctuation"],
+  ]);
 
   let response: Response;
   try {

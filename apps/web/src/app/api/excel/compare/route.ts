@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { sealHeaders } from "@/lib/analysis-seal";
+import { forwardOptions } from "@/lib/form-options";
 import {
   COMPARE_TIMEOUT_MS,
   EXCEL_MAX_UPLOAD_BYTES,
@@ -72,6 +73,11 @@ export async function POST(request: Request) {
   const outgoing = new FormData();
   outgoing.append("original", original, "original.xlsx");
   outgoing.append("revised", revised, "revised.xlsx");
+  // Ignore options.
+  forwardOptions(form, outgoing, [
+    ["ignoreCase", "ignore_case"],
+    ["ignoreWhitespace", "ignore_whitespace"],
+  ]);
 
   let response: Response;
   try {

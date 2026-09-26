@@ -1,28 +1,50 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 import { ReportWithAnalyst } from "@/components/analysis/ReportWithAnalyst";
+import { ExampleGuide } from "@/components/examples/ExampleGuide";
+import { TryExample } from "@/components/examples/TryExample";
 import { ComparisonError } from "@/components/results/ComparisonError";
 import { ComparisonReport } from "@/components/results/ComparisonReport";
-import { ProcessingState, type ProcessingStage } from "@/components/results/ProcessingState";
+import { ProcessingState } from "@/components/results/ProcessingState";
 import { UploadSlot, type SlotFile } from "@/components/upload/UploadSlot";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
-import type {
-  ComparisonError as ComparisonErrorPayload,
-  ComparisonResponse,
+import type { WorkspaceControls } from "@/components/workspace/WorkspaceControls";
+import {
+  DEFAULT_PDF_OPTIONS,
+  type ComparisonError as ComparisonErrorPayload,
+  type ComparisonResponse,
+  type PdfOptions,
 } from "@/lib/comparison";
+import { EXAMPLE_FILES, EXAMPLE_GUIDES, loadExampleFile } from "@/lib/examples";
+import { inspectPdf } from "@/lib/pdf-preview";
+import { pdfExportFormats } from "@/lib/tool-exports";
+import { runStatus, useComparisonRun, type RunFiles } from "@/lib/use-comparison-run";
 import { DEFAULT_LIMITS } from "@/lib/validation";
-import { SEAL_HEADER } from "@/lib/analysis";
 
-type EngineStatus = { checked: boolean; available: boolean };
+/** The Ignore options PDF Compare really implements, each applied by the engine. */
+const IGNORE_OPTIONS = [
+  {
+    id: "ignoreCase",
+    label: "Ignore capitalisation",
+    detail: "“Deadline” and “deadline” count as the same word. On by default.",
+  },
+  {
+    id: "ignorePunctuation",
+    label: "Ignore punctuation-only changes",
+    detail:
+      "An added or removed comma or full stop is not reported. Punctuation inside numbers, such as 2,500 or 3.5, is always compared.",
+  },
+];
 
-type Phase =
-  | { name: "idle" }
-  | { name: "working"; stage: ProcessingStage; uploadPercent: number | null }
-  | { name: "done"; result: ComparisonResponse; seal: string | null }
-  | { name: "failed"; error: ComparisonErrorPayload };
+const ALWAYS_IGNORED = [
+  "Where lines wrap and where pages break, and extra spaces between words",
+  "Repeated headers, footers and page numbers — set aside as minor differences, which you can show from Filters",
+];
+
+const NOT_COMPARED = ["Fonts, colours and layout", "Images and drawings", "Scanned pages without a text layer"];
 
 /**
  * The upload step and everything that follows it.
@@ -34,110 +56,81 @@ type Phase =
 export function CompareDesk() {
   const [previous, setPrevious] = useState<SlotFile | null>(null);
   const [revised, setRevised] = useState<SlotFile | null>(null);
-  const [engine, setEngine] = useState<EngineStatus>({ checked: false, available: false });
-  const [phase, setPhase] = useState<Phase>({ name: "idle" });
-  const requestRef = useRef<XMLHttpRequest | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    fetch("/api/engine-status")
-      .then((response) => response.json())
-      .then((body) => {
-        if (!cancelled) setEngine({ checked: true, available: Boolean(body.available) });
-      })
-      .catch(() => {
-        if (!cancelled) setEngine({ checked: true, available: false });
-      });
-    return () => {
-      cancelled = true;
-      requestRef.current?.abort();
-    };
-  }, []);
+  const [options, setOptions] = useState<PdfOptions>(DEFAULT_PDF_OPTIONS);
+  const { engine, phase, run, cancel } = useComparisonRun<ComparisonResponse, SlotFile, ComparisonErrorPayload>({
+    endpoint: "/api/compare",
+    fields: ["previous", "revised"],
+    filenames: ["previous.pdf", "revised.pdf"],
+  });
 
   const bothReady = previous !== null && revised !== null;
   const working = phase.name === "working";
   const canCompare = bothReady && engine.available && !working;
   const sameFile =
-    bothReady &&
-    previous.sizeBytes === revised.sizeBytes &&
-    previous.displayName === revised.displayName;
+    bothReady && previous.sizeBytes === revised.sizeBytes && previous.displayName === revised.displayName;
 
-  function runComparison() {
-    if (!previous || !revised) return;
+  /** Every comparison — the first, Reverse, new Ignore options, the example — is this one request. */
+  function compare(files: RunFiles<SlotFile>, matching: PdfOptions = options) {
+    run(files, { ...matching }, Boolean(files.original.example && files.revised.example));
+  }
 
-    const form = new FormData();
-    form.append("previous", previous.file, "previous.pdf");
-    form.append("revised", revised.file, "revised.pdf");
+  function reverse(done: RunFiles<SlotFile>) {
+    const swapped = { original: done.revised, revised: done.original };
+    setPrevious(swapped.original);
+    setRevised(swapped.revised);
+    compare(swapped);
+  }
 
-    // XMLHttpRequest rather than fetch, because it reports real upload progress.
-    // Nothing here estimates: the percentage shown is bytes actually sent.
-    const request = new XMLHttpRequest();
-    requestRef.current = request;
-    setPhase({ name: "working", stage: "sending", uploadPercent: 0 });
+  function applyOptions(done: RunFiles<SlotFile>, values: Record<string, boolean>) {
+    const next: PdfOptions = { ignoreCase: Boolean(values.ignoreCase), ignorePunctuation: Boolean(values.ignorePunctuation) };
+    setOptions(next);
+    compare(done, next);
+  }
 
-    request.upload.addEventListener("progress", (event) => {
-      if (!event.lengthComputable) return;
-      const percent = Math.round((event.loaded / event.total) * 100);
-      setPhase({
-        name: "working",
-        stage: percent >= 100 ? "comparing" : "sending",
-        uploadPercent: percent,
-      });
-    });
+  /** Loads the built-in example PDFs into both slots and compares them. */
+  async function tryExample() {
+    const [first, second] = await Promise.all(
+      [EXAMPLE_FILES.pdf.original, EXAMPLE_FILES.pdf.revised].map(async (example) => {
+        const file = await loadExampleFile(example, "application/pdf");
+        const inspection = await inspectPdf(file, DEFAULT_LIMITS);
+        if (!inspection.ok) throw new Error("example unreadable");
+        return {
+          file,
+          displayName: example.name,
+          sizeBytes: file.size,
+          pageCount: inspection.pageCount,
+          example: true,
+        } satisfies SlotFile;
+      }),
+    );
+    setPrevious(first);
+    setRevised(second);
+    if (engine.available) compare({ original: first, revised: second });
+    else cancel();
+  }
 
-    request.upload.addEventListener("load", () => {
-      setPhase({ name: "working", stage: "comparing", uploadPercent: 100 });
-    });
-
-    request.addEventListener("load", () => {
-      let body: unknown = null;
-      try {
-        body = JSON.parse(request.responseText);
-      } catch {
-        body = null;
-      }
-
-      if (request.status >= 200 && request.status < 300 && body) {
-        setPhase({ name: "working", stage: "preparing", uploadPercent: 100 });
-        // Give the browser a frame to paint the final stage before the report
-        // replaces it, so the last step is seen rather than skipped.
-        // The seal lets this result be sent for AI analysis later, if the person asks.
-        const seal = request.getResponseHeader?.(SEAL_HEADER) ?? null;
-        requestAnimationFrame(() => setPhase({ name: "done", result: body as ComparisonResponse, seal }));
-        return;
-      }
-
-      const error = (body as { error?: ComparisonErrorPayload } | null)?.error;
-      setPhase({
-        name: "failed",
-        error: error ?? {
-          code: "comparison_failed",
-          message: "The comparison could not be completed.",
-        },
-      });
-    });
-
-    request.addEventListener("error", () => {
-      setPhase({
-        name: "failed",
-        error: {
-          code: "network",
-          message: "The connection dropped before the comparison finished.",
-        },
-      });
-    });
-
-    request.addEventListener("abort", () => setPhase({ name: "idle" }));
-
-    request.open("POST", "/api/compare");
-    request.send(form);
+  function controlsFor(done: RunFiles<SlotFile> & { result: ComparisonResponse }): WorkspaceControls {
+    const applied = done.result.options ?? DEFAULT_PDF_OPTIONS;
+    return {
+      ignore: {
+        options: IGNORE_OPTIONS,
+        applied: { ignoreCase: applied.ignoreCase, ignorePunctuation: applied.ignorePunctuation },
+        alwaysIgnored: ALWAYS_IGNORED,
+        notCompared: NOT_COMPARED,
+        onApply: (values) => applyOptions(done, values),
+      },
+      exports: pdfExportFormats(done.result, { name: done.original.displayName }, { name: done.revised.displayName }),
+      reverse: {
+        onReverse: () => reverse(done),
+        detail: `Compare again with ${done.revised.displayName} as the previous version and ${done.original.displayName} as the new one`,
+      },
+    };
   }
 
   function replaceFile(setter: (value: SlotFile | null) => void) {
     return (value: SlotFile | null) => {
       setter(value);
-      requestRef.current?.abort();
-      setPhase({ name: "idle" }); // results never linger beside different files
+      cancel(); // results never linger beside different files
     };
   }
 
@@ -174,18 +167,23 @@ export function CompareDesk() {
           )}
 
           <div className="flex flex-wrap items-center gap-3">
-            <Button disabled={!canCompare} onClick={runComparison} aria-describedby="compare-state">
+            <Button
+              disabled={!canCompare}
+              onClick={() => bothReady && compare({ original: previous, revised })}
+              aria-describedby="compare-state"
+            >
               {working ? "Comparing…" : "Compare documents"}
             </Button>
-            <p
-              id="compare-state"
-              role="status"
-              aria-live="polite"
-              className="text-[0.85rem] text-ink-soft"
-            >
-              {stateMessage({ bothReady, engine, phase })}
+            <p id="compare-state" role="status" aria-live="polite" className="text-[0.85rem] text-ink-soft">
+              {runStatus(phase, engine, bothReady)}
             </p>
           </div>
+
+          <TryExample
+            disabled={working}
+            onTry={tryExample}
+            note="Loads two versions of a fictional recruitment notice into the slots above and compares them — no account and no files of your own needed. Replace either one to compare your own."
+          />
 
           {engine.checked && !engine.available && (
             <Alert tone="planned" title="Comparison service not reachable">
@@ -201,41 +199,26 @@ export function CompareDesk() {
         </div>
       </div>
 
-      {phase.name === "working" && (
-        <ProcessingState stage={phase.stage} uploadPercent={phase.uploadPercent} />
+      {phase.name === "working" && <ProcessingState stage={phase.stage} uploadPercent={phase.uploadPercent} />}
+      {phase.name === "failed" && (
+        <ComparisonError error={phase.error} onRetry={() => bothReady && compare({ original: previous, revised })} />
       )}
-      {phase.name === "failed" && <ComparisonError error={phase.error} onRetry={runComparison} />}
+      {phase.name === "done" && phase.example && <ExampleGuide guide={EXAMPLE_GUIDES.pdf} />}
       {phase.name === "done" && (
-        <ReportWithAnalyst tool="pdf" result={phase.result} seal={phase.seal}>
+        <ReportWithAnalyst key={phase.run} tool="pdf" result={phase.result} seal={phase.seal}>
           {({ analyst, focus, analysis }) => (
             <ComparisonReport
               result={phase.result}
-              files={{ original: previous?.file ?? null, revised: revised?.file ?? null }}
-              names={{ original: previous?.displayName ?? "Previous version", revised: revised?.displayName ?? "New version" }}
+              files={{ original: phase.original.file, revised: phase.revised.file }}
+              names={{ original: phase.original.displayName, revised: phase.revised.displayName }}
               analyst={analyst}
               analysis={analysis}
               focus={focus}
+              controls={controlsFor(phase)}
             />
           )}
         </ReportWithAnalyst>
       )}
     </>
   );
-}
-
-function stateMessage({
-  bothReady,
-  engine,
-  phase,
-}: {
-  bothReady: boolean;
-  engine: EngineStatus;
-  phase: Phase;
-}): string {
-  if (phase.name === "working") return "Working on it — progress is shown below.";
-  if (!bothReady) return "Add both documents to continue.";
-  if (!engine.checked) return "Checking the comparison service…";
-  if (!engine.available) return "The comparison service is unavailable.";
-  if (phase.name === "done") return "Your report is ready below.";
-  return "Both documents are ready.";
 }

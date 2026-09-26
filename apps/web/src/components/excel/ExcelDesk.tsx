@@ -4,27 +4,52 @@ import { useEffect, useRef, useState } from "react";
 
 import { ReportWithAnalyst } from "@/components/analysis/ReportWithAnalyst";
 import { ExcelWorkspace } from "@/components/excel/ExcelWorkspace";
-import { ProcessingState, type ProcessingStage, type StageText } from "@/components/results/ProcessingState";
+import { ExampleGuide } from "@/components/examples/ExampleGuide";
+import { TryExample } from "@/components/examples/TryExample";
+import { ProcessingState, type StageText } from "@/components/results/ProcessingState";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import { OfficeFileSlot, type FileCheck, type SlotFile } from "@/components/upload/OfficeFileSlot";
-import type { ExcelComparison, ExcelFailure } from "@/lib/excel-report";
+import type { WorkspaceControls } from "@/components/workspace/WorkspaceControls";
+import {
+  DEFAULT_EXCEL_OPTIONS,
+  type ExcelComparison,
+  type ExcelFailure,
+  type ExcelOptions,
+} from "@/lib/excel-report";
+import { EXAMPLE_FILES, EXAMPLE_GUIDES, loadExampleFile } from "@/lib/examples";
+import { excelExportFormats } from "@/lib/tool-exports";
+import { useComparisonRun, type EngineStatus, type RunFiles } from "@/lib/use-comparison-run";
 import { EXCEL_ERROR_MESSAGES, EXCEL_MAX_FILE_BYTES, checkXlsxBytes, excelErrorMessage, formatFileSize } from "@/lib/validation";
-import { SEAL_HEADER } from "@/lib/analysis";
-
-type EngineStatus = { checked: boolean; available: boolean };
-
-type Phase =
-  | { name: "idle" }
-  | { name: "working"; stage: ProcessingStage; uploadPercent: number | null }
-  | { name: "done"; result: ExcelComparison; original: SlotFile; revised: SlotFile; seal: string | null }
-  | { name: "failed"; error: ExcelFailure };
 
 const STAGES: StageText[] = [
   { id: "sending", label: "Sending your workbooks", detail: "Transferring both files securely" },
   { id: "comparing", label: "Reading and comparing", detail: "Reading every sheet, then matching rows, columns and cells" },
   { id: "preparing", label: "Preparing the comparison", detail: "Laying out both workbooks and every change" },
 ];
+
+const XLSX_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+/** The Ignore options Excel Compare really implements, each applied by the engine to text cells. */
+const IGNORE_OPTIONS = [
+  {
+    id: "ignoreCase",
+    label: "Ignore capitalisation",
+    detail: "“Paid” and “PAID” count as the same text. Off by default: text is compared exactly.",
+  },
+  {
+    id: "ignoreWhitespace",
+    label: "Ignore extra spaces",
+    detail: "Spaces at the start or end of a cell, and repeated spaces inside it, are not reported. Off by default.",
+  },
+];
+
+const ALWAYS_IGNORED = [
+  "A number or date whose format changed but whose stored value did not",
+  "A formula rewritten only because a row or column was inserted above or before it",
+];
+
+const NOT_COMPARED = ["Formatting: fonts, colours, borders and column widths", "Charts, images and comments", "Macros"];
 
 /** The first look at a workbook: its size and its first bytes, as the engine will check them. */
 async function checkWorkbook(file: File): Promise<FileCheck> {
@@ -50,30 +75,18 @@ async function checkWorkbook(file: File): Promise<FileCheck> {
 export function ExcelDesk() {
   const [original, setOriginal] = useState<SlotFile | null>(null);
   const [revised, setRevised] = useState<SlotFile | null>(null);
-  const [engine, setEngine] = useState<EngineStatus>({ checked: false, available: false });
-  const [phase, setPhase] = useState<Phase>({ name: "idle" });
-  const requestRef = useRef<XMLHttpRequest | null>(null);
+  const [options, setOptions] = useState<ExcelOptions>(DEFAULT_EXCEL_OPTIONS);
+  const { engine, phase, run, cancel } = useComparisonRun<ExcelComparison, SlotFile, ExcelFailure>({
+    endpoint: "/api/excel/compare",
+    fields: ["original", "revised"],
+    filenames: ["original.xlsx", "revised.xlsx"],
+  });
   const resultRef = useRef<HTMLDivElement>(null);
+  const run_ = phase.name === "done" ? phase.run : 0;
 
   useEffect(() => {
-    let cancelled = false;
-    fetch("/api/engine-status")
-      .then((response) => response.json())
-      .then((body) => {
-        if (!cancelled) setEngine({ checked: true, available: Boolean(body.available) });
-      })
-      .catch(() => {
-        if (!cancelled) setEngine({ checked: true, available: false });
-      });
-    return () => {
-      cancelled = true;
-      requestRef.current?.abort();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (phase.name === "done") resultRef.current?.scrollIntoView?.({ block: "start" });
-  }, [phase.name]);
+    if (run_ > 0) resultRef.current?.scrollIntoView?.({ block: "start" });
+  }, [run_]);
 
   const bothReady = original !== null && revised !== null;
   const working = phase.name === "working";
@@ -81,61 +94,60 @@ export function ExcelDesk() {
   const sameFile =
     bothReady && original.sizeBytes === revised.sizeBytes && original.displayName === revised.displayName;
 
-  function runComparison() {
-    if (!original || !revised) return;
-    const files = { original, revised };
-    const form = new FormData();
-    form.append("original", original.file, "original.xlsx");
-    form.append("revised", revised.file, "revised.xlsx");
+  /** Every comparison — the first, Reverse, new Ignore options, the example — is this one request. */
+  function compare(files: RunFiles<SlotFile>, matching: ExcelOptions = options) {
+    run(files, { ...matching }, Boolean(files.original.example && files.revised.example));
+  }
 
-    // XMLHttpRequest rather than fetch, because it reports real upload progress.
-    const request = new XMLHttpRequest();
-    requestRef.current = request;
-    setPhase({ name: "working", stage: "sending", uploadPercent: 0 });
+  function reverse(done: RunFiles<SlotFile>) {
+    const swapped = { original: done.revised, revised: done.original };
+    setOriginal(swapped.original);
+    setRevised(swapped.revised);
+    compare(swapped);
+  }
 
-    request.upload.addEventListener("progress", (event) => {
-      if (!event.lengthComputable) return;
-      const percent = Math.round((event.loaded / event.total) * 100);
-      setPhase({ name: "working", stage: percent >= 100 ? "comparing" : "sending", uploadPercent: percent });
-    });
-    request.upload.addEventListener("load", () => {
-      setPhase({ name: "working", stage: "comparing", uploadPercent: 100 });
-    });
-    request.addEventListener("load", () => {
-      let body: unknown = null;
-      try {
-        body = JSON.parse(request.responseText);
-      } catch {
-        body = null;
-      }
-      if (request.status >= 200 && request.status < 300 && body) {
-        setPhase({ name: "working", stage: "preparing", uploadPercent: 100 });
-        const seal = request.getResponseHeader?.(SEAL_HEADER) ?? null;
-        requestAnimationFrame(() => setPhase({ name: "done", result: body as ExcelComparison, ...files, seal }));
-        return;
-      }
-      const error = (body as { error?: ExcelFailure } | null)?.error;
-      setPhase({
-        name: "failed",
-        error: error ?? { code: "comparison_failed", message: "The comparison could not be completed." },
-      });
-    });
-    request.addEventListener("error", () => {
-      setPhase({
-        name: "failed",
-        error: { code: "network", message: "The connection dropped before the comparison finished." },
-      });
-    });
-    request.addEventListener("abort", () => setPhase({ name: "idle" }));
-    request.open("POST", "/api/excel/compare");
-    request.send(form);
+  function applyOptions(done: RunFiles<SlotFile>, values: Record<string, boolean>) {
+    const next: ExcelOptions = { ignoreCase: Boolean(values.ignoreCase), ignoreWhitespace: Boolean(values.ignoreWhitespace) };
+    setOptions(next);
+    compare(done, next);
+  }
+
+  /** Loads the built-in example workbooks into both slots and compares them. */
+  async function tryExample() {
+    const [first, second] = await Promise.all(
+      [EXAMPLE_FILES.excel.original, EXAMPLE_FILES.excel.revised].map(async (example) => {
+        const file = await loadExampleFile(example, XLSX_TYPE);
+        return { file, displayName: example.name, sizeBytes: file.size, example: true } satisfies SlotFile;
+      }),
+    );
+    setOriginal(first);
+    setRevised(second);
+    if (engine.available) compare({ original: first, revised: second });
+    else cancel();
+  }
+
+  function controlsFor(done: RunFiles<SlotFile> & { result: ExcelComparison }): WorkspaceControls {
+    const applied = done.result.options ?? DEFAULT_EXCEL_OPTIONS;
+    return {
+      ignore: {
+        options: IGNORE_OPTIONS,
+        applied: { ignoreCase: applied.ignoreCase, ignoreWhitespace: applied.ignoreWhitespace },
+        alwaysIgnored: ALWAYS_IGNORED,
+        notCompared: NOT_COMPARED,
+        onApply: (values) => applyOptions(done, values),
+      },
+      exports: excelExportFormats(done.result, { name: done.original.displayName }, { name: done.revised.displayName }),
+      reverse: {
+        onReverse: () => reverse(done),
+        detail: `Compare again with ${done.revised.displayName} as the original and ${done.original.displayName} as the revision`,
+      },
+    };
   }
 
   function replaceFile(setter: (value: SlotFile | null) => void) {
     return (value: SlotFile | null) => {
       setter(value);
-      requestRef.current?.abort();
-      setPhase({ name: "idle" }); // a result never lingers beside different files
+      cancel(); // a result never lingers beside different files
     };
   }
 
@@ -178,13 +190,22 @@ export function ExcelDesk() {
             </Alert>
           )}
           <div className="flex flex-wrap items-center gap-3">
-            <Button disabled={!canCompare} onClick={runComparison} aria-describedby="excel-compare-state">
+            <Button
+              disabled={!canCompare}
+              onClick={() => bothReady && compare({ original, revised })}
+              aria-describedby="excel-compare-state"
+            >
               {working ? "Comparing…" : "Compare workbooks"}
             </Button>
             <p id="excel-compare-state" role="status" aria-live="polite" className="text-[0.85rem] text-ink-soft">
               {stateMessage({ bothReady, engine, phase })}
             </p>
           </div>
+          <TryExample
+            disabled={working}
+            onTry={tryExample}
+            note="Loads two versions of a fictional company workbook into the slots above and compares them — no account and no files of your own needed. Replace either one to compare your own."
+          />
           {engine.checked && !engine.available && (
             <Alert tone="planned" title="Comparison service not reachable">
               The service that compares workbooks isn&apos;t responding right now, so comparison is unavailable. Your
@@ -206,11 +227,16 @@ export function ExcelDesk() {
         {phase.name === "working" && (
           <ProcessingState stage={phase.stage} uploadPercent={phase.uploadPercent} stages={STAGES} />
         )}
-        {phase.name === "failed" && <ExcelErrorView error={phase.error} onRetry={runComparison} />}
+        {phase.name === "failed" && (
+          <ExcelErrorView error={phase.error} onRetry={() => bothReady && compare({ original, revised })} />
+        )}
       </div>
+      {/* The result scrolls into view here — from the example's guide, when there is one. */}
+      <div ref={resultRef} className="scroll-mt-4" />
+      {phase.name === "done" && phase.example && <ExampleGuide guide={EXAMPLE_GUIDES.excel} />}
       {phase.name === "done" && (
-        <div ref={resultRef} className="max-w-none! scroll-mt-4">
-          <ReportWithAnalyst tool="excel" result={phase.result} seal={phase.seal}>
+        <div className="max-w-none!">
+          <ReportWithAnalyst key={phase.run} tool="excel" result={phase.result} seal={phase.seal}>
             {({ analyst, focus, analysis }) => (
               <ExcelWorkspace
                 result={phase.result}
@@ -219,6 +245,7 @@ export function ExcelDesk() {
                 analyst={analyst}
                 analysis={analysis}
                 focus={focus}
+                controls={controlsFor(phase)}
               />
             )}
           </ReportWithAnalyst>
@@ -273,7 +300,15 @@ function ExcelErrorView({ error, onRetry }: { error: ExcelFailure; onRetry: () =
   );
 }
 
-function stateMessage({ bothReady, engine, phase }: { bothReady: boolean; engine: EngineStatus; phase: Phase }): string {
+function stateMessage({
+  bothReady,
+  engine,
+  phase,
+}: {
+  bothReady: boolean;
+  engine: EngineStatus;
+  phase: { name: string };
+}): string {
   if (phase.name === "working") return "Working on it — progress is shown below.";
   if (!bothReady) return "Add both workbooks to continue.";
   if (!engine.checked) return "Checking the comparison service…";

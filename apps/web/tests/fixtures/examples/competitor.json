@@ -1,0 +1,1922 @@
+{
+ "engineVersion": "0.1.0",
+ "processingMs": 0,
+ "documents": {
+  "previous": {
+   "url": "https://competitor.example.com/pricing",
+   "sha256": "7104b1c297fd7c834c771d871a8a787a7332eb8b07e79af0e8f50e7f204a9e01",
+   "nodeCount": 59
+  },
+  "revised": {
+   "url": "https://competitor.example.com/pricing",
+   "sha256": "12891364ad55aeceab8295f2554623daed3eb0c002709614d73a109942f41aec",
+   "nodeCount": 61
+  }
+ },
+ "counts": {
+  "total": 10,
+  "meaningful": 10,
+  "noise": 0
+ },
+ "changes": [
+  {
+   "id": "c0",
+   "seq": 0,
+   "type": "METADATA_CHANGED",
+   "kind": "modified",
+   "category": "metadata",
+   "subtype": "title",
+   "label": "Page title",
+   "oldValue": "Pricing - Northwind Task Management",
+   "newValue": "Pricing - Northwind Task Management with Automations",
+   "delta": null,
+   "confidence": 1.0,
+   "isNoise": false,
+   "noiseReason": null,
+   "sections": [],
+   "evidence": [
+    {
+     "side": "old",
+     "scope": "document",
+     "nodeId": null,
+     "path": null,
+     "sectionPath": [],
+     "field": "metadata.title",
+     "excerpt": "Pricing - Northwind Task Management"
+    },
+    {
+     "side": "new",
+     "scope": "document",
+     "nodeId": null,
+     "path": null,
+     "sectionPath": [],
+     "field": "metadata.title",
+     "excerpt": "Pricing - Northwind Task Management with Automations"
+    }
+   ],
+   "competitorSignal": {
+    "signal": "seo_metadata",
+    "label": "SEO & Metadata",
+    "basis": "metadata_field",
+    "matchedText": "Page title",
+    "reason": "the change is to the page title",
+    "summary": "Touches SEO & Metadata"
+   }
+  },
+  {
+   "id": "c1",
+   "seq": 1,
+   "type": "TEXT_MODIFIED",
+   "kind": "modified",
+   "category": "text",
+   "subtype": "heading",
+   "label": null,
+   "oldValue": "that keeps every team moving",
+   "newValue": "with automations built in",
+   "delta": null,
+   "confidence": 0.588,
+   "isNoise": false,
+   "noiseReason": null,
+   "sections": [],
+   "evidence": [
+    {
+     "side": "old",
+     "scope": "node",
+     "nodeId": "n0",
+     "path": "main > section:nth-of-type(1) > h1",
+     "sectionPath": [],
+     "field": null,
+     "excerpt": "that keeps every team moving"
+    },
+    {
+     "side": "new",
+     "scope": "node",
+     "nodeId": "n0",
+     "path": "main > section:nth-of-type(1) > h1",
+     "sectionPath": [],
+     "field": null,
+     "excerpt": "with automations built in"
+    }
+   ],
+   "competitorSignal": {
+    "signal": "messaging_positioning",
+    "label": "Messaging & Positioning",
+    "basis": "main_heading",
+    "matchedText": "Task management with automations built in",
+    "reason": "this is the page's main heading",
+    "summary": "Touches Messaging & Positioning"
+   }
+  },
+  {
+   "id": "c2",
+   "seq": 2,
+   "type": "TEXT_MODIFIED",
+   "kind": "modified",
+   "category": "text",
+   "subtype": null,
+   "label": "Task management with automations built in",
+   "oldValue": "Start",
+   "newValue": "Try Northwind",
+   "delta": null,
+   "confidence": 0.69,
+   "isNoise": false,
+   "noiseReason": null,
+   "sections": [
+    "Task management that keeps every team moving",
+    "Task management with automations built in"
+   ],
+   "evidence": [
+    {
+     "side": "old",
+     "scope": "node",
+     "nodeId": "n2",
+     "path": "main > section:nth-of-type(1) > p:nth-of-type(2)",
+     "sectionPath": [
+      "Task management that keeps every team moving"
+     ],
+     "field": null,
+     "excerpt": "Start"
+    },
+    {
+     "side": "new",
+     "scope": "node",
+     "nodeId": "n2",
+     "path": "main > section:nth-of-type(1) > p:nth-of-type(2)",
+     "sectionPath": [
+      "Task management with automations built in"
+     ],
+     "field": null,
+     "excerpt": "Try Northwind"
+    }
+   ],
+   "competitorSignal": {
+    "signal": "calls_to_action",
+    "label": "Calls to Action",
+    "basis": "link_text",
+    "matchedText": "Try Northwind free",
+    "reason": "the link “Try Northwind free” asks the visitor to act",
+    "summary": "Touches Calls to Action"
+   }
+  },
+  {
+   "id": "c3",
+   "seq": 3,
+   "type": "TEXT_REMOVED",
+   "kind": "removed",
+   "category": "text",
+   "subtype": null,
+   "label": "Task management with automations built in",
+   "oldValue": "trial",
+   "newValue": null,
+   "delta": null,
+   "confidence": 0.69,
+   "isNoise": false,
+   "noiseReason": null,
+   "sections": [
+    "Task management that keeps every team moving"
+   ],
+   "evidence": [
+    {
+     "side": "old",
+     "scope": "node",
+     "nodeId": "n2",
+     "path": "main > section:nth-of-type(1) > p:nth-of-type(2)",
+     "sectionPath": [
+      "Task management that keeps every team moving"
+     ],
+     "field": null,
+     "excerpt": "trial"
+    }
+   ],
+   "competitorSignal": {
+    "signal": "calls_to_action",
+    "label": "Calls to Action",
+    "basis": "link_text",
+    "matchedText": "Start free trial",
+    "reason": "the link “Start free trial” asks the visitor to act",
+    "summary": "Touches Calls to Action"
+   }
+  },
+  {
+   "id": "c4",
+   "seq": 4,
+   "type": "NUMBER_CHANGED",
+   "kind": "modified",
+   "category": "number",
+   "subtype": null,
+   "label": "Team",
+   "oldValue": "$15",
+   "newValue": "$16",
+   "delta": "+1 (+6.67%)",
+   "confidence": 0.974,
+   "isNoise": false,
+   "noiseReason": null,
+   "sections": [
+    "Task management that keeps every team moving › Plans › Team",
+    "Task management with automations built in › Plans › Team"
+   ],
+   "evidence": [
+    {
+     "side": "old",
+     "scope": "node",
+     "nodeId": "n12",
+     "path": "main > section:nth-of-type(2) > div:nth-of-type(2) > p:nth-of-type(1)",
+     "sectionPath": [
+      "Task management that keeps every team moving",
+      "Plans",
+      "Team"
+     ],
+     "field": null,
+     "excerpt": "$15"
+    },
+    {
+     "side": "new",
+     "scope": "node",
+     "nodeId": "n12",
+     "path": "main > section:nth-of-type(2) > div:nth-of-type(2) > p:nth-of-type(1)",
+     "sectionPath": [
+      "Task management with automations built in",
+      "Plans",
+      "Team"
+     ],
+     "field": null,
+     "excerpt": "$16"
+    }
+   ],
+   "competitorSignal": {
+    "signal": "pricing_commercial",
+    "label": "Pricing & Commercial",
+    "basis": "money_value",
+    "matchedText": "$16",
+    "reason": "“$16” is an amount of money",
+    "summary": "Touches Pricing & Commercial"
+   }
+  },
+  {
+   "id": "c5",
+   "seq": 5,
+   "type": "NUMBER_CHANGED",
+   "kind": "modified",
+   "category": "number",
+   "subtype": null,
+   "label": "About Northwind",
+   "oldValue": "12,000",
+   "newValue": "13,000",
+   "delta": "+1000 (+8.33%)",
+   "confidence": 0.988,
+   "isNoise": false,
+   "noiseReason": null,
+   "sections": [
+    "Task management that keeps every team moving › About Northwind",
+    "Task management with automations built in › About Northwind"
+   ],
+   "evidence": [
+    {
+     "side": "old",
+     "scope": "node",
+     "nodeId": "n51",
+     "path": "main > section:nth-of-type(6) > p:nth-of-type(1)",
+     "sectionPath": [
+      "Task management that keeps every team moving",
+      "About Northwind"
+     ],
+     "field": null,
+     "excerpt": "12,000"
+    },
+    {
+     "side": "new",
+     "scope": "node",
+     "nodeId": "n53",
+     "path": "main > section:nth-of-type(6) > p:nth-of-type(1)",
+     "sectionPath": [
+      "Task management with automations built in",
+      "About Northwind"
+     ],
+     "field": null,
+     "excerpt": "13,000"
+    }
+   ],
+   "competitorSignal": {
+    "signal": "content_sections",
+    "label": "Content & Sections",
+    "basis": "section",
+    "matchedText": "About Northwind",
+    "reason": "it sits in the section “About Northwind”",
+    "summary": "Touches Content & Sections"
+   }
+  },
+  {
+   "id": "c6",
+   "seq": 6,
+   "type": "TEXT_ADDED",
+   "kind": "added",
+   "category": "text",
+   "subtype": "list_item",
+   "label": "Team",
+   "oldValue": null,
+   "newValue": "Automations",
+   "delta": null,
+   "confidence": 1.0,
+   "isNoise": false,
+   "noiseReason": null,
+   "sections": [
+    "Task management with automations built in › Plans › Team"
+   ],
+   "evidence": [
+    {
+     "side": "new",
+     "scope": "node",
+     "nodeId": "n16",
+     "path": "main > section:nth-of-type(2) > div:nth-of-type(2) > ul > li:nth-of-type(4)",
+     "sectionPath": [
+      "Task management with automations built in",
+      "Plans",
+      "Team"
+     ],
+     "field": null,
+     "excerpt": "Automations"
+    }
+   ],
+   "competitorSignal": {
+    "signal": "plans_packaging",
+    "label": "Plans & Packaging",
+    "basis": "section_heading",
+    "matchedText": "Plans",
+    "reason": "it sits in the section “Plans”",
+    "summary": "Touches Plans & Packaging"
+   }
+  },
+  {
+   "id": "c7",
+   "seq": 7,
+   "type": "TEXT_ADDED",
+   "kind": "added",
+   "category": "text",
+   "subtype": "list_item",
+   "label": "Features",
+   "oldValue": null,
+   "newValue": "Automations",
+   "delta": null,
+   "confidence": 1.0,
+   "isNoise": false,
+   "noiseReason": null,
+   "sections": [
+    "Task management with automations built in › Features"
+   ],
+   "evidence": [
+    {
+     "side": "new",
+     "scope": "node",
+     "nodeId": "n46",
+     "path": "main > section:nth-of-type(4) > ul > li:nth-of-type(5)",
+     "sectionPath": [
+      "Task management with automations built in",
+      "Features"
+     ],
+     "field": null,
+     "excerpt": "Automations"
+    }
+   ],
+   "competitorSignal": {
+    "signal": "product_features",
+    "label": "Product & Features",
+    "basis": "section_heading",
+    "matchedText": "Features",
+    "reason": "it sits in the section “Features”",
+    "summary": "Touches Product & Features"
+   }
+  },
+  {
+   "id": "c8",
+   "seq": 8,
+   "type": "LINK_CHANGED",
+   "kind": "removed",
+   "category": "link",
+   "subtype": null,
+   "label": null,
+   "oldValue": "https://competitor.example.com/signup",
+   "newValue": null,
+   "delta": null,
+   "confidence": 1.0,
+   "isNoise": false,
+   "noiseReason": null,
+   "sections": [],
+   "evidence": [
+    {
+     "side": "old",
+     "scope": "node",
+     "nodeId": "n53",
+     "path": "main > section:nth-of-type(1) > p:nth-of-type(2) > a:nth-of-type(1)",
+     "sectionPath": [],
+     "field": null,
+     "excerpt": "Start free trial"
+    }
+   ],
+   "competitorSignal": {
+    "signal": "calls_to_action",
+    "label": "Calls to Action",
+    "basis": "link_text",
+    "matchedText": "Start free trial",
+    "reason": "the link “Start free trial” asks the visitor to act",
+    "summary": "Touches Calls to Action"
+   }
+  },
+  {
+   "id": "c9",
+   "seq": 9,
+   "type": "LINK_CHANGED",
+   "kind": "added",
+   "category": "link",
+   "subtype": null,
+   "label": null,
+   "oldValue": null,
+   "newValue": "https://competitor.example.com/signup",
+   "delta": null,
+   "confidence": 1.0,
+   "isNoise": false,
+   "noiseReason": null,
+   "sections": [],
+   "evidence": [
+    {
+     "side": "new",
+     "scope": "node",
+     "nodeId": "n55",
+     "path": "main > section:nth-of-type(1) > p:nth-of-type(2) > a:nth-of-type(1)",
+     "sectionPath": [],
+     "field": null,
+     "excerpt": "Try Northwind free"
+    }
+   ],
+   "competitorSignal": {
+    "signal": "calls_to_action",
+    "label": "Calls to Action",
+    "basis": "link_text",
+    "matchedText": "Try Northwind free",
+    "reason": "the link “Try Northwind free” asks the visitor to act",
+    "summary": "Touches Calls to Action"
+   }
+  }
+ ],
+ "diagnostics": {
+  "notes": [],
+  "previousWarnings": [],
+  "revisedWarnings": [],
+  "needsJavascript": false
+ },
+ "view": {
+  "original": {
+   "nodes": [
+    {
+     "id": "n0",
+     "role": "heading",
+     "text": "Task management that keeps every team moving",
+     "level": 1
+    },
+    {
+     "id": "n1",
+     "role": "paragraph",
+     "text": "Plan projects, track work and hit deadlines together, in one shared workspace.",
+     "section": [
+      "Task management that keeps every team moving"
+     ]
+    },
+    {
+     "id": "n2",
+     "role": "paragraph",
+     "text": "Start free trial Book a demo",
+     "section": [
+      "Task management that keeps every team moving"
+     ]
+    },
+    {
+     "id": "n3",
+     "role": "heading",
+     "text": "Plans",
+     "level": 2,
+     "section": [
+      "Task management that keeps every team moving"
+     ]
+    },
+    {
+     "id": "n4",
+     "role": "paragraph",
+     "text": "Every plan includes unlimited guests and a 99.9% uptime commitment.",
+     "section": [
+      "Task management that keeps every team moving",
+      "Plans"
+     ]
+    },
+    {
+     "id": "n5",
+     "role": "heading",
+     "text": "Starter",
+     "level": 3,
+     "section": [
+      "Task management that keeps every team moving",
+      "Plans"
+     ]
+    },
+    {
+     "id": "n6",
+     "role": "paragraph",
+     "text": "$8 per user per month, billed annually",
+     "section": [
+      "Task management that keeps every team moving",
+      "Plans",
+      "Starter"
+     ]
+    },
+    {
+     "id": "n7",
+     "role": "list_item",
+     "text": "Up to 3 projects",
+     "section": [
+      "Task management that keeps every team moving",
+      "Plans",
+      "Starter"
+     ]
+    },
+    {
+     "id": "n8",
+     "role": "list_item",
+     "text": "Basic reporting",
+     "section": [
+      "Task management that keeps every team moving",
+      "Plans",
+      "Starter"
+     ]
+    },
+    {
+     "id": "n9",
+     "role": "list_item",
+     "text": "Email support",
+     "section": [
+      "Task management that keeps every team moving",
+      "Plans",
+      "Starter"
+     ]
+    },
+    {
+     "id": "n10",
+     "role": "paragraph",
+     "text": "Choose Starter",
+     "section": [
+      "Task management that keeps every team moving",
+      "Plans",
+      "Starter"
+     ]
+    },
+    {
+     "id": "n11",
+     "role": "heading",
+     "text": "Team",
+     "level": 3,
+     "section": [
+      "Task management that keeps every team moving",
+      "Plans"
+     ]
+    },
+    {
+     "id": "n12",
+     "role": "paragraph",
+     "text": "$15 per user per month, billed annually",
+     "section": [
+      "Task management that keeps every team moving",
+      "Plans",
+      "Team"
+     ]
+    },
+    {
+     "id": "n13",
+     "role": "list_item",
+     "text": "Unlimited projects",
+     "section": [
+      "Task management that keeps every team moving",
+      "Plans",
+      "Team"
+     ]
+    },
+    {
+     "id": "n14",
+     "role": "list_item",
+     "text": "Timeline view",
+     "section": [
+      "Task management that keeps every team moving",
+      "Plans",
+      "Team"
+     ]
+    },
+    {
+     "id": "n15",
+     "role": "list_item",
+     "text": "Priority email support",
+     "section": [
+      "Task management that keeps every team moving",
+      "Plans",
+      "Team"
+     ]
+    },
+    {
+     "id": "n16",
+     "role": "paragraph",
+     "text": "Choose Team",
+     "section": [
+      "Task management that keeps every team moving",
+      "Plans",
+      "Team"
+     ]
+    },
+    {
+     "id": "n17",
+     "role": "heading",
+     "text": "Business",
+     "level": 3,
+     "section": [
+      "Task management that keeps every team moving",
+      "Plans"
+     ]
+    },
+    {
+     "id": "n18",
+     "role": "paragraph",
+     "text": "$29 per user per month, billed annually",
+     "section": [
+      "Task management that keeps every team moving",
+      "Plans",
+      "Business"
+     ]
+    },
+    {
+     "id": "n19",
+     "role": "list_item",
+     "text": "Everything in Team",
+     "section": [
+      "Task management that keeps every team moving",
+      "Plans",
+      "Business"
+     ]
+    },
+    {
+     "id": "n20",
+     "role": "list_item",
+     "text": "Audit log",
+     "section": [
+      "Task management that keeps every team moving",
+      "Plans",
+      "Business"
+     ]
+    },
+    {
+     "id": "n21",
+     "role": "list_item",
+     "text": "Single sign-on",
+     "section": [
+      "Task management that keeps every team moving",
+      "Plans",
+      "Business"
+     ]
+    },
+    {
+     "id": "n22",
+     "role": "paragraph",
+     "text": "Choose Business",
+     "section": [
+      "Task management that keeps every team moving",
+      "Plans",
+      "Business"
+     ]
+    },
+    {
+     "id": "n23",
+     "role": "heading",
+     "text": "Compare plans",
+     "level": 2,
+     "section": [
+      "Task management that keeps every team moving"
+     ]
+    },
+    {
+     "id": "n24",
+     "role": "table_cell",
+     "text": "Included",
+     "section": [
+      "Task management that keeps every team moving",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "n25",
+     "role": "table_cell",
+     "text": "Starter",
+     "section": [
+      "Task management that keeps every team moving",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "id": "n26",
+     "role": "table_cell",
+     "text": "Team",
+     "section": [
+      "Task management that keeps every team moving",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      0,
+      2
+     ]
+    },
+    {
+     "id": "n27",
+     "role": "table_cell",
+     "text": "Business",
+     "section": [
+      "Task management that keeps every team moving",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      0,
+      3
+     ]
+    },
+    {
+     "id": "n28",
+     "role": "table_cell",
+     "text": "Projects",
+     "section": [
+      "Task management that keeps every team moving",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "id": "n29",
+     "role": "table_cell",
+     "text": "3",
+     "section": [
+      "Task management that keeps every team moving",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      1,
+      1
+     ]
+    },
+    {
+     "id": "n30",
+     "role": "table_cell",
+     "text": "Unlimited",
+     "section": [
+      "Task management that keeps every team moving",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      1,
+      2
+     ]
+    },
+    {
+     "id": "n31",
+     "role": "table_cell",
+     "text": "Unlimited",
+     "section": [
+      "Task management that keeps every team moving",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      1,
+      3
+     ]
+    },
+    {
+     "id": "n32",
+     "role": "table_cell",
+     "text": "Storage",
+     "section": [
+      "Task management that keeps every team moving",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      2,
+      0
+     ]
+    },
+    {
+     "id": "n33",
+     "role": "table_cell",
+     "text": "5 GB",
+     "section": [
+      "Task management that keeps every team moving",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      2,
+      1
+     ]
+    },
+    {
+     "id": "n34",
+     "role": "table_cell",
+     "text": "100 GB",
+     "section": [
+      "Task management that keeps every team moving",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      2,
+      2
+     ]
+    },
+    {
+     "id": "n35",
+     "role": "table_cell",
+     "text": "1 TB",
+     "section": [
+      "Task management that keeps every team moving",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      2,
+      3
+     ]
+    },
+    {
+     "id": "n36",
+     "role": "table_cell",
+     "text": "Audit log",
+     "section": [
+      "Task management that keeps every team moving",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      3,
+      0
+     ]
+    },
+    {
+     "id": "n37",
+     "role": "table_cell",
+     "text": "No",
+     "section": [
+      "Task management that keeps every team moving",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      3,
+      1
+     ]
+    },
+    {
+     "id": "n38",
+     "role": "table_cell",
+     "text": "No",
+     "section": [
+      "Task management that keeps every team moving",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      3,
+      2
+     ]
+    },
+    {
+     "id": "n39",
+     "role": "table_cell",
+     "text": "Yes",
+     "section": [
+      "Task management that keeps every team moving",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      3,
+      3
+     ]
+    },
+    {
+     "id": "n40",
+     "role": "heading",
+     "text": "Features",
+     "level": 2,
+     "section": [
+      "Task management that keeps every team moving"
+     ]
+    },
+    {
+     "id": "n41",
+     "role": "list_item",
+     "text": "Kanban boards",
+     "section": [
+      "Task management that keeps every team moving",
+      "Features"
+     ]
+    },
+    {
+     "id": "n42",
+     "role": "list_item",
+     "text": "Gantt timelines",
+     "section": [
+      "Task management that keeps every team moving",
+      "Features"
+     ]
+    },
+    {
+     "id": "n43",
+     "role": "list_item",
+     "text": "Recurring tasks",
+     "section": [
+      "Task management that keeps every team moving",
+      "Features"
+     ]
+    },
+    {
+     "id": "n44",
+     "role": "list_item",
+     "text": "Time tracking reports",
+     "section": [
+      "Task management that keeps every team moving",
+      "Features"
+     ]
+    },
+    {
+     "id": "n45",
+     "role": "heading",
+     "text": "Frequently asked questions",
+     "level": 2,
+     "section": [
+      "Task management that keeps every team moving"
+     ]
+    },
+    {
+     "id": "n46",
+     "role": "heading",
+     "text": "Can I change plans later?",
+     "level": 3,
+     "section": [
+      "Task management that keeps every team moving",
+      "Frequently asked questions"
+     ]
+    },
+    {
+     "id": "n47",
+     "role": "paragraph",
+     "text": "Yes. You can upgrade or downgrade at any time from your account settings.",
+     "section": [
+      "Task management that keeps every team moving",
+      "Frequently asked questions",
+      "Can I change plans later?"
+     ]
+    },
+    {
+     "id": "n48",
+     "role": "heading",
+     "text": "Do you offer discounts for nonprofits?",
+     "level": 3,
+     "section": [
+      "Task management that keeps every team moving",
+      "Frequently asked questions"
+     ]
+    },
+    {
+     "id": "n49",
+     "role": "paragraph",
+     "text": "Registered nonprofits receive 30% off any annual plan.",
+     "section": [
+      "Task management that keeps every team moving",
+      "Frequently asked questions",
+      "Do you offer discounts for nonprofits?"
+     ]
+    },
+    {
+     "id": "n50",
+     "role": "heading",
+     "text": "About Northwind",
+     "level": 2,
+     "section": [
+      "Task management that keeps every team moving"
+     ]
+    },
+    {
+     "id": "n51",
+     "role": "paragraph",
+     "text": "Northwind was founded in 2016 and now serves more than 12,000 teams in 40 countries.",
+     "section": [
+      "Task management that keeps every team moving",
+      "About Northwind"
+     ]
+    },
+    {
+     "id": "n52",
+     "role": "paragraph",
+     "text": "Read the Northwind blog for product news and customer stories.",
+     "section": [
+      "Task management that keeps every team moving",
+      "About Northwind"
+     ]
+    },
+    {
+     "id": "n53",
+     "role": "link",
+     "text": "Start free trial",
+     "href": "https://competitor.example.com/signup"
+    },
+    {
+     "id": "n54",
+     "role": "link",
+     "text": "Book a demo",
+     "href": "https://competitor.example.com/demo"
+    },
+    {
+     "id": "n55",
+     "role": "link",
+     "text": "Choose Starter",
+     "href": "https://competitor.example.com/signup?plan=starter"
+    },
+    {
+     "id": "n56",
+     "role": "link",
+     "text": "Choose Team",
+     "href": "https://competitor.example.com/signup?plan=team"
+    },
+    {
+     "id": "n57",
+     "role": "link",
+     "text": "Choose Business",
+     "href": "https://competitor.example.com/signup?plan=business"
+    },
+    {
+     "id": "n58",
+     "role": "link",
+     "text": "Northwind blog",
+     "href": "https://competitor.example.com/blog"
+    }
+   ],
+   "fields": {
+    "metadata.title": "Pricing - Northwind Task Management",
+    "metadata.description": "Simple per-user pricing for teams of every size. Start free for 14 days.",
+    "metadata.canonical": "https://competitor.example.com/pricing"
+   }
+  },
+  "revised": {
+   "nodes": [
+    {
+     "id": "n0",
+     "role": "heading",
+     "text": "Task management with automations built in",
+     "level": 1
+    },
+    {
+     "id": "n1",
+     "role": "paragraph",
+     "text": "Plan projects, track work and hit deadlines together, in one shared workspace.",
+     "section": [
+      "Task management with automations built in"
+     ]
+    },
+    {
+     "id": "n2",
+     "role": "paragraph",
+     "text": "Try Northwind free Book a demo",
+     "section": [
+      "Task management with automations built in"
+     ]
+    },
+    {
+     "id": "n3",
+     "role": "heading",
+     "text": "Plans",
+     "level": 2,
+     "section": [
+      "Task management with automations built in"
+     ]
+    },
+    {
+     "id": "n4",
+     "role": "paragraph",
+     "text": "Every plan includes unlimited guests and a 99.9% uptime commitment.",
+     "section": [
+      "Task management with automations built in",
+      "Plans"
+     ]
+    },
+    {
+     "id": "n5",
+     "role": "heading",
+     "text": "Starter",
+     "level": 3,
+     "section": [
+      "Task management with automations built in",
+      "Plans"
+     ]
+    },
+    {
+     "id": "n6",
+     "role": "paragraph",
+     "text": "$8 per user per month, billed annually",
+     "section": [
+      "Task management with automations built in",
+      "Plans",
+      "Starter"
+     ]
+    },
+    {
+     "id": "n7",
+     "role": "list_item",
+     "text": "Up to 3 projects",
+     "section": [
+      "Task management with automations built in",
+      "Plans",
+      "Starter"
+     ]
+    },
+    {
+     "id": "n8",
+     "role": "list_item",
+     "text": "Basic reporting",
+     "section": [
+      "Task management with automations built in",
+      "Plans",
+      "Starter"
+     ]
+    },
+    {
+     "id": "n9",
+     "role": "list_item",
+     "text": "Email support",
+     "section": [
+      "Task management with automations built in",
+      "Plans",
+      "Starter"
+     ]
+    },
+    {
+     "id": "n10",
+     "role": "paragraph",
+     "text": "Choose Starter",
+     "section": [
+      "Task management with automations built in",
+      "Plans",
+      "Starter"
+     ]
+    },
+    {
+     "id": "n11",
+     "role": "heading",
+     "text": "Team",
+     "level": 3,
+     "section": [
+      "Task management with automations built in",
+      "Plans"
+     ]
+    },
+    {
+     "id": "n12",
+     "role": "paragraph",
+     "text": "$16 per user per month, billed annually",
+     "section": [
+      "Task management with automations built in",
+      "Plans",
+      "Team"
+     ]
+    },
+    {
+     "id": "n13",
+     "role": "list_item",
+     "text": "Unlimited projects",
+     "section": [
+      "Task management with automations built in",
+      "Plans",
+      "Team"
+     ]
+    },
+    {
+     "id": "n14",
+     "role": "list_item",
+     "text": "Timeline view",
+     "section": [
+      "Task management with automations built in",
+      "Plans",
+      "Team"
+     ]
+    },
+    {
+     "id": "n15",
+     "role": "list_item",
+     "text": "Priority email support",
+     "section": [
+      "Task management with automations built in",
+      "Plans",
+      "Team"
+     ]
+    },
+    {
+     "id": "n16",
+     "role": "list_item",
+     "text": "Automations",
+     "section": [
+      "Task management with automations built in",
+      "Plans",
+      "Team"
+     ]
+    },
+    {
+     "id": "n17",
+     "role": "paragraph",
+     "text": "Choose Team",
+     "section": [
+      "Task management with automations built in",
+      "Plans",
+      "Team"
+     ]
+    },
+    {
+     "id": "n18",
+     "role": "heading",
+     "text": "Business",
+     "level": 3,
+     "section": [
+      "Task management with automations built in",
+      "Plans"
+     ]
+    },
+    {
+     "id": "n19",
+     "role": "paragraph",
+     "text": "$29 per user per month, billed annually",
+     "section": [
+      "Task management with automations built in",
+      "Plans",
+      "Business"
+     ]
+    },
+    {
+     "id": "n20",
+     "role": "list_item",
+     "text": "Everything in Team",
+     "section": [
+      "Task management with automations built in",
+      "Plans",
+      "Business"
+     ]
+    },
+    {
+     "id": "n21",
+     "role": "list_item",
+     "text": "Audit log",
+     "section": [
+      "Task management with automations built in",
+      "Plans",
+      "Business"
+     ]
+    },
+    {
+     "id": "n22",
+     "role": "list_item",
+     "text": "Single sign-on",
+     "section": [
+      "Task management with automations built in",
+      "Plans",
+      "Business"
+     ]
+    },
+    {
+     "id": "n23",
+     "role": "paragraph",
+     "text": "Choose Business",
+     "section": [
+      "Task management with automations built in",
+      "Plans",
+      "Business"
+     ]
+    },
+    {
+     "id": "n24",
+     "role": "heading",
+     "text": "Compare plans",
+     "level": 2,
+     "section": [
+      "Task management with automations built in"
+     ]
+    },
+    {
+     "id": "n25",
+     "role": "table_cell",
+     "text": "Included",
+     "section": [
+      "Task management with automations built in",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "n26",
+     "role": "table_cell",
+     "text": "Starter",
+     "section": [
+      "Task management with automations built in",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "id": "n27",
+     "role": "table_cell",
+     "text": "Team",
+     "section": [
+      "Task management with automations built in",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      0,
+      2
+     ]
+    },
+    {
+     "id": "n28",
+     "role": "table_cell",
+     "text": "Business",
+     "section": [
+      "Task management with automations built in",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      0,
+      3
+     ]
+    },
+    {
+     "id": "n29",
+     "role": "table_cell",
+     "text": "Projects",
+     "section": [
+      "Task management with automations built in",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "id": "n30",
+     "role": "table_cell",
+     "text": "3",
+     "section": [
+      "Task management with automations built in",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      1,
+      1
+     ]
+    },
+    {
+     "id": "n31",
+     "role": "table_cell",
+     "text": "Unlimited",
+     "section": [
+      "Task management with automations built in",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      1,
+      2
+     ]
+    },
+    {
+     "id": "n32",
+     "role": "table_cell",
+     "text": "Unlimited",
+     "section": [
+      "Task management with automations built in",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      1,
+      3
+     ]
+    },
+    {
+     "id": "n33",
+     "role": "table_cell",
+     "text": "Storage",
+     "section": [
+      "Task management with automations built in",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      2,
+      0
+     ]
+    },
+    {
+     "id": "n34",
+     "role": "table_cell",
+     "text": "5 GB",
+     "section": [
+      "Task management with automations built in",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      2,
+      1
+     ]
+    },
+    {
+     "id": "n35",
+     "role": "table_cell",
+     "text": "100 GB",
+     "section": [
+      "Task management with automations built in",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      2,
+      2
+     ]
+    },
+    {
+     "id": "n36",
+     "role": "table_cell",
+     "text": "1 TB",
+     "section": [
+      "Task management with automations built in",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      2,
+      3
+     ]
+    },
+    {
+     "id": "n37",
+     "role": "table_cell",
+     "text": "Audit log",
+     "section": [
+      "Task management with automations built in",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      3,
+      0
+     ]
+    },
+    {
+     "id": "n38",
+     "role": "table_cell",
+     "text": "No",
+     "section": [
+      "Task management with automations built in",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      3,
+      1
+     ]
+    },
+    {
+     "id": "n39",
+     "role": "table_cell",
+     "text": "No",
+     "section": [
+      "Task management with automations built in",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      3,
+      2
+     ]
+    },
+    {
+     "id": "n40",
+     "role": "table_cell",
+     "text": "Yes",
+     "section": [
+      "Task management with automations built in",
+      "Compare plans"
+     ],
+     "table": [
+      0,
+      3,
+      3
+     ]
+    },
+    {
+     "id": "n41",
+     "role": "heading",
+     "text": "Features",
+     "level": 2,
+     "section": [
+      "Task management with automations built in"
+     ]
+    },
+    {
+     "id": "n42",
+     "role": "list_item",
+     "text": "Kanban boards",
+     "section": [
+      "Task management with automations built in",
+      "Features"
+     ]
+    },
+    {
+     "id": "n43",
+     "role": "list_item",
+     "text": "Gantt timelines",
+     "section": [
+      "Task management with automations built in",
+      "Features"
+     ]
+    },
+    {
+     "id": "n44",
+     "role": "list_item",
+     "text": "Recurring tasks",
+     "section": [
+      "Task management with automations built in",
+      "Features"
+     ]
+    },
+    {
+     "id": "n45",
+     "role": "list_item",
+     "text": "Time tracking reports",
+     "section": [
+      "Task management with automations built in",
+      "Features"
+     ]
+    },
+    {
+     "id": "n46",
+     "role": "list_item",
+     "text": "Automations",
+     "section": [
+      "Task management with automations built in",
+      "Features"
+     ]
+    },
+    {
+     "id": "n47",
+     "role": "heading",
+     "text": "Frequently asked questions",
+     "level": 2,
+     "section": [
+      "Task management with automations built in"
+     ]
+    },
+    {
+     "id": "n48",
+     "role": "heading",
+     "text": "Can I change plans later?",
+     "level": 3,
+     "section": [
+      "Task management with automations built in",
+      "Frequently asked questions"
+     ]
+    },
+    {
+     "id": "n49",
+     "role": "paragraph",
+     "text": "Yes. You can upgrade or downgrade at any time from your account settings.",
+     "section": [
+      "Task management with automations built in",
+      "Frequently asked questions",
+      "Can I change plans later?"
+     ]
+    },
+    {
+     "id": "n50",
+     "role": "heading",
+     "text": "Do you offer discounts for nonprofits?",
+     "level": 3,
+     "section": [
+      "Task management with automations built in",
+      "Frequently asked questions"
+     ]
+    },
+    {
+     "id": "n51",
+     "role": "paragraph",
+     "text": "Registered nonprofits receive 30% off any annual plan.",
+     "section": [
+      "Task management with automations built in",
+      "Frequently asked questions",
+      "Do you offer discounts for nonprofits?"
+     ]
+    },
+    {
+     "id": "n52",
+     "role": "heading",
+     "text": "About Northwind",
+     "level": 2,
+     "section": [
+      "Task management with automations built in"
+     ]
+    },
+    {
+     "id": "n53",
+     "role": "paragraph",
+     "text": "Northwind was founded in 2016 and now serves more than 13,000 teams in 40 countries.",
+     "section": [
+      "Task management with automations built in",
+      "About Northwind"
+     ]
+    },
+    {
+     "id": "n54",
+     "role": "paragraph",
+     "text": "Read the Northwind blog for product news and customer stories.",
+     "section": [
+      "Task management with automations built in",
+      "About Northwind"
+     ]
+    },
+    {
+     "id": "n55",
+     "role": "link",
+     "text": "Try Northwind free",
+     "href": "https://competitor.example.com/signup"
+    },
+    {
+     "id": "n56",
+     "role": "link",
+     "text": "Book a demo",
+     "href": "https://competitor.example.com/demo"
+    },
+    {
+     "id": "n57",
+     "role": "link",
+     "text": "Choose Starter",
+     "href": "https://competitor.example.com/signup?plan=starter"
+    },
+    {
+     "id": "n58",
+     "role": "link",
+     "text": "Choose Team",
+     "href": "https://competitor.example.com/signup?plan=team"
+    },
+    {
+     "id": "n59",
+     "role": "link",
+     "text": "Choose Business",
+     "href": "https://competitor.example.com/signup?plan=business"
+    },
+    {
+     "id": "n60",
+     "role": "link",
+     "text": "Northwind blog",
+     "href": "https://competitor.example.com/blog"
+    }
+   ],
+   "fields": {
+    "metadata.title": "Pricing - Northwind Task Management with Automations",
+    "metadata.description": "Simple per-user pricing for teams of every size. Start free for 14 days.",
+    "metadata.canonical": "https://competitor.example.com/pricing"
+   }
+  },
+  "marks": [
+   {
+    "change": "c0",
+    "side": "original",
+    "field": "metadata.title"
+   },
+   {
+    "change": "c0",
+    "side": "revised",
+    "field": "metadata.title"
+   },
+   {
+    "change": "c1",
+    "side": "original",
+    "node": "n0",
+    "start": 16,
+    "end": 44
+   },
+   {
+    "change": "c1",
+    "side": "revised",
+    "node": "n0",
+    "start": 16,
+    "end": 41
+   },
+   {
+    "change": "c2",
+    "side": "original",
+    "node": "n2",
+    "start": 0,
+    "end": 5
+   },
+   {
+    "change": "c2",
+    "side": "revised",
+    "node": "n2",
+    "start": 0,
+    "end": 13
+   },
+   {
+    "change": "c3",
+    "side": "original",
+    "node": "n2",
+    "start": 11,
+    "end": 16
+   },
+   {
+    "change": "c4",
+    "side": "original",
+    "node": "n12",
+    "start": 0,
+    "end": 3
+   },
+   {
+    "change": "c4",
+    "side": "revised",
+    "node": "n12",
+    "start": 0,
+    "end": 3
+   },
+   {
+    "change": "c5",
+    "side": "original",
+    "node": "n51",
+    "start": 55,
+    "end": 61
+   },
+   {
+    "change": "c5",
+    "side": "revised",
+    "node": "n53",
+    "start": 55,
+    "end": 61
+   },
+   {
+    "change": "c6",
+    "side": "revised",
+    "node": "n16",
+    "start": 0,
+    "end": 11
+   },
+   {
+    "change": "c7",
+    "side": "revised",
+    "node": "n46",
+    "start": 0,
+    "end": 11
+   },
+   {
+    "change": "c8",
+    "side": "original",
+    "node": "n53",
+    "start": 0,
+    "end": 16
+   },
+   {
+    "change": "c9",
+    "side": "revised",
+    "node": "n55",
+    "start": 0,
+    "end": 18
+   }
+  ]
+ },
+ "competitor": {
+  "signalsVersion": "2026.09.1",
+  "signals": [
+   {
+    "id": "pricing_commercial",
+    "label": "Pricing & Commercial",
+    "blurb": "Prices, amounts of money, billing periods, trials and other commercial wording.",
+    "changeCount": 1,
+    "changeIds": [
+     "c4"
+    ]
+   },
+   {
+    "id": "product_features",
+    "label": "Product & Features",
+    "blurb": "Content in sections the page itself calls features, integrations, products or what's new.",
+    "changeCount": 1,
+    "changeIds": [
+     "c7"
+    ]
+   },
+   {
+    "id": "messaging_positioning",
+    "label": "Messaging & Positioning",
+    "blurb": "The page's main heading and the opening text directly beneath it.",
+    "changeCount": 1,
+    "changeIds": [
+     "c1"
+    ]
+   },
+   {
+    "id": "plans_packaging",
+    "label": "Plans & Packaging",
+    "blurb": "Plans and tiers named in the page's headings and tables, and what is listed under them.",
+    "changeCount": 1,
+    "changeIds": [
+     "c6"
+    ]
+   },
+   {
+    "id": "calls_to_action",
+    "label": "Calls to Action",
+    "blurb": "Links whose words ask the visitor to act, such as Start free, Sign up or Book a demo.",
+    "changeCount": 4,
+    "changeIds": [
+     "c2",
+     "c3",
+     "c8",
+     "c9"
+    ]
+   },
+   {
+    "id": "content_sections",
+    "label": "Content & Sections",
+    "blurb": "Other headings and wording in the named sections of the page.",
+    "changeCount": 1,
+    "changeIds": [
+     "c5"
+    ]
+   },
+   {
+    "id": "links_destinations",
+    "label": "Links & Destinations",
+    "blurb": "Links that were added, removed or now point somewhere else.",
+    "changeCount": 0,
+    "changeIds": []
+   },
+   {
+    "id": "seo_metadata",
+    "label": "SEO & Metadata",
+    "blurb": "The page title, meta description and canonical link that search engines read.",
+    "changeCount": 1,
+    "changeIds": [
+     "c0"
+    ]
+   },
+   {
+    "id": "other",
+    "label": "Other",
+    "blurb": "Changes that none of the categories above clearly describes.",
+    "changeCount": 0,
+    "changeIds": []
+   }
+  ],
+  "changedSignals": [
+   "pricing_commercial",
+   "product_features",
+   "messaging_positioning",
+   "plans_packaging",
+   "calls_to_action",
+   "content_sections",
+   "seo_metadata"
+  ]
+ }
+}

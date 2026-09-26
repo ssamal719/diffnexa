@@ -168,6 +168,34 @@ export function exportName(parts: string[], extension: string, date: Date = new 
   return `DiffNexa - ${base || "comparison"} - ${stamp}.${extension}`;
 }
 
+/**
+ * The three formats every tool can export reliably, each building its file
+ * only when chosen. `parts` names the file (usually the two versions' names).
+ */
+export function exportFormats(build: () => ExportReport, parts: string[]): ExportFormat[] {
+  const name = (extension: string) => exportName(parts, extension);
+  return [
+    {
+      id: "csv",
+      label: "Changes table (CSV)",
+      detail: "One row per change, for Excel or Google Sheets.",
+      download: () => saveFile(name("csv"), "text/csv;charset=utf-8", toCsv(build())),
+    },
+    {
+      id: "html",
+      label: "Report (HTML)",
+      detail: "A page to read, share or print to PDF from your browser.",
+      download: () => saveFile(name("html"), "text/html;charset=utf-8", toHtml(build())),
+    },
+    {
+      id: "text",
+      label: "Report (plain text)",
+      detail: "The same report as simple text.",
+      download: () => saveFile(name("txt"), "text/plain;charset=utf-8", toText(build())),
+    },
+  ];
+}
+
 /** Hands a file to the browser to save. */
 export function saveFile(name: string, type: string, content: string): void {
   const blob = new Blob([content], { type });

@@ -157,7 +157,6 @@ function upload(content: string, name = "tasklane-saas-pricing-2026-03-12.diffne
 }
 
 async function openCheck(file = JSON.stringify(buildBaselineFile(SNAPSHOT, "Tasklane", "saas_pricing"))) {
-  fireEvent.click(screen.getByRole("button", { name: "Check for changes" }));
   upload(file);
   await waitFor(() => expect((screen.getByLabelText("Page address") as HTMLInputElement).value).not.toBe(""));
 }
@@ -170,7 +169,7 @@ describe("the first screen", () => {
     expect((screen.getByLabelText("Product / service") as HTMLInputElement).placeholder).toBe("GitHub Copilot");
     expect(screen.getByLabelText("Page address")).toBeTruthy();
     expect(document.body.textContent).toContain("A public page, for example example.com/pricing");
-    expect(screen.getByRole("button", { name: "Capture this page" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Capture baseline" })).toBeTruthy();
   });
 
   it("offers exactly the agreed page types, and says they are only a label", () => {
@@ -199,7 +198,7 @@ describe("the first screen", () => {
     const calls = stubFetch([]);
     render(<PriceDesk />);
     fill("Page address", "example.com/pricing");
-    fireEvent.click(screen.getByRole("button", { name: "Capture this page" }));
+    fireEvent.click(screen.getByRole("button", { name: "Capture baseline" }));
     expect(await screen.findByText(/Enter a name for this product or service/)).toBeTruthy();
     expect(calls).toHaveLength(0);
   });
@@ -209,7 +208,7 @@ describe("the first screen", () => {
     render(<PriceDesk />);
     fill("Product / service", "Tasklane");
     fill("Page address", "http://192.168.1.10/pricing");
-    fireEvent.click(screen.getByRole("button", { name: "Capture this page" }));
+    fireEvent.click(screen.getByRole("button", { name: "Capture baseline" }));
     expect(await screen.findByText(/available publicly on the internet/)).toBeTruthy();
     expect(calls).toHaveLength(0);
   });
@@ -222,12 +221,12 @@ describe("capturing a baseline", () => {
     fill("Product / service", "Tasklane");
     fill("Page address", "tasklane.example.com/pricing");
     fireEvent.change(screen.getByLabelText("Page type"), { target: { value: "saas_pricing" } });
-    fireEvent.click(screen.getByRole("button", { name: "Capture this page" }));
+    fireEvent.click(screen.getByRole("button", { name: "Capture baseline" }));
 
-    const panel = (await screen.findByText("Baseline captured")).closest("section")!;
-    expect(within(panel).getByRole("heading", { name: "Tasklane" })).toBeTruthy();
+    const panel = screen.getByRole("region", { name: "Baseline" });
+    expect(await within(panel).findByText("Captured now")).toBeTruthy();
+    expect(panel.textContent).toContain("Tasklane");
     expect(panel.textContent).toContain("SaaS Pricing");
-    expect(panel.textContent).toContain("https://tasklane.example.com/pricing");
     expect(calls).toEqual([{ url: "/api/price/snapshot", body: { url: "https://tasklane.example.com/pricing" } }]);
   });
 
@@ -243,7 +242,7 @@ describe("capturing a baseline", () => {
     fill("Product / service", "GitHub Copilot");
     fill("Page address", "tasklane.example.com/pricing");
     fireEvent.change(screen.getByLabelText("Page type"), { target: { value: "subscription_plan" } });
-    fireEvent.click(screen.getByRole("button", { name: "Capture this page" }));
+    fireEvent.click(screen.getByRole("button", { name: "Capture baseline" }));
     fireEvent.click(await screen.findByRole("button", { name: "Download baseline" }));
     expect(names).toEqual(["github-copilot-subscription-plan-2026-03-12.diffnexa-snapshot.json"]);
     click.mockRestore();
@@ -254,9 +253,8 @@ describe("checking against a baseline", () => {
   it("refuses without a baseline file", async () => {
     const calls = stubFetch([]);
     render(<PriceDesk />);
-    fireEvent.click(screen.getByRole("button", { name: "Check for changes" }));
     fill("Page address", "tasklane.example.com/pricing");
-    fireEvent.click(screen.getByRole("button", { name: "Check this page now" }));
+    fireEvent.click(screen.getByRole("button", { name: "Check for changes" }));
     expect(await screen.findByText(/Choose the baseline file/)).toBeTruthy();
     expect(calls).toHaveLength(0);
   });
@@ -267,7 +265,7 @@ describe("checking against a baseline", () => {
     await openCheck();
     expect((screen.getByLabelText("Product / service") as HTMLInputElement).value).toBe("Tasklane");
     expect((screen.getByLabelText("Page type") as HTMLSelectElement).value).toBe("saas_pricing");
-    fireEvent.click(screen.getByRole("button", { name: "Check this page now" }));
+    fireEvent.click(screen.getByRole("button", { name: "Check for changes" }));
     expect(await screen.findByRole("heading", { name: "3 changes found" })).toBeTruthy();
     expect(calls).toEqual([
       { url: "/api/price/compare", body: { url: "https://tasklane.example.com/pricing", previous_snapshot: SNAPSHOT } },
@@ -281,7 +279,7 @@ describe("checking against a baseline", () => {
       render(<PriceDesk />);
       await openCheck();
       fireEvent.change(screen.getByLabelText("Page type"), { target: { value: pageType } });
-      fireEvent.click(screen.getByRole("button", { name: "Check this page now" }));
+      fireEvent.click(screen.getByRole("button", { name: "Check for changes" }));
       await screen.findByRole("heading", { name: "No changes found" });
       bodies.push(calls[0].body);
       cleanup();
@@ -292,7 +290,6 @@ describe("checking against a baseline", () => {
   it("refuses a file that is not a baseline, before asking the server", async () => {
     const calls = stubFetch([]);
     render(<PriceDesk />);
-    fireEvent.click(screen.getByRole("button", { name: "Check for changes" }));
     upload("this is not json", "notes.txt");
     expect(await screen.findByText(/isn't a DiffNexa baseline/)).toBeTruthy();
     expect(calls).toHaveLength(0);
@@ -308,7 +305,7 @@ describe("checking against a baseline", () => {
     stubFetch([{ status: 400, body: { error: { code, message: "x", side: null } } }]);
     render(<PriceDesk />);
     await openCheck();
-    fireEvent.click(screen.getByRole("button", { name: "Check this page now" }));
+    fireEvent.click(screen.getByRole("button", { name: "Check for changes" }));
     const alert = await screen.findByRole("alert");
     expect(alert.textContent).toContain(title);
   });
@@ -392,6 +389,17 @@ describe("the report", () => {
   });
 });
 
+describe("Try example", () => {
+  it("asks for the built-in example, with nothing else in the request, and explains how the tool works", async () => {
+    const calls = stubFetch([{ status: 200, body: comparison([]) }]);
+    render(<PriceDesk />);
+    fireEvent.click(screen.getByRole("button", { name: "Try example" }));
+    expect(await screen.findByText("How this tool works")).toBeTruthy();
+    expect(calls).toEqual([{ url: "/api/price/compare", body: { example: true } }]);
+    expect(document.body.textContent).toContain("nothing is fetched from the internet");
+  });
+});
+
 describe("accessibility basics", () => {
   it("labels every control and gives buttons distinct names", () => {
     render(<PriceDesk />);
@@ -399,7 +407,6 @@ describe("accessibility basics", () => {
       const id = input.getAttribute("id");
       expect(id && document.querySelector(`label[for="${id}"]`), input.outerHTML).toBeTruthy();
     }
-    fireEvent.click(screen.getByRole("button", { name: "Check for changes" }));
     expect(document.querySelector('label[for="price-baseline-file"]')?.textContent).toBe("Choose baseline file");
     const names = screen.getAllByRole("button").map((button) => button.textContent);
     expect(new Set(names).size).toBe(names.length);

@@ -5,16 +5,7 @@
  * evidence. AI explanations are not included.
  */
 
-import {
-  exportName,
-  saveFile,
-  toCsv,
-  toHtml,
-  toText,
-  type ExportFormat,
-  type ExportReport,
-  type ExportRow,
-} from "@/lib/export";
+import { exportFormats, type ExportFormat, type ExportReport, type ExportRow } from "@/lib/export";
 import {
   DEFAULT_DOCX_OPTIONS,
   headlineFor,
@@ -80,26 +71,5 @@ export function docxExportReport(
 
 /** The export formats DOCX Compare can produce reliably, each building its file on demand. */
 export function docxExportFormats(result: DocxComparison, original: FileSummary, revised: FileSummary): ExportFormat[] {
-  const build = () => docxExportReport(result, original, revised);
-  const name = (extension: string) => exportName([original.name, revised.name], extension);
-  return [
-    {
-      id: "csv",
-      label: "Changes table (CSV)",
-      detail: "One row per change, for Excel or Google Sheets.",
-      download: () => saveFile(name("csv"), "text/csv;charset=utf-8", toCsv(build())),
-    },
-    {
-      id: "html",
-      label: "Report (HTML)",
-      detail: "A page to read, share or print to PDF from your browser.",
-      download: () => saveFile(name("html"), "text/html;charset=utf-8", toHtml(build())),
-    },
-    {
-      id: "text",
-      label: "Report (plain text)",
-      detail: "The same report as simple text.",
-      download: () => saveFile(name("txt"), "text/plain;charset=utf-8", toText(build())),
-    },
-  ];
+  return exportFormats(() => docxExportReport(result, original, revised), [original.name, revised.name]);
 }
